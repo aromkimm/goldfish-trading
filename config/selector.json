@@ -1,0 +1,62 @@
+{
+  "_note": "값의 구분은 각 항목의 _status를 따른다. 확정: 금붕부부 결정. 제안: 추정치 — 미확정 제안값. 미확인: 공식 확인 전이라 비워 둔다.",
+
+  "exclusion": {
+    "_status": "확정 — docs/product-selection.md 초기 제외 기준·가치관 필터",
+    "_match_note": "category는 도매 카테고리 경로명, title은 상품명에서 부분 일치로 찾는다.",
+    "rules": {
+      "인증·표시 부담 상품군": {
+        "category": ["화장품", "뷰티", "식품", "건강식품", "음료", "가전", "디지털", "전기", "출산", "유아", "육아"],
+        "title": ["화장품", "스킨케어", "충전기", "배터리", "어댑터", "전기", "유아용", "아기", "신생아"]
+      },
+      "사이즈·색상 반품 부담": {
+        "category": ["의류", "신발", "언더웨어", "속옷"],
+        "title": []
+      },
+      "캐릭터·라이선스 굿즈": {
+        "category": ["캐릭터"],
+        "title": ["캐릭터", "디즈니", "산리오", "포켓몬", "마블", "카카오프렌즈", "라인프렌즈", "짱구", "정품라이선스"]
+      },
+      "일회용·일회성 소비": {
+        "category": ["파티용품"],
+        "title": ["일회용", "1회용"]
+      },
+      "다이어트·건강 과장": {
+        "category": ["다이어트"],
+        "title": ["다이어트", "체중감량", "지방분해", "디톡스"]
+      }
+    },
+    "exclude_adult": true,
+    "exclude_oversea": true,
+    "_rule_note": "규칙은 명백한 경우만 거른다. 통과한 상품은 triage 단계에서 Claude가 다시 판정한다."
+  },
+
+  "manual_check": {
+    "_status": "제안 — 수동 확인 대상 상위 후보 수",
+    "shortlist": 30
+  },
+
+  "verification": {
+    "_status": "반려 기준은 확정 — 필요한 정보 미확보 또는 배송·반품 조건 불일치(docs/product-selection-agent.md). 아래 수치는 주의 표시용 제안값",
+    "top": 25,
+    "prep_warn_days": 2,
+    "sale_end_warn_days": 14
+  },
+
+  "pricing": {
+    "platform_fee_rate": null,
+    "_fee_status": "미확인 — 스마트스토어 수수료를 공식 자료로 확인한 뒤 소수(예: 0.0x)로 입력한다. 비어 있으면 수수료 반영 마진은 모름으로 표시한다.",
+    "min_matched_for_same_product_price": 3,
+    "_basis_status": "제안 — 수동 확인한 같은 상품 가격이 이 개수 이상이면 그 가격으로, 아니면 비슷한 상품 가격으로 경쟁가를 잡는다."
+  },
+
+  "scoring": {
+    "_status": "제안 — 배치 내 백분위 순위의 가중합. 가중치·임계값은 미확정",
+    "weights": {
+      "saturation": 0.35,
+      "gross_margin_rate": 0.25,
+      "competition_density": 0.2,
+      "search_volume": 0.2
+    }
+  }
+}

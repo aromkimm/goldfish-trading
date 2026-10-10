@@ -1,0 +1,84 @@
+from __future__ import annotations
+
+import json
+import sqlite3
+from datetime import datetime, timezone
+
+from .config import DATA_DIR
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS candidates (
+    no INTEGER PRIMARY KEY,           -- 도매 상품번호
+    title TEXT,
+    url TEXT,
+    source_query TEXT,                -- 후보를 찾은 검색 조건
+    stage TEXT NOT NULL DEFAULT 'new',-- new → detailed → triaged → measured → checked → verified / excluded·returned
+    exclude_reason TEXT,
+    keywords TEXT,                    -- JSON 배열. triage에서 Claude가 작성
+    review TEXT,                      -- JSON. 상위 후보 검토에서 Claude가 작성
+    added_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS supply_snapshots (  -- 변동성 계산용 스냅샷
+    no INTEGER NOT NULL,
+    fetched_at TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    raw TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS keyword_stats (
+    keyword TEXT NOT NULL,
+    fetched_at TEXT NOT NULL,
+    pc INTEGER, mobile INTEGER, comp_idx TEXT,
+    raw TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 결과
+    no INTEGER NOT NULL,
+    checked_at TEXT NOT NULL,
+    total_results INTEGER,            -- 대표 키워드 검색 결과 전체 상품 수
+    same_sellers INTEGER,             -- 같은 상품을 파는 판매자 수 (동일 상품 포화도)
+    same_prices TEXT NOT NULL,        -- JSON 배열
+    similar_prices TEXT NOT NULL,     -- JSON 배열. 같은 상품이 적을 때의 경쟁가
+    note TEXT
+);
+CREATE TABLE IF NOT EXISTS verifications (     -- 판매 가능 조건 확인
+    no INTEGER NOT NULL,
+    checked_at TEXT NOT NULL,
+    conditions TEXT NOT NULL,         -- JSON. API로 채운 조건
+    manual TEXT NOT NULL,             -- JSON. 사람이 입력한 값
+    result TEXT NOT NULL,             -- verified / returned
+    reasons TEXT NOT NULL,            -- JSON 배열. 반려 사유
+    warnings TEXT NOT NULL            -- JSON 배열
+);
+"""
+
+
+def now() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def connect(path=None) -> sqlite3.Connection:
+    if path is None:
+        DATA_DIR.mkdir(exist_ok=True)
+        path = DATA_DIR / "selector.db"
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
+    conn.executescript(SCHEMA)
+    return conn
+
+
+def latest_snapshot(conn: sqlite3.Connection, no: int) -> dict | None:
+    row = conn.execute(
+        "SELECT summary FROM supply_snapshots WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
+    ).fetchone()
+    return json.loads(row["summary"]) if row else None
+
+
+def latest_keyword_stats(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM keyword_stats WHERE keyword=? ORDER BY fetched_at DESC LIMIT 1", (keyword,)
+    ).fetchone()
+
+
+def latest_manual_check(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM manual_checks WHERE no=? ORDER BY checked_at DESC LIMIT 1", (no,)
+    ).fetchone()
