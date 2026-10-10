@@ -31,9 +31,17 @@
     "_rule_note": "규칙은 명백한 경우만 거른다. 통과한 상품은 triage 단계에서 Claude가 다시 판정한다."
   },
 
+  "competition": {
+    "_status": "제안 — 11번가 경쟁 수집. 같은 상품은 도매 상품명 검색 상위 title_top개에서 dHash 거리 dhash_max_distance 이하로 판정(2026-10-10 표본 12건 근거)",
+    "title_top": 100,
+    "keyword_top": 40,
+    "dhash_max_distance": 10
+  },
+
   "manual_check": {
-    "_status": "제안 — 수동 확인 대상 상위 후보 수",
-    "shortlist": 30
+    "_status": "제안 — 수동 확인 대상 상위 후보 수와 대표 키워드당 상한(같은 키워드 쏠림 방지)",
+    "shortlist": 30,
+    "per_keyword": 3
   },
 
   "verification": {

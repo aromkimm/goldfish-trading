@@ -10,8 +10,9 @@ description: 금붕상사 상품 추천 에이전트를 실행해 도매매 후�
 ## 준비
 
 - `.env`에 키가 있어야 한다(`.env.example` 참고). 비어 있으면 실행하지 말고 어떤 키가 필요한지 알린다. 키 값은 출력·기록하지 않는다.
-- 명령은 저장소 루트에서 `python3 -m selector <명령>`으로 실행한다. 표준 라이브러리만 쓴다.
-- 네이버쇼핑은 크롤링하거나 브라우저로 대신 확인하지 않는다. 경쟁가·판매자 수는 사람이 확인한다.
+- 명령은 저장소 루트에서 `.venv/bin/python -m selector <명령>`으로 실행한다. 처음이면 `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
+- 11번가 키는 등록한 IP에서만 동작한다. 실행 위치가 바뀌어 거부되면 11번가 API 관리에서 IP를 추가하라고 안내한다.
+- 네이버쇼핑은 크롤링하거나 브라우저로 대신 확인하지 않는다.
 
 ## 절차
 
@@ -19,7 +20,7 @@ description: 금붕상사 상품 추천 에이전트를 실행해 도매매 후�
 2. `detail`로 상세를 받고 규칙 제외를 적용한다. 매일 실행할 때는 `detail --refresh`로 변동성 스냅샷을 쌓는다.
 3. `triage-export` → `data/llm/triage_pending.jsonl`의 각 줄을 판정해 `data/llm/triage_done.jsonl`에 쓴다 → `triage-import data/llm/triage_done.jsonl`.
 4. `measure`로 대표 키워드 검색량을 수집한다.
-5. `manual-export`로 `data/manual/check-<날짜>.html`을 만들어 사용자에게 열어 보라고 안내한다. 사용자가 입력 후 'CSV 저장'한 파일 경로를 받으면 `manual-import <경로>`.
+5. `compete`로 11번가 경쟁·가격을 수집한다(후보 150개 기준 약 6분). 네이버 대비 검증 표본이 필요할 때만 `manual-export`·`manual-import`를 쓴다.
 6. `review-export --top 10` → 각 줄을 검토해 `data/llm/review_done.jsonl`에 쓴다 → `review-import data/llm/review_done.jsonl`.
 7. `report`로 `data/reports/<날짜>-candidates.md·csv`를 만들고 요약 보고한다.
 8. `verify-export`로 `data/verify/verify-<날짜>.html`을 만들어 사용자에게 판매 가능 조건 확인을 안내한다. 받은 CSV 경로로 `verify-import <경로>` → `data/reports/<날짜>-sell-conditions.md`. 반려된 상품과 사유를 보고한다. 판매 조건서가 최종 산출물이며 등록·운영은 이 스킬 범위가 아니다. 통과 상품이 부족하면 `verify-export --nos`로 비교표의 다음 후보를 확인한다.

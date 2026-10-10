@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS candidates (
     title TEXT,
     url TEXT,
     source_query TEXT,                -- 후보를 찾은 검색 조건
-    stage TEXT NOT NULL DEFAULT 'new',-- new → detailed → triaged → measured → checked → verified / excluded·returned
+    stage TEXT NOT NULL DEFAULT 'new',-- new → detailed → triaged → measured → checked(경쟁 정보 확보) → verified / excluded·returned
     exclude_reason TEXT,
     keywords TEXT,                    -- JSON 배열. triage에서 Claude가 작성
     review TEXT,                      -- JSON. 상위 후보 검토에서 Claude가 작성
@@ -30,7 +30,21 @@ CREATE TABLE IF NOT EXISTS keyword_stats (
     pc INTEGER, mobile INTEGER, comp_idx TEXT,
     raw TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 결과
+CREATE TABLE IF NOT EXISTS competition (       -- 11번가 경쟁 수집 (자동)
+    no INTEGER NOT NULL,
+    fetched_at TEXT NOT NULL,
+    title_query TEXT NOT NULL,        -- 도매 상품명에서 만든 검색어
+    title_total INTEGER,              -- 그 검색어의 11번가 전체 결과 수
+    checked INTEGER NOT NULL,         -- 이미지를 비교한 상품 수
+    image_failed INTEGER NOT NULL,
+    same_sellers INTEGER NOT NULL,    -- 같은 상품을 파는 판매자 수 (동일 상품 포화도)
+    same_prices TEXT NOT NULL,        -- JSON 배열
+    same_reviews INTEGER NOT NULL,    -- 같은 상품들의 리뷰 수 합계 (판매 흔적)
+    keyword TEXT NOT NULL,
+    keyword_total INTEGER,            -- 대표 키워드의 11번가 전체 상품 수
+    similar_prices TEXT NOT NULL      -- JSON 배열. 대표 키워드 인기도 상위 상품 가격
+);
+CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 결과 (11번가 대비 검증 표본)
     no INTEGER NOT NULL,
     checked_at TEXT NOT NULL,
     total_results INTEGER,            -- 대표 키워드 검색 결과 전체 상품 수
@@ -75,6 +89,12 @@ def latest_snapshot(conn: sqlite3.Connection, no: int) -> dict | None:
 def latest_keyword_stats(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
     return conn.execute(
         "SELECT * FROM keyword_stats WHERE keyword=? ORDER BY fetched_at DESC LIMIT 1", (keyword,)
+    ).fetchone()
+
+
+def latest_competition(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM competition WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
     ).fetchone()
 
 

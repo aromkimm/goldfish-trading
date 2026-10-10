@@ -1,4 +1,4 @@
-"""사용법: python3 -m selector <명령>. 전체 실행 순서는 .claude/skills/product-selector/SKILL.md."""
+"""사용법: .venv/bin/python -m selector <명령>. 전체 실행 순서는 .claude/skills/product-selector/SKILL.md."""
 from __future__ import annotations
 
 import argparse
@@ -15,6 +15,7 @@ def main(argv=None) -> None:
     s.add_argument("--kw", help="검색어")
     s.add_argument("--ca", help="카테고리 코드 (예: 01_11_00_00_00)")
     s.add_argument("--pages", type=int, default=1)
+    s.add_argument("--size", type=int, default=200, help="페이지당 상품 수 (1~200)")
     s.add_argument("--sort", help="se 정확도, rd 랭킹, ha 인기, aa 낮은가격, da 최근등록")
 
     d = sub.add_parser("detail", help="2. 상세 수집·규칙 제외")
@@ -27,9 +28,12 @@ def main(argv=None) -> None:
 
     sub.add_parser("measure", help="4. 대표 키워드 검색량 수집")
 
-    me = sub.add_parser("manual-export", help="5. 네이버쇼핑 수동 확인 화면 만들기")
+    cp = sub.add_parser("compete", help="5. 11번가 경쟁·가격 수집 (같은 상품 판매자·경쟁가·상품 수)")
+    cp.add_argument("--limit", type=int)
+
+    me = sub.add_parser("manual-export", help="검증 표본: 네이버쇼핑 수동 확인 화면 만들기")
     me.add_argument("--shortlist", type=int, help="확인할 상위 후보 수 (기본: 설정값)")
-    mi = sub.add_parser("manual-import", help="5. 수동 확인 CSV 반영")
+    mi = sub.add_parser("manual-import", help="검증 표본: 수동 확인 CSV 반영")
     mi.add_argument("path")
 
     sub.add_parser("report", help="6. 마진·점수 계산, 비교표 작성")
@@ -51,7 +55,7 @@ def main(argv=None) -> None:
     conn = db.connect()
 
     if args.cmd == "search":
-        print(f"추가 {pipeline.search_supply(conn, kw=args.kw, ca=args.ca, pages=args.pages, sort=args.sort)}건")
+        print(f"추가 {pipeline.search_supply(conn, kw=args.kw, ca=args.ca, pages=args.pages, size=args.size, sort=args.sort)}건")
     elif args.cmd == "detail":
         stages = ("new", "detailed", "triaged", "measured", "checked") if args.refresh else ("new",)
         print(pipeline.fetch_details(conn, stages=stages, limit=args.limit))
@@ -62,6 +66,8 @@ def main(argv=None) -> None:
         print(pipeline.import_triage(conn, args.path))
     elif args.cmd == "measure":
         print(pipeline.measure(conn))
+    elif args.cmd == "compete":
+        print(pipeline.compete(conn, limit=args.limit))
     elif args.cmd == "manual-export":
         path, n = pipeline.export_manual(conn, args.shortlist)
         print(f"{n}건 → {path}")

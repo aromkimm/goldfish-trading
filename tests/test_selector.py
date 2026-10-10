@@ -1,15 +1,39 @@
-"""외부 API 없이 도는 테스트. 실행: python3 -m unittest discover tests"""
+"""외부 API 없이 도는 테스트. 실행: .venv/bin/python -m unittest discover tests"""
 from __future__ import annotations
 
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
 
-from selector import db, filters, manual, pipeline, scoring, verify
+from PIL import Image, ImageDraw
+
+from selector import db, filters, manual, pipeline, saturation, scoring, verify
 from selector.config import settings
-from selector.sources import domeggook, naver
+from selector.sources import domeggook, elevenst, naver
+
+
+def png(seed: int, shift: int = 0) -> bytes:
+    """seed마다 다른 무늬, shift는 같은 무늬의 약한 변형."""
+    img = Image.new("RGB", (120, 120), "white")
+    draw = ImageDraw.Draw(img)
+    for i in range(6):
+        x = (seed * 37 + i * 53) % 100
+        y = (seed * 91 + i * 29) % 100
+        draw.rectangle([x, y, x + 20 + shift, y + 15], fill=(seed * 40 % 255, i * 40, 120))
+    buf = io.BytesIO()
+    img.save(buf, "PNG")
+    return buf.getvalue()
+
+
+ELEVENST_XML = """<?xml version="1.0" encoding="EUC-KR"?><ProductSearchResponse><Products><TotalCount>1,234</TotalCount>
+<Product><ProductCode>1</ProductCode><ProductName><![CDATA[걸이 A]]></ProductName><ProductImage200><![CDATA[u1]]></ProductImage200>
+<Seller>a</Seller><ProductPrice>10000</ProductPrice><SalePrice>9000</SalePrice><Delivery><![CDATA[무료]]></Delivery><ReviewCount>12</ReviewCount></Product>
+<Product><ProductCode>2</ProductCode><ProductName><![CDATA[걸이 B]]></ProductName><ProductImage200><![CDATA[u2]]></ProductImage200>
+<Seller>b</Seller><ProductPrice>9900</ProductPrice><SalePrice></SalePrice><ReviewCount>0</ReviewCount></Product>
+</Products></ProductSearchResponse>""".encode("euc-kr")
 
 
 VIEW = {"domeggook": {
@@ -99,6 +123,38 @@ class Filters(unittest.TestCase):
     def test_status_and_flags(self):
         self.assertIn("판매상태", filters.rule_exclusion(self.summary(status="판매종료"), self.cfg))
         self.assertEqual(filters.rule_exclusion(self.summary(from_oversea=True), self.cfg), "해외직배송")
+
+
+class Elevenst(unittest.TestCase):
+    def test_parse(self):
+        total, items = elevenst.parse(ELEVENST_XML)
+        self.assertEqual(total, 1234)
+        self.assertEqual([(i["name"], i["price"], i["seller"], i["reviews"]) for i in items],
+                         [("걸이 A", 9000, "a", 12), ("걸이 B", 9900, "b", 0)])
+
+    def test_error_response(self):
+        err = '<?xml version="1.0" encoding="EUC-KR"?><ErrorResponse><ErrorCode>003</ErrorCode><ErrorMessage>x</ErrorMessage></ErrorResponse>'
+        with self.assertRaises(RuntimeError):
+            elevenst.parse(err.encode("euc-kr"))
+
+    def test_query_from_title(self):
+        self.assertEqual(elevenst.query_from_title("[도매라인] 세련된디자인 두꺼운 겨울 극세사담요 100*80 겨울이불담요 겨울담요"),
+                         "세련된디자인 두꺼운 겨울 극세사담요 겨울이불담요")
+
+
+class Saturation(unittest.TestCase):
+    def test_counts_same_image_sellers_prices_reviews(self):
+        images = {"same1": png(1), "same2": png(1, shift=1), "other": png(5), "broken": b"not an image"}
+        items = [
+            {"image": "same1", "seller": "A", "price": 9000, "reviews": 3},
+            {"image": "same2", "seller": "B", "price": 9500, "reviews": 0},
+            {"image": "same1", "seller": "A", "price": 9100, "reviews": 1},
+            {"image": "other", "seller": "C", "price": 5000, "reviews": 50},
+            {"image": "broken", "seller": "D", "price": 1, "reviews": 0},
+        ]
+        r = saturation.match(png(1), items, max_distance=10, fetch=images.__getitem__)
+        self.assertEqual((r["matched"], r["sellers"], r["image_failed"], r["reviews"]), (3, 2, 1, 4))
+        self.assertEqual(r["prices"], [9000, 9100, 9500])
 
 
 class ManualCheck(unittest.TestCase):
@@ -219,7 +275,15 @@ class EndToEnd(unittest.TestCase):
              mock.patch.object(domeggook, "item_list", return_value=({"numberOfPages": 1}, listing)), \
              mock.patch.object(domeggook, "item_view", side_effect=lambda no: domeggook.unwrap(views[no])), \
              mock.patch.object(naver, "keyword_stats", return_value=[
-                 {"relKeyword": "스테인리스걸이", "monthlyPcQcCnt": "300", "monthlyMobileQcCnt": "2700", "compIdx": "중간"}]):
+                 {"relKeyword": "스테인리스걸이", "monthlyPcQcCnt": "300", "monthlyMobileQcCnt": "2700", "compIdx": "중간"}]), \
+             mock.patch.object(elevenst, "search", side_effect=lambda q, size=100, sort=None: (
+                 (120, [{"image": "u1", "seller": "a", "price": 9000, "reviews": 5},
+                        {"image": "u2", "seller": "b", "price": 9900, "reviews": 0},
+                        {"image": "u3", "seller": "c", "price": 8500, "reviews": 2},
+                        {"image": "u4", "seller": "d", "price": 4000, "reviews": 90}])
+                 if sort is None else (3000, [{"price": 7000}, {"price": 12000}]))), \
+             mock.patch.object(saturation, "fetch_image", side_effect={
+                 "https://img/supplier.png": png(1), "u1": png(1), "u2": png(1), "u3": png(1, 1), "u4": png(7)}.__getitem__):
             self.assertEqual(pipeline.search_supply(conn, kw="걸이"), 2)
             self.assertEqual(pipeline.fetch_details(conn), {"fetched": 2, "excluded": 1, "failed": 0})
             _, n = pipeline.export_triage(conn)
@@ -229,15 +293,14 @@ class EndToEnd(unittest.TestCase):
                             encoding="utf-8")
             self.assertEqual(pipeline.import_triage(conn, done), {"triaged": 1, "excluded": 0})
             self.assertEqual(pipeline.measure(conn), {"measured": 1})
-            page, n = pipeline.export_manual(conn)
+            self.assertEqual(pipeline.compete(conn), {"checked": 1, "failed": 0})
+            page, n = pipeline.export_manual(conn)  # 검증 표본 화면도 경쟁 수집 후 만들 수 있다
             self.assertEqual(n, 1)
             self.assertIn("스테인리스 다용도 걸이", Path(page).read_text(encoding="utf-8"))
-            check = tmp / "manual_done.csv"
-            check.write_text("no,total_results,same_sellers,same_prices,similar_prices,note\n"
-                             '101,3000,3,"9000 9900 8500",,\n', encoding="utf-8")
-            self.assertEqual(pipeline.import_manual(conn, check), 1)
             row = pipeline.build_rows(conn)[0]
             self.assertEqual(row["saturation"], 3)
+            self.assertEqual(row["same_reviews"], 7)
+            self.assertEqual(row["shop_total"], 3000)
             self.assertEqual(row["price_basis"], "동일 상품")
             self.assertEqual(row["price_lowest"], 8500)
             self.assertEqual(row["price_median"], 9000)
