@@ -1,0 +1,18 @@
+{
+  "product_id": "format-demo",
+  "scope": "가상 데스크 매트 / 샌드 / 60×30cm",
+  "sources": [
+    {
+      "id": "s",
+      "path": "sources/synthetic.txt",
+      "location": "직접 작성한 합성 자료",
+      "observed_at": "2026-10-13"
+    },
+    {
+      "id": "image-source",
+      "path": "assets/photo.png",
+      "location": "직접 작성한 도식",
+      "observed_at": "2026-10-13"
+    }
+  ]
+}

@@ -1,21 +1,72 @@
 # 판매 등록 에이전트
 
-전달받은 상품 정보와 정해진 가격 기준으로 상품명·이미지·상세페이지를 구성해 스마트스토어에 등록한다. 가격 기준을 임의로 정하지 않는다. 공통 개발 범위는 [실행 계획](../../docs/execution-plan.md#에이전트-개발-방향)을 따른다.
+상품 URL·자료와 판매할 옵션을 주면 대화형 에이전트가 검색 의도·경쟁 조건을 조사하고 등록 자료를 작성한다. `tools.py`는 근거 연결 검사·출력·버전별 검수 기록을 담당한다. 별도 모델 API 없이 현재 대화와 로컬 Python으로 실행한다.
 
-## 상세페이지 기준
+## 사용하기
 
-**구매자가 “구매 전에 무엇을 확인해야 하지?”에 답을 얻도록 돕는다.** 상품의 매력과 구매 전 확인 사항·확인 방법을 함께 설명한다.
+이 프로젝트에서 다음처럼 요청한다.
 
-- 상품별로 용도·재질·호환성·관리 방법·옵션·구성품·사용 제한을 선별한다. 치수·설치 조건은 필요할 때 다룬다. 무엇을 어떻게 확인·측정·비교할지 사진·도식·문구로 안내한다.
-- 사실 문구를 해당 상품·옵션의 근거와 연결한다. 공급처 제공 정보와 직접 확인한 사실을 구분하고, 인증·성능은 증빙이 확인된 범위에서만 설명한다.
-- 누락·충돌한 정보는 확인 과제로 남긴다. 사진이나 AI로 성능·수치·설치 여유·허용 오차·호환성을 추측하지 않으며, 근거 없이 적합성이나 품질을 보장하지 않는다.
-- 사용·편집이 허용된 실물 사진을 활용하고, 연출 소품과 실제 구성품을 구분한다. 생성·편집으로 제품 외형·색상·구성·성능을 왜곡하지 않는다. 차별화는 정보 순서·설명·레이아웃에 담는다.
-- 실제 수행하지 않은 검수·시험을 주장하지 않는다. 확인된 제약과 주의사항은 구매 전에 쉽게 찾을 수 있게 배치한다.
+> 판매 등록 에이전트로 이 상품의 등록 자료를 만들어줘. 상품: [URL 또는 파일]. 판매 옵션: [규격·색상·구성].
 
-## 검증 기준
+에이전트는 [작업 절차](workflow.md)를 수행하고 필요한 자료만 추가로 묻는다. 사용자가 JSON을 직접 작성할 필요는 없다. URL 접근이 불가능해도 제공 자료로 부분 초안을 만들 수 있다. 도입 제목·사진·이미지 문구 처리는 [공통 포맷 기준](../../docs/product-listing-principles.md#상세페이지-포맷)을 적용한다. 사진 포함 내부 검토 시안과 게시 전 확인 사항은 [등록 자료 작성 절차](workflow.md#등록-자료-작성)에 따라 함께 제공한다. 아래 파일 표는 기본 CLI 패키지이며 별도 내부 시안은 같은 게시 준비 상태를 유지한다.
 
-문구와 근거, 상품·옵션·치수가 일치해야 한다. 구매 전 확인 안내가 해당 상품에 유용하고 모바일에서 읽기 쉬워야 한다. 구매·문의·반품 개선 효과는 미검증이다.
+| 결과 파일 | 내용 |
+| --- | --- |
+| `proposal.md` | 상품명·태그 후보의 검색량·실제 경쟁·대안 비교와 채택/보류/제외 이유, 구매 질문·불확실성 |
+| `fields.md` | 등록 입력값과 내부 확인 메모 |
+| `preview.html` | 상태·미완성 자산 표시를 포함한 내부 상세 미리보기 |
+| `customer.html` | 내부 메모 없는 고객용 화면. 부분 초안이면 제공 불가 안내 |
+| `image-tasks.md` | 이미지 채택·편집·확보 작업과 권한 |
+| `review.md` | 확인 과제·검사 증거·게시 차단·승인·작업시간 |
+| `listing-package.json` | 출처·사실·판단·출력의 같은 버전 관리 원본 |
 
-## 설계 미결
+[가상 상품 미리보기](examples/format-demo/bundle/preview.html)와 [제안서](examples/format-demo/bundle/proposal.md)는 동작·포맷 예시다. 실제 상품을 조사하거나 게시 승인한 결과가 아니다. 실제 채널에 옮길 때는 확인된 필드·문구·허용 이미지만 사용하며 HTML 전체를 붙여 넣지 않는다.
 
-입력 자료 형식, 이미지 제작 방식, 실행 환경·도구, 오류 복구와 검증 방법을 구체화해야 한다. 현재 구현 방식은 확정되지 않았다. 실제 실행 권한·승인 범위는 [공통 미결 과제](../../STATUS.md#미결-과제)를 따른다.
+## 실행 명령
+
+프로젝트 루트에서 Python 3.10 이상을 사용한다. 외부 패키지 설치가 필요 없다. 아래 경로는 실행 예시이며 출력 폴더는 매번 새 이름으로 정한다.
+
+```sh
+python3 agents/product-listing/tools.py prepare brief.json --out agents/product-listing/runs/item-work
+```
+
+brief.json의 형식은 다음과 같다. 로컬 자료는 브리프 폴더 안의 상대 경로와 확인일을 추가한다. URL은 prepare가 조회하지 않으므로 에이전트가 원문을 확인해야 한다.
+
+```json
+{
+  "product_id": "item-id",
+  "scope": "판매할 규격·색상·구성",
+  "sources": [{"id": "supplier", "location": "공급처 상품 URL"}]
+}
+```
+
+준비된 request.md와 [데이터 계약](contract.md)에 따라 에이전트가 draft.json을 채운 다음 실행한다.
+
+```sh
+python3 agents/product-listing/tools.py validate agents/product-listing/runs/item-work/draft.json
+python3 agents/product-listing/tools.py build agents/product-listing/runs/item-work/draft.json --out agents/product-listing/runs/item-v1
+python3 agents/product-listing/tools.py check agents/product-listing/runs/item-v1
+python3 agents/product-listing/tools.py review-template agents/product-listing/runs/item-v1 > agents/product-listing/runs/item-review.json
+```
+
+실제 검사 결과와 증거를 item-review.json에 기록한 뒤 적용한다. 모든 검사를 임의로 pass로 채우지 않는다.
+
+```sh
+python3 agents/product-listing/tools.py review agents/product-listing/runs/item-v1 --report agents/product-listing/runs/item-review.json
+python3 agents/product-listing/tools.py check agents/product-listing/runs/item-v1
+```
+
+`approve <폴더> --reviewer <검토자> --revision <현재 버전> [--decision <판매 실험 판단>]`은 사람의 명시적 해당 버전 승인 후에만 사용한다. 필수 차단이 있으면 거부하며 전략이 가설 검증/상품 재검토 상태이면 decision이 필요하다. 내용 수정은 새 폴더로 build하고 `--previous <이전 결과 폴더>`를 연결한다. 검수·승인을 다시 수행한다.
+
+## 구조와 검증 범위
+
+- [설계](design.md): 역할·처리 책임·품질 기준. [공통 원칙](../../docs/product-listing-principles.md): 검색 전략과 상세페이지 포맷.
+- `listing_agent/schema.py`: 새 계약·참조·준비 상태 검사. `package.py`: 자료 준비·버전·검수·승인. `render.py`: 문서·HTML 출력. `cli.py`: 명령 연결.
+- `listing_tools/`, `tests/test_tools.py`, `examples/23824864/`는 보존된 이전 도구·회귀 자료다. 기본 tools.py는 이를 호출하지 않으며 이전 JSON 계약을 자동 변환하지 않는다. 과거 결과는 [기록](../../records/2026-10-12-listing-mvp.md)에 있다.
+- `tests/test_agent.py`는 새 계약의 합성 시험이며 [구현 검증 기록](../../records/2026-10-13-listing-agent-implementation.md)에서 실행 결과와 범위를 확인한다. `runs/`는 Git 제외 작업 자료다.
+
+```sh
+python3 -m unittest discover -s agents/product-listing/tests -v
+```
+
+자동 테스트는 사실의 진위·검색 전략의 효과·이미지 실제 권한·사용자 신원을 인증하지 않는다. 실제 상품 실행과 판매자센터 검수·업무시간·판매 효과 검증은 별도다. 현재 사업 상태와 담당은 [STATUS.md](../../STATUS.md)에서 관리한다.

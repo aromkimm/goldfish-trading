@@ -1,0 +1,118 @@
+[
+  {
+    "id": "seller_code",
+    "label": "내부 관리코드"
+  },
+  {
+    "id": "title",
+    "label": "상품명"
+  },
+  {
+    "id": "category",
+    "label": "카테고리"
+  },
+  {
+    "id": "scope",
+    "label": "판매 상품 범위"
+  },
+  {
+    "id": "options",
+    "label": "옵션 구성"
+  },
+  {
+    "id": "cost",
+    "label": "공급가"
+  },
+  {
+    "id": "price",
+    "label": "판매가"
+  },
+  {
+    "id": "tax",
+    "label": "과세 설정"
+  },
+  {
+    "id": "stock",
+    "label": "판매 가능 수량·주문 한도"
+  },
+  {
+    "id": "shipping_origin",
+    "label": "출고지·국내외 배송 구분"
+  },
+  {
+    "id": "carrier",
+    "label": "배송 방법·택배사"
+  },
+  {
+    "id": "lead_time",
+    "label": "발송기간"
+  },
+  {
+    "id": "delivery_fee",
+    "label": "소비자 배송비·추가배송비·묶음배송"
+  },
+  {
+    "id": "return_policy",
+    "label": "교환·반품비·주소·수거 방식"
+  },
+  {
+    "id": "service",
+    "label": "A/S·고객응대 연락처"
+  },
+  {
+    "id": "material",
+    "label": "소재"
+  },
+  {
+    "id": "origin",
+    "label": "원산지"
+  },
+  {
+    "id": "manufacturer",
+    "label": "제조사"
+  },
+  {
+    "id": "importer",
+    "label": "수입자"
+  },
+  {
+    "id": "brand_model",
+    "label": "브랜드·모델명"
+  },
+  {
+    "id": "notice",
+    "label": "상품정보제공고시 유형·필드"
+  },
+  {
+    "id": "certification",
+    "label": "인증·허가 대상 및 번호"
+  },
+  {
+    "id": "main_image",
+    "label": "대표 이미지"
+  },
+  {
+    "id": "detail",
+    "label": "상세설명"
+  },
+  {
+    "id": "tags",
+    "label": "검색 태그"
+  },
+  {
+    "id": "page_title",
+    "label": "검색 Page Title"
+  },
+  {
+    "id": "meta_description",
+    "label": "검색 Meta description"
+  },
+  {
+    "id": "extras",
+    "label": "추가상품"
+  },
+  {
+    "id": "benefits",
+    "label": "할인·사은품·유료 혜택"
+  }
+]
