@@ -222,7 +222,11 @@
       "task": "use",
       "instruction": "직접 만든 포맷 검증용 도식. 실물 사진 아님",
       "status": "ready",
-      "derived_from": null
+      "derived_from": null,
+      "dimensions": [
+        1000,
+        650
+      ]
     }
   ],
   "content": {
@@ -231,19 +235,32 @@
       {
         "id": "hero",
         "kind": "hero",
-        "heading": "책상 위에 놓는\n60×30cm 데스크 매트",
-        "text": "가상 상품 · 포맷 검증용 예시\n샌드 컬러의 매트 단품 구성",
+        "heading": "데스크 매트",
+        "text": "가상 상품 · 포맷 검증용 예시",
         "question_refs": [
           "question"
         ],
         "fact_refs": [
           "f"
         ],
-        "asset_ids": [
-          "image"
-        ],
+        "asset_ids": [],
         "rows": [],
-        "edit_reason": "주요 규격과 구매 범위를 도입에서 설명"
+        "edit_reason": "주요 규격과 구매 범위를 도입에서 설명",
+        "kicker": "DESK MAT",
+        "composition": "매트 단품",
+        "option_text": "60×30cm · 샌드",
+        "photos": [
+          {
+            "asset_id": "image",
+            "region": [
+              0,
+              0,
+              1000,
+              650
+            ],
+            "caption": "가상 배치 도식 · 실물 사진 아님"
+          }
+        ]
       },
       {
         "id": "size",
@@ -288,7 +305,8 @@
         "rows": [],
         "edit_reason": "소품을 구매 구성으로 오인하지 않도록 안내"
       }
-    ]
+    ],
+    "layout": "photo"
   },
   "issues": [],
   "timing": {

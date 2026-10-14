@@ -1,0 +1,1801 @@
+{
+  "schema_version": "listing-2",
+  "package_id": "67434894-v2",
+  "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+  "scope_source_refs": [
+    "scope"
+  ],
+  "sources": [
+    {
+      "id": "scope",
+      "kind": "provided",
+      "location": "현재 대화 사용자 응답",
+      "observed_at": "2026-10-12",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "사용자 지시"
+    },
+    {
+      "id": "detail",
+      "kind": "provided",
+      "location": "https://stainbuy.diskn.com/DH/SDO/260116/detail/SD-1005451.jpg",
+      "observed_at": "2026-10-12",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "공급사 기재. 자체 시험 아님"
+    },
+    {
+      "id": "live",
+      "kind": "supplier",
+      "location": "https://domeme.domeggook.com/s/67434894",
+      "observed_at": "2026-10-13",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "공개 상품 페이지·상세이미지 직접 열람. 공급처 기재이며 실물 시험 아님."
+    },
+    {
+      "id": "naver",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=걸이형%20미니%20수납%20바구니",
+      "observed_at": "2026-10-13",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "blocked",
+      "note": "보안 확인 화면으로 결과 열람 불가. 순위·경쟁군·검색량 확인 불가."
+    },
+    {
+      "id": "competitor-index",
+      "kind": "search",
+      "location": "https://www.coupang.com/vp/products/9459387810",
+      "observed_at": "2026-10-13",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "웹 검색어 걸이형 미니 수납 바구니 황마 12 13.5의 검색 색인 요약만 관측. 검색 도구가 약 2개월 전 수집으로 표시. 실시간 가격 아님."
+    },
+    {
+      "id": "competitor-page",
+      "kind": "competitor",
+      "location": "https://www.coupang.com/vp/products/9459387810",
+      "observed_at": "2026-10-13",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "blocked",
+      "note": "직접 열람 403 실패. 배송비·현재 가격·옵션별 재고 확인 불가."
+    },
+    {
+      "id": "naver-search-basket",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EA%B1%B8%EC%9D%B4%ED%98%95%20%EB%AF%B8%EB%8B%88%20%EC%88%98%EB%82%A9%20%EB%B0%94%EA%B5%AC%EB%8B%88&prevQuery=%EB%8D%B0%EC%8A%A4%ED%81%AC%EB%A7%A4%ED%8A%B8%2060x30%20%ED%95%91%ED%81%AC&vertical=search",
+      "observed_at": "2026-10-13",
+      "scope": "네이버 가격비교 검색 결과의 상품 유형·분류 관측",
+      "access": "available",
+      "note": "Chrome PC 비로그인, 랭킹순. 광고와 일반 목록 구분. 검색 결과 수는 검색량·판매자 수가 아님. 원문 관측은 search-review-20261013/observations.json."
+    },
+    {
+      "id": "naver-search-fabric",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%ED%8C%A8%EB%B8%8C%EB%A6%AD%20%EB%AF%B8%EB%8B%88%20%EC%88%98%EB%82%A9%20%EB%B0%94%EA%B5%AC%EB%8B%88&prevQuery=%EA%B1%B8%EC%9D%B4%ED%98%95%20%EB%AF%B8%EB%8B%88%20%EC%88%98%EB%82%A9%20%EB%B0%94%EA%B5%AC%EB%8B%88&vertical=search",
+      "observed_at": "2026-10-13",
+      "scope": "네이버 가격비교 검색 결과의 상품 유형·분류 관측",
+      "access": "available",
+      "note": "Chrome PC 비로그인, 랭킹순. 광고와 일반 목록 구분. 검색 결과 수는 검색량·판매자 수가 아님. 원문 관측은 search-review-20261013/observations.json."
+    },
+    {
+      "id": "channel-basket-category",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "로그인 Chrome PC 상품 등록 화면의 카테고리·속성 목록 및 검색 적용 태그 확인; 미저장 조회",
+      "access": "available",
+      "note": "실제 선택값과 태그사전 등록 여부만 검증. 기본 선택된 원산지·KC값은 상품 사실 아님. 검색량·상위노출·최종 게시 적합성 미검증."
+    },
+    {
+      "id": "channel-basket-main-info",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "로그인 Chrome PC 상품 등록 화면의 카테고리·속성 목록 및 검색 적용 태그 확인; 미저장 조회",
+      "access": "available",
+      "note": "실제 선택값과 태그사전 등록 여부만 검증. 기본 선택된 원산지·KC값은 상품 사실 아님. 검색량·상위노출·최종 게시 적합성 미검증."
+    },
+    {
+      "id": "channel-all-tags",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "로그인 Chrome PC 상품 등록 화면의 카테고리·속성 목록 및 검색 적용 태그 확인; 미저장 조회",
+      "access": "available",
+      "note": "실제 선택값과 태그사전 등록 여부만 검증. 기본 선택된 원산지·KC값은 상품 사실 아님. 검색량·상위노출·최종 게시 적합성 미검증."
+    },
+    {
+      "id": "demand-primary",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "2026-10-14 네이버 광고주센터 키워드 도구의 월간검색수. 툴팁 정의는 최근 한달 네이버 통합검색 횟수. 쇼핑 전용 검색수·고유 구매자·태그 유입량이 아님. 광고 경쟁도는 자연검색 경쟁도로 사용하지 않음."
+    },
+    {
+      "id": "demand-alt",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "2026-10-14 네이버 광고주센터 키워드 도구의 월간검색수. 툴팁 정의는 최근 한달 네이버 통합검색 횟수. 쇼핑 전용 검색수·고유 구매자·태그 유입량이 아님. 광고 경쟁도는 자연검색 경쟁도로 사용하지 않음."
+    },
+    {
+      "id": "demand-definition",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "2026-10-14 네이버 광고주센터 키워드 도구의 월간검색수. 툴팁 정의는 최근 한달 네이버 통합검색 횟수. 쇼핑 전용 검색수·고유 구매자·태그 유입량이 아님. 광고 경쟁도는 자연검색 경쟁도로 사용하지 않음."
+    },
+    {
+      "id": "search-20261014-mini",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%AF%B8%EB%8B%88%20%EC%88%98%EB%82%A9%20%EB%B0%94%EA%B5%AC%EB%8B%88",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "일반 목록에 이케아 수납함·야채바구니·트롤리 걸이형 등 혼재. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "search-20261014-fabric",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%ED%8C%A8%EB%B8%8C%EB%A6%AD%20%EB%B0%94%EA%B5%AC%EB%8B%88",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "누빔 아기 장난감·중대형 수납과 혼재. 우리 미니 책상 소품 용도의 대체 범위 제한. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "search-20261014-fabricmini",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%ED%8C%A8%EB%B8%8C%EB%A6%AD%20%EB%AF%B8%EB%8B%88%20%EB%B0%94%EA%B5%AC%EB%8B%88",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "펠트 미니 트레이·누빔 바구니·다른 규격 상품 확인. 동일 상품 확정 못함. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "search-20261014-organize",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EC%B1%85%EC%83%81%EC%A0%95%EB%A6%AC",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "일반 결과에서 히키스 오거나이저·미니서랍·시스맥스 오거나이저 확인. 바구니 전용 수요 아님. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "deep-ggusle",
+      "kind": "competitor",
+      "location": "https://smartstore.naver.com/ggusle2/products/12270213822",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-fayzly",
+      "kind": "competitor",
+      "location": "https://smartstore.naver.com/fayzly/products/12148278286",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-basket-search",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%ED%8C%A8%EB%B8%8C%EB%A6%AD%20%EB%AF%B8%EB%8B%88%20%EB%B0%94%EA%B5%AC%EB%8B%88",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-wall-search",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%B2%BD%EA%B1%B8%EC%9D%B4%20%EB%B0%94%EA%B5%AC%EB%8B%88",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-mini-basket-alternative-search",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%AF%B8%EB%8B%88%EB%B0%94%EC%8A%A4%EC%BC%93",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-tag-dictionary",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "tag-demand-basket",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "공식 키워드 도구에서 지정 검색어·기존 태그를 같은 세션에 조회. PC·모바일 월간검색수 셀 원문. 최근 한달 통합검색 기준이며 쇼핑 수요·태그 유입 아님. 정확한 집계 시작/종료일 미표시."
+    },
+    {
+      "id": "tag-demand-existing",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "access": "available",
+      "note": "공식 키워드 도구에서 지정 검색어·기존 태그를 같은 세션에 조회. PC·모바일 월간검색수 셀 원문. 최근 한달 통합검색 기준이며 쇼핑 수요·태그 유입 아님. 정확한 집계 시작/종료일 미표시."
+    }
+  ],
+  "facts": [
+    {
+      "id": "product",
+      "value": "고리 있는 미니 소품 수납 바구니. 책상 위 소품과 걸이 수납 연출 확인.",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "공개 상세 설명",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "size",
+      "value": "상단 12cm · 하단 10cm · 높이 13.5cm",
+      "status": "supplier_stated",
+      "numeric_status": "confirmed",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "INFORMATION 아래 규격 화살표; 고리 포함·측정 오차 모름",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "origin",
+      "value": "중국",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "공개 상세 설명",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "patterns",
+      "value": "OPTION에 네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 표시",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "OPTION 사진 라벨; 실제 주문 가능 옵션은 미확인",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "material",
+      "value": "소재 표 황마 / 상품명 린넨·라탄 충돌",
+      "status": "conflict",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "공개 상세 설명",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": [
+        "material"
+      ]
+    },
+    {
+      "id": "rights",
+      "value": "상세설명 이미지 사용허용. 편집 권한은 모름.",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "공개 상세 설명",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "supplycost",
+      "value": null,
+      "status": "unknown",
+      "numeric_status": "unknown",
+      "source_refs": [
+        "live"
+      ],
+      "locator": "공개 상세 설명",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": [
+        "price"
+      ]
+    },
+    {
+      "id": "scopefact",
+      "value": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "status": "user_provided",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "scope"
+      ],
+      "locator": "공개 상세 설명",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-13 공급처 표기·사진 관측; 실물 확인 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "channel-category",
+      "value": "생활/건강 > 수납/정리용품 > 바구니 > 패브릭바구니 / ID 50019419",
+      "status": "verified",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "channel-basket-category"
+      ],
+      "locator": "선택한 카테고리와 category 입력값",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-14 판매자센터 조회. 입력 가능 분류·사전 상태이며 상품 게시 또는 검색 성과 확인 아님.",
+      "issue_refs": []
+    },
+    {
+      "id": "channel-tags",
+      "value": "태그사전에 등록됨: 소품수납, 책상정리",
+      "status": "verified",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "channel-all-tags"
+      ],
+      "locator": "검색설정 > 검색에 적용되는 태그 확인 > 등록됨",
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-14 판매자센터 조회. 입력 가능 분류·사전 상태이며 상품 게시 또는 검색 성과 확인 아님.",
+      "issue_refs": []
+    }
+  ],
+  "observations": [
+    {
+      "id": "obs-index",
+      "query": "걸이형 미니 수납 바구니 황마 12 13.5",
+      "source_refs": [
+        "competitor-index"
+      ],
+      "observed_at": "2026-10-13",
+      "surface": "외부 웹 검색 색인 요약 / 네이버 쇼핑 결과 아님",
+      "device": "검색 도구; 고객 기기 조건 모름",
+      "login": "모름",
+      "sampling": "가장 유사한 패턴·크기의 검색 결과 1건; 순위 대표 표본 아님",
+      "ad": "모름",
+      "competitors": [
+        {
+          "name": "소유공간 다용도 미니 인테리어 수납 바구니 S261-0306",
+          "relation": "substitute",
+          "scope": "ONE SIZE(12.3×13.5×9.1cm), 베이지 도트, 2개 (검색 색인 표기)",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [],
+            "period": "모름",
+            "definition": "2개 구매 시 배송 포함 총비용(원)",
+            "device": "모름",
+            "note": "색인 상품가 10,900원/2개를 관측했으나 현재가·배송비·혜택 미확인. 실구매 총비용 비교 불가."
+          },
+          "delivery": "모름: 상세 페이지 403",
+          "information": "유사 4패턴 표기. 규격과 모델이 달라 동일상품으로 확정하지 않음.",
+          "trust": "리뷰·판매자·배송 이행 신뢰 모름",
+          "source_refs": [
+            "competitor-index"
+          ],
+          "note": "약 2개월 전 수집 색인. 우리 상품 사실의 근거로 사용하지 않음."
+        }
+      ]
+    },
+    {
+      "id": "obs-basket",
+      "query": "걸이형 미니 수납 바구니",
+      "source_refs": [
+        "naver-search-basket"
+      ],
+      "observed_at": "2026-10-13",
+      "surface": "네이버 가격비교 / 유사 상품 포함 확장 결과",
+      "device": "Chrome PC",
+      "login": "비로그인",
+      "sampling": "검색 첫 페이지에서 스크롤해 표시된 일반 상품과 광고의 분류·상품 유형 대조; 대표성 있는 순위 표본 아님",
+      "ad": "광고 포함 화면; 아래 비교 대상은 광고 표시 없는 일반 결과",
+      "competitors": [
+        {
+          "name": "걸이형 미니 수납 바구니",
+          "relation": "substitute",
+          "scope": "소재·치수·동일 상품 여부 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "naver-search-basket"
+            ],
+            "period": "2026-10-13",
+            "definition": "동일 판매 범위의 실제 구매 총비용",
+            "device": "PC",
+            "note": "700원 + 배송비 3,000원 표시; 목록 관측이며 상세 옵션·결제 조건 미확인"
+          },
+          "delivery": "목록 배송비만 확인; 출고·도착 약속 미확인",
+          "information": "관측 분류: 생활/건강 > 수납/정리용품 > 바구니 > 기타바구니",
+          "trust": "리뷰 진위·판매 이행 미검증",
+          "source_refs": [
+            "naver-search-basket"
+          ],
+          "note": "검색 목록의 경쟁 자료이며 우리 상품의 사실 근거로 사용하지 않음"
+        }
+      ]
+    },
+    {
+      "id": "obs-fabric",
+      "query": "패브릭 미니 수납 바구니",
+      "source_refs": [
+        "naver-search-fabric"
+      ],
+      "observed_at": "2026-10-13",
+      "surface": "네이버 가격비교 / 유사 상품 포함 확장 결과",
+      "device": "Chrome PC",
+      "login": "비로그인",
+      "sampling": "검색 첫 페이지에서 스크롤해 표시된 일반 상품과 광고의 분류·상품 유형 대조; 대표성 있는 순위 표본 아님",
+      "ad": "광고 포함 화면; 아래 비교 대상은 광고 표시 없는 일반 결과",
+      "competitors": [
+        {
+          "name": "코드패브릭 미니 수납 바구니 트레이",
+          "relation": "substitute",
+          "scope": "12×10×7cm, 우리 제품과 다른 트레이 형태",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "naver-search-fabric"
+            ],
+            "period": "2026-10-13",
+            "definition": "동일 판매 범위의 실제 구매 총비용",
+            "device": "PC",
+            "note": "6,500원·무료배송 표시; 목록 관측이며 상세 옵션·결제 조건 미확인"
+          },
+          "delivery": "목록 배송비만 확인; 출고·도착 약속 미확인",
+          "information": "관측 분류: 생활/건강 > 수납/정리용품 > 바구니 > 패브릭바구니",
+          "trust": "리뷰 진위·판매 이행 미검증",
+          "source_refs": [
+            "naver-search-fabric"
+          ],
+          "note": "검색 목록의 경쟁 자료이며 우리 상품의 사실 근거로 사용하지 않음"
+        },
+        {
+          "name": "케이엠 감성 린넨 패브릭 미니 수납 바구니",
+          "relation": "substitute",
+          "scope": "손잡이형, 동일 상품·규격 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "naver-search-fabric"
+            ],
+            "period": "2026-10-13",
+            "definition": "동일 판매 범위의 실제 구매 총비용",
+            "device": "PC",
+            "note": "3,000원 + 배송비 3,000원 표시; 목록 관측이며 상세 옵션·결제 조건 미확인"
+          },
+          "delivery": "목록 배송비만 확인; 출고·도착 약속 미확인",
+          "information": "관측 분류: 생활/건강 > 수납/정리용품 > 바구니 > 패브릭바구니",
+          "trust": "리뷰 진위·판매 이행 미검증",
+          "source_refs": [
+            "naver-search-fabric"
+          ],
+          "note": "검색 목록의 경쟁 자료이며 우리 상품의 사실 근거로 사용하지 않음"
+        }
+      ]
+    },
+    {
+      "id": "obs-20261014-mini",
+      "query": "미니 수납 바구니",
+      "source_refs": [
+        "search-20261014-mini"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 일반 목록에 이케아 수납함·야채바구니·트롤리 걸이형 등 혼재.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": []
+    },
+    {
+      "id": "obs-20261014-fabric",
+      "query": "패브릭 바구니",
+      "source_refs": [
+        "search-20261014-fabric"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 누빔 아기 장난감·중대형 수납과 혼재. 우리 미니 책상 소품 용도의 대체 범위 제한.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": []
+    },
+    {
+      "id": "obs-20261014-fabricmini",
+      "query": "패브릭 미니 바구니",
+      "source_refs": [
+        "search-20261014-fabricmini"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 펠트 미니 트레이·누빔 바구니·다른 규격 상품 확인. 동일 상품 확정 못함.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": [
+        {
+          "name": "마롱즈 펠트 미니 트레이",
+          "relation": "substitute",
+          "scope": "펠트 트레이로 형태·재질·규격 차이; 동일 상품 아님",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "search-20261014-fabricmini"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 규격·색상·구성의 배송 포함 실제 결제 총비용(원)",
+            "device": "Chrome PC",
+            "note": "확인된 목록 표시: 3,900원 + 배송비 3,000원; 상세 옵션·추가금·결제조건 미확인으로 총액 확정 안 함."
+          },
+          "delivery": "목록 배송 표기만 관측; 실제 출고·도착 미검증",
+          "information": "펠트 미니 트레이·누빔 바구니·다른 규격 상품 확인. 동일 상품 확정 못함.",
+          "trust": "리뷰 158 표시; 옵션별 집계 미확인",
+          "source_refs": [
+            "search-20261014-fabricmini"
+          ],
+          "note": "광고 표시 없는 일반 결과. 카탈로그 리뷰·판매처 집계는 단일 판매자의 실적 아님."
+        },
+        {
+          "name": "꾸슬샵 누빔 패브릭 바구니 바스켓 장난감 정리함 미니사각 천바구니",
+          "relation": "substitute",
+          "scope": "누빔 미니사각; 우리 원형 고리 바구니와 형태·소재 차이",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "search-20261014-fabricmini"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 규격·색상·구성의 배송 포함 실제 결제 총비용(원)",
+            "device": "Chrome PC",
+            "note": "확인된 목록 표시: 13,500원 + 배송비 3,000원; 상세 옵션·추가금·결제조건 미확인으로 총액 확정 안 함."
+          },
+          "delivery": "목록 배송 표기만 관측; 실제 출고·도착 미검증",
+          "information": "펠트 미니 트레이·누빔 바구니·다른 규격 상품 확인. 동일 상품 확정 못함.",
+          "trust": "리뷰 145 표시; 품질 우위 근거로 전용하지 않음",
+          "source_refs": [
+            "search-20261014-fabricmini"
+          ],
+          "note": "광고 표시 없는 일반 결과. 카탈로그 리뷰·판매처 집계는 단일 판매자의 실적 아님."
+        },
+        {
+          "name": "코드86 접이식 패브릭 수납바구니",
+          "relation": "substitute",
+          "scope": "접이식 수납바구니; 동일 크기·구성 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "search-20261014-fabricmini"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 규격·색상·구성의 배송 포함 실제 결제 총비용(원)",
+            "device": "Chrome PC",
+            "note": "확인된 목록 표시: 9,800원 / 무료배송; 상세 옵션·추가금·결제조건 미확인으로 총액 확정 안 함."
+          },
+          "delivery": "목록 배송 표기만 관측; 실제 출고·도착 미검증",
+          "information": "펠트 미니 트레이·누빔 바구니·다른 규격 상품 확인. 동일 상품 확정 못함.",
+          "trust": "리뷰 71 표시; 옵션별 집계 미확인",
+          "source_refs": [
+            "search-20261014-fabricmini"
+          ],
+          "note": "광고 표시 없는 일반 결과. 카탈로그 리뷰·판매처 집계는 단일 판매자의 실적 아님."
+        }
+      ]
+    },
+    {
+      "id": "obs-20261014-organize",
+      "query": "책상정리",
+      "source_refs": [
+        "search-20261014-organize"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 일반 결과에서 히키스 오거나이저·미니서랍·시스맥스 오거나이저 확인. 바구니 전용 수요 아님.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": []
+    },
+    {
+      "id": "obs-demand-20261014",
+      "query": "미니바구니 / 미니수납바구니 / 패브릭바구니 / 걸이형바구니 / 책상수납바구니 / 패브릭미니바구니 / 소품수납 / 책상정리",
+      "source_refs": [
+        "demand-primary",
+        "demand-alt",
+        "demand-definition"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 광고주센터 키워드 도구 / 월간검색수",
+      "device": "PC·모바일 분리 집계",
+      "login": "로그인",
+      "sampling": "상품 종류·선택 조건·기존 태그 후보 지정 조회. 연관어 전체를 수요로 합산하지 않음.",
+      "ad": "검색광고 도구; 월간검색수는 통합검색 기준. 광고 경쟁도·광고 클릭률을 자연검색 효과로 사용하지 않음.",
+      "competitors": []
+    },
+    {
+      "id": "deep-obs",
+      "query": "패브릭 미니 바구니 / 벽걸이 바구니 / 미니바스켓",
+      "source_refs": [
+        "deep-ggusle",
+        "deep-fayzly",
+        "deep-basket-search",
+        "deep-wall-search",
+        "deep-mini-basket-alternative-search",
+        "deep-tag-dictionary"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 일반 목록 및 연결된 스마트스토어 상세 관련 태그; 태그 사전",
+      "device": "Chrome PC",
+      "login": "로그인; 개인화 배제 못함",
+      "sampling": "첫 페이지 부분 표본에서 소재·크기·형태 비교 가능한 판매처 상세 2곳 선택. 전수·고정 순위·무작위 표본 아님. 경쟁 제목/태그 효과의 인과 추론 불가.",
+      "ad": "광고를 구분하고 상세는 광고 표시 없는 일반 결과에서 선택. 카탈로그 판매처·리뷰 수는 단일 판매자 실적으로 보지 않음.",
+      "competitors": [
+        {
+          "name": "꾸슬샵 누빔 패브릭 바구니 바스켓 장난감 정리함 미니사각 천바구니",
+          "relation": "substitute",
+          "scope": "누빔·미니 사각 가로16 세로16 높이16 등 복수 규격; 우리 제품과 소재·형태 다름",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "deep-ggusle"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 옵션·구성 배송 포함 결제 총액(원)",
+            "device": "Chrome PC",
+            "note": "상세 표시 13,500원·배송비 3,000원; 무료배송 조건 별도; 옵션별 결제총액 미확정."
+          },
+          "delivery": "상세 배송 표기만 확인; 실제 이행 미검증",
+          "information": "천바구니·바구니정리함·기저귀정리 등. 유아/누빔 표현 복사 제외",
+          "trust": "리뷰·브랜드·배송 등 혼입 요인으로 제목/태그 단독 효과 추론 불가",
+          "source_refs": [
+            "deep-ggusle"
+          ],
+          "note": "일반 검색 결과에서 진입한 공개 상세 관측. 우리 상품의 성능·소재 근거로 전용하지 않음."
+        },
+        {
+          "name": "파이즐리 패브릭 미니 바구니 벽걸이 소품 수납 핸드메이드",
+          "relation": "substitute",
+          "scope": "용량 300ml 표기·색상 옵션. 걸이형 소품 수납 대체품; 동일 제조/규격 아님",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "deep-fayzly"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 옵션·구성 배송 포함 결제 총액(원)",
+            "device": "Chrome PC",
+            "note": "상세 표시 6,900원·배송비 3,000원; 무료배송 조건 별도; 옵션별 결제총액 미확정."
+          },
+          "delivery": "상세 배송 표기만 확인; 실제 이행 미검증",
+          "information": "소품수납·미니바스켓·벽걸이바구니·천바구니·패브릭바스켓. 핸드메이드 표현 복사 제외",
+          "trust": "리뷰·브랜드·배송 등 혼입 요인으로 제목/태그 단독 효과 추론 불가",
+          "source_refs": [
+            "deep-fayzly"
+          ],
+          "note": "일반 검색 결과에서 진입한 공개 상세 관측. 우리 상품의 성능·소재 근거로 전용하지 않음."
+        }
+      ]
+    },
+    {
+      "id": "tag-demand-obs",
+      "query": "천바구니 / 벽걸이바구니 / 미니바스켓 / 패브릭바스켓 / 바구니정리함 / 소품수납 / 책상정리",
+      "source_refs": [
+        "tag-demand-basket",
+        "tag-demand-existing",
+        "demand-definition"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 광고주센터 키워드 도구",
+      "device": "PC·모바일 분리 집계",
+      "login": "로그인",
+      "sampling": "새 후보와 기존 태그 지정 조회. 연관어 수치는 합산하지 않음.",
+      "ad": "광고 경쟁도·클릭률은 자연검색 경쟁도·태그 효과로 사용하지 않음.",
+      "competitors": []
+    }
+  ],
+  "strategy": {
+    "status": "reconsider",
+    "summary": "미니 걸이형 소품 수납으로 방향을 좁히되, 판매 채택은 재검토한다.",
+    "reason_to_choose": "작은 공간에 두거나 걸어 쓸 소품 바구니를 찾는 고객에게 크기와 패턴을 빠르게 보여주는 방향. 제품의 고리·미니 규격과 맞지만 독점적 장점은 확인되지 않았다.",
+    "counter_evidence": "미니 수납 검색에는 플라스틱·트롤리 바구니가, 패브릭 검색에는 누빔 아기용·대형 바구니가 혼재한다. 책상정리는 서랍·오거나이저가 다수 보여 전체 수요를 우리 바구니에 배정할 수 없다. 작은 규격·고리·소품 용도는 적합하지만 소재·옵션·공급가 미확인으로 판매 재검토를 유지한다.",
+    "uncertainties": "2026-10-14 지정 검색어의 네이버 통합검색 월간검색수와 실제 쇼핑 결과를 확인했다. 쇼핑 전용 수요·신규 상품의 자연검색 노출 가능성·태그 유입 효과·동일 옵션 경쟁 결제 총액은 미검증. 공급 조건·권한·고시·인증 확인은 별도. 유사 소형 고리 바구니 상세·실제 태그를 확인했으나 검색 상위노출 효과는 미입증. 기존 제목·태그 유지. 새 태그 후보의 통합검색 수요는 확인했으며 수치·비교 판단은 검색어별 demand에서 관리한다. 검색량 우위는 관련 구매 유입 우위를 뜻하지 않는다.",
+    "queries": [
+      {
+        "id": "q-main",
+        "query": "걸이형 미니 수납 바구니",
+        "origin": "hypothesis",
+        "intent": "작은 소품을 걸어서 정리",
+        "decision": "target",
+        "fit": "match",
+        "reason": "고리 있는 외형과 작은 규격이 일치. 실수요 확인 전 작업 가설. 네이버 실제 검색 결과 대조 완료. 플라스틱·트롤리 바구니 혼재로 핵심 상품 종류를 먼저 표현.",
+        "fact_refs": [
+          "product",
+          "size"
+        ],
+        "observation_refs": [
+          "obs-basket"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "네이버 쇼핑 검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-desk",
+        "query": "책상 소품 수납 바구니",
+        "origin": "hypothesis",
+        "intent": "책상 위 작은 물건 정리",
+        "decision": "target",
+        "fit": "match",
+        "reason": "공급처 책상 연출과 일치. 수납 가능 특정 물품/수량은 보장하지 않음.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "네이버 쇼핑 검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-laundry",
+        "query": "빨래바구니",
+        "origin": "hypothesis",
+        "intent": "의류 세탁물 보관",
+        "decision": "exclude",
+        "fit": "mismatch",
+        "reason": "미니 규격으로 일반 세탁물 보관 기대를 충족하기 어려움. 공급처 제목 그대로 사용하지 않음.",
+        "fact_refs": [
+          "size"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "네이버 쇼핑 검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-rattan",
+        "query": "라탄 수납 바구니",
+        "origin": "hypothesis",
+        "intent": "라탄 소재 지정",
+        "decision": "exclude",
+        "fit": "unknown",
+        "reason": "라탄 소재 입증이 없고 소재 표와 충돌.",
+        "fact_refs": [
+          "material"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "네이버 쇼핑 검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-linen",
+        "query": "린넨 수납 바구니",
+        "origin": "hypothesis",
+        "intent": "린넨 소재 지정",
+        "decision": "exclude",
+        "fit": "unknown",
+        "reason": "린넨 함량·소재 확인 전 제목·태그에서 제외.",
+        "fact_refs": [
+          "material"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "네이버 쇼핑 검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-0",
+        "query": "미니바구니",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "핵심 상품 종류의 수요 확인. 작은 수납물·재질이 다른 상품까지 포함하므로 상품 조건을 함께 표시.",
+        "fact_refs": [
+          "product",
+          "size"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize"
+        ],
+        "demand": {
+          "value": 520,
+          "status": "confirmed",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC 110회 / 모바일 410회. 확인된 표시값 합산 520회. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-1",
+        "query": "미니수납바구니",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "현재 제목의 상품 종류에 해당. 적은 검색수라도 실제 용도를 표현하므로 유지.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC < 10회 / 모바일 30회. 10 미만은 검열 구간이므로 0·10으로 대체하지 않으며 정확한 합계는 모름. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-2",
+        "query": "패브릭바구니",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "hold",
+        "fit": "unknown",
+        "reason": "넓은 분류 수요는 확인되나 누빔·아기용·대형 제품이 혼재. 정확한 섬유 조성 충돌 상태에서 제목 확장의 근거로 쓰지 않음.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize"
+        ],
+        "demand": {
+          "value": 1080,
+          "status": "confirmed",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC 140회 / 모바일 940회. 확인된 표시값 합산 1,080회. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-3",
+        "query": "걸이형바구니",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "고리 사용 조건에는 맞지만 트롤리용 등 다른 타입 혼재. 보조 조건어로만 사용.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize"
+        ],
+        "demand": {
+          "value": 400,
+          "status": "confirmed",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC 70회 / 모바일 330회. 확인된 표시값 합산 400회. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-4",
+        "query": "책상수납바구니",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "책상 소품 사용 장면에 맞는 보조 표현. 단독 수요는 작음.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC < 10회 / 모바일 10회. 10 미만은 검열 구간이므로 0·10으로 대체하지 않으며 정확한 합계는 모름. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-5",
+        "query": "패브릭미니바구니",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "hold",
+        "fit": "unknown",
+        "reason": "실제 결과는 펠트·누빔 트레이 등 다른 규격·구성. 소재 미해결로 이름 확장 보류.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC < 10회 / 모바일 < 10회. 10 미만은 검열 구간이므로 0·10으로 대체하지 않으며 정확한 합계는 모름. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-6",
+        "query": "소품수납",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "사전 등록된 보조 태그 유지. 낮은 검색수만으로 삭제하지 않으며 유입 효과는 미검증. 이 표현의 쇼핑 결과는 이번 직접 조회 대상 아님.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC < 10회 / 모바일 30회. 10 미만 보존; 정확한 합계 모름, 0·10으로 대체하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-7",
+        "query": "책상정리",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "보조 태그 유지. 일반 결과는 오거나이저·서랍형 비중이 있어 이 전체 수요를 바구니 수요로 간주하지 않음.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mini",
+          "obs-20261014-fabric",
+          "obs-20261014-fabricmini",
+          "obs-20261014-organize",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 1090,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 380회 / 모바일 710회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-13",
+        "query": "벽걸이바구니",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "match",
+        "reason": "파이즐리 유사 소형 고리 바구니 태그·사전 등록 확인. 별도 검색 일반 결과에 빨래바구니가 많아 현재 걸이형 소품 조건보다 유리하다는 근거 부족. 접착·고정 부속 포함으로 확대 해석 금지.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 110,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 20회 / 모바일 90회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-14",
+        "query": "미니바스켓",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "match",
+        "reason": "파이즐리 태그·사전 등록 확인. 실제 일반 결과에는 창신리빙·우림 등 플라스틱/사각 수납이 혼재. 제목의 미니 바구니와 중복 역할이므로 보완 우위 미입증.",
+        "fact_refs": [
+          "product"
+        ],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 100,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 30회 / 모바일 70회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-15",
+        "query": "천바구니",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "unknown",
+        "reason": "꾸슬샵·파이즐리 태그와 사전 등록 확인. 우리 소재 충돌의 범위를 먼저 확인해야 하며 경쟁 소재로 우리 상품을 확정하지 않음.",
+        "fact_refs": [],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 200,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 20회 / 모바일 180회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-16",
+        "query": "패브릭바스켓",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "unknown",
+        "reason": "월간 통합검색 400회 확인. 기존 소품수납보다 많은 수치지만 넓은 패브릭 제품군 수요이며 소재 표현 검수·기존 분류와 중복 검토가 남아 교체 보류.",
+        "fact_refs": [],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 400,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 60회 / 모바일 340회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "tag-demand-q-17",
+        "query": "바구니정리함",
+        "origin": "observed",
+        "intent": "태그 후보 수요·적합성 비교",
+        "decision": "hold",
+        "fit": "unknown",
+        "reason": "태그 사전 등록은 확인했으나 바구니정리함은 넓은 유형이며 현재 소품수납을 대체할 이점 미입증.",
+        "fact_refs": [],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "tag-demand-basket",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC < 10회 / 모바일 30회. 10 미만 보존; 정확한 합계 모름, 0·10으로 대체하지 않음."
+        }
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "purpose",
+      "question": "어디에 두고 어떻게 쓰는 바구니인가?",
+      "priority": "high",
+      "reason": "사용 상황 적합성을 먼저 판단",
+      "source_refs": [
+        "live"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "product"
+      ],
+      "issue_refs": []
+    },
+    {
+      "id": "size",
+      "question": "놓을 공간과 담을 물건에 맞는 크기인가?",
+      "priority": "high",
+      "reason": "미니 규격을 대형 수납으로 오인하지 않도록 안내",
+      "source_refs": [
+        "live"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "size"
+      ],
+      "issue_refs": []
+    },
+    {
+      "id": "pattern",
+      "question": "어떤 패턴을 고를 수 있고 무엇이 포함되는가?",
+      "priority": "high",
+      "reason": "옵션 사진과 실제 주문 구성의 일치 필요",
+      "source_refs": [
+        "live"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "patterns"
+      ],
+      "issue_refs": [
+        "options"
+      ]
+    },
+    {
+      "id": "care",
+      "question": "소재와 세탁 방법은?",
+      "priority": "high",
+      "reason": "관리 실패 예방",
+      "source_refs": [
+        "live"
+      ],
+      "hypothesis": true,
+      "fact_refs": [],
+      "issue_refs": [
+        "material"
+      ]
+    },
+    {
+      "id": "cost",
+      "question": "배송 포함 얼마이며 언제 받을 수 있는가?",
+      "priority": "high",
+      "reason": "실구매 조건 비교",
+      "source_refs": [
+        "live"
+      ],
+      "hypothesis": true,
+      "fact_refs": [],
+      "issue_refs": [
+        "price",
+        "shipping",
+        "returns"
+      ]
+    }
+  ],
+  "fields": [
+    {
+      "id": "title",
+      "label": "상품명 초안",
+      "value": "미니 수납 바구니 걸이형 책상 소품 정리",
+      "status": "ready",
+      "fact_refs": [
+        "product",
+        "size"
+      ],
+      "query_refs": [
+        "q-main",
+        "q-desk",
+        "demand-q-0",
+        "demand-q-1"
+      ],
+      "issue_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "핵심 상품 종류를 앞에 배치. 걸이형 검색의 트롤리·플라스틱 혼재를 고려해 용도 보완. 소재 충돌로 린넨·라탄 제외. 검색량 검증 전 제안. 2026-10-14 수요·검색결과 재검토: 현재 문구 유지. 사실·종류·조건을 정확히 표현하며 대안의 우월성 미입증. 단어 순서·띄어쓰기 변경의 순위 효과를 주장하지 않음. 대안 비교: 패브릭/천 소재 추가는 소재 표현 검수 전 보류, 벽걸이 중심 제목은 빨래통 의도 혼재, 미니 바스켓으로 교체는 플라스틱 혼재와 동의어 교체 효과 미검증으로 미채택."
+    },
+    {
+      "id": "category",
+      "label": "카테고리",
+      "value": "생활/건강 > 수납/정리용품 > 바구니 > 패브릭바구니",
+      "status": "ready",
+      "fact_refs": [
+        "product",
+        "channel-category"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "판매자센터 실제 선택 확인, ID 50019419 (2026-10-14). 상품의 주된 용도·형태 기준. 정확한 섬유 조성 확정과 별개이며 린넨·라탄 소재 주장은 제외."
+    },
+    {
+      "id": "price",
+      "label": "판매가",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "price"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "도매매 공급가 확보 후 배송 포함 총비용·마진 기준으로 산정. 도매꾹 가격 대입 금지."
+    },
+    {
+      "id": "options",
+      "label": "옵션",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "options"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "검토 후보: 네이비 도트 / 베이지 도트 / 네이비 스트라이프 / 베이지 스트라이프. 주문 가능 여부와 수량 구성 미확인."
+    },
+    {
+      "id": "supply",
+      "label": "공급 조건",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "supply"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "사업자 공급가·모델 매핑·재고 동기화 확인 필요."
+    },
+    {
+      "id": "shipping",
+      "label": "배송 조건",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "shipping"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "공급처 배송비 3,000원 표시(2026-10-13). 소비자 배송 설정은 별도 확정."
+    },
+    {
+      "id": "returns",
+      "label": "교환·반품",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "returns"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "공급처 반품 조건을 고객 정책으로 그대로 복사하지 않음."
+    },
+    {
+      "id": "dimensions",
+      "label": "규격",
+      "value": "상단 12cm · 하단 10cm · 높이 13.5cm",
+      "status": "ready",
+      "fact_refs": [
+        "size"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "공급처 도면 표기. 실측·허용 오차·고리 포함 여부 확인 전."
+    },
+    {
+      "id": "origin",
+      "label": "원산지",
+      "value": "중국",
+      "status": "ready",
+      "fact_refs": [
+        "origin"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "공급처 기재 기반 초안; 최종 채널 검수 전"
+    },
+    {
+      "id": "material",
+      "label": "소재",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "material"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "공급처 기재 기반 초안; 최종 채널 검수 전"
+    },
+    {
+      "id": "tags",
+      "label": "태그",
+      "value": [
+        "소품수납",
+        "책상정리"
+      ],
+      "status": "ready",
+      "fact_refs": [
+        "product",
+        "channel-tags"
+      ],
+      "query_refs": [
+        "demand-q-6",
+        "demand-q-7"
+      ],
+      "issue_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "2026-10-14 검색 적용 태그 확인 창에서 두 단어 모두 사전 등록 확인. 관련 사용 상황 보완용. 별도 정제 후 검색 반영되므로 노출·순위 보장은 아님. 수요·의도 재검토 후 보조 태그로 유지. 통합검색 수치를 태그 유입량으로 해석하지 않으며 제목에 추가하지 않음. 소량 수요만으로 삭제하거나 인기어로 대체할 근거 없음. 경쟁 확대: 유사 고리형 소형 상품 파이즐리에도 소품수납 태그가 있음. 벽걸이바구니·미니바스켓은 실제 일반 결과 혼재로 교체/추가 보류. 경쟁 태그 존재가 효과 증거는 아님. 새 후보·기존 태그의 공식 통합검색 월간검색수를 같은 세션에서 대조함. 후보 수요가 있어도 검색 유형 혼재·소재 미결 또는 중복으로 기존 태그 유지."
+    },
+    {
+      "id": "disclosure",
+      "label": "상품정보고시·인증",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "channel"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "note": "공급처 기재 기반 초안; 최종 채널 검수 전"
+    }
+  ],
+  "channel": {
+    "status": "unverified",
+    "category_field_id": "category",
+    "source_refs": [
+      "channel-basket-category",
+      "channel-basket-main-info",
+      "channel-all-tags"
+    ],
+    "required_field_ids": [],
+    "note": "2026-10-14 로그인 판매자센터에서 카테고리 선택과 태그사전 조회 완료. 패브릭바구니 속성 목록 확인: 특징(뚜껑있음/적층수납/손잡이), 용량(L), 가로사이즈·폭·높이(cm). 높이는 공급처 표기 13.5cm. 상단 12cm·하단 10cm를 가로·폭으로 변환하지 않으며 용량을 계산해 채우지 않음. 고리를 손잡이 속성으로 자동 대입하지 않음. 전체 필수 필드·상품정보고시·인증 및 실제 상세 표시 검수는 미완료이므로 unverified 유지."
+  },
+  "assets": [
+    {
+      "id": "original",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "detail"
+      ],
+      "rights": "use",
+      "rights_source_refs": [
+        "live"
+      ],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "alt": "공급처 상세 설명 원본",
+      "task": "use",
+      "instruction": "증거 보관 전용. 소재·옵션 충돌과 미확인 세탁 문구가 있어 새 고객 상세에는 원본 전체를 채택하지 않음. 편집 전 권한 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "hero",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "detail",
+        "live"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "alt": "고리와 바구니 전체가 보이는 제품 사진",
+      "task": "acquire",
+      "instruction": "편집 허용 후 원본의 제품 단독 사진을 분리. 소품·고리는 포함 구성 확인 전 대표사진에서 제외. 또는 허용된 단독 사진 확보.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "use",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "detail",
+        "live"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "alt": "책상 위·걸이 수납 사용 모습",
+      "task": "acquire",
+      "instruction": "편집 허용 후 실제 상품 사용 장면을 분리. 하중·방수·세탁 기능을 추가하지 않음.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "patterns",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "detail",
+        "live"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "네이비 도트·베이지 도트·네이비 스트라이프·베이지 스트라이프 모두 검토; 실제 주문 가능 여부 미확인",
+      "alt": "도트·스트라이프 패턴 비교 사진",
+      "task": "acquire",
+      "instruction": "SKU 확인 후 네이비/베이지와 도트/스트라이프를 실제 옵션명에 맞춰 배치. 색상 변경·합성 금지.",
+      "status": "missing",
+      "derived_from": null
+    }
+  ],
+  "content": {
+    "main_asset_id": "hero",
+    "blocks": [
+      {
+        "id": "hero",
+        "kind": "hero",
+        "heading": "작은 소품을 담는\n미니 수납 바구니",
+        "text": "책상 위에 두거나 고리로 걸어 두세요.",
+        "question_refs": [
+          "purpose"
+        ],
+        "fact_refs": [
+          "product"
+        ],
+        "asset_ids": [
+          "hero"
+        ],
+        "rows": [],
+        "edit_reason": "구매 질문에 필요한 확인된 정보만 짧게 제시; 미확정 사항은 내부 검수표에서 관리"
+      },
+      {
+        "id": "size",
+        "kind": "specs",
+        "heading": "크기부터 확인하세요",
+        "text": "담을 물건과 놓을 공간의 크기를 비교해 주세요.\n아래 치수는 공급처 도면 표기입니다.",
+        "question_refs": [
+          "size"
+        ],
+        "fact_refs": [
+          "size"
+        ],
+        "asset_ids": [],
+        "rows": [
+          [
+            "상단 너비",
+            "12cm"
+          ],
+          [
+            "하단 너비",
+            "10cm"
+          ],
+          [
+            "높이",
+            "13.5cm"
+          ]
+        ],
+        "edit_reason": "구매 질문에 필요한 확인된 정보만 짧게 제시; 미확정 사항은 내부 검수표에서 관리"
+      },
+      {
+        "id": "use",
+        "kind": "feature",
+        "heading": "두거나, 걸거나",
+        "text": "필요한 자리에 작은 소품을 모아 보관하세요.",
+        "question_refs": [
+          "purpose"
+        ],
+        "fact_refs": [
+          "product"
+        ],
+        "asset_ids": [
+          "use"
+        ],
+        "rows": [],
+        "edit_reason": "구매 질문에 필요한 확인된 정보만 짧게 제시; 미확정 사항은 내부 검수표에서 관리"
+      },
+      {
+        "id": "pattern",
+        "kind": "feature",
+        "heading": "도트와 스트라이프",
+        "text": "네이비와 베이지 톤의 패턴을 확인해 보세요.",
+        "question_refs": [
+          "pattern"
+        ],
+        "fact_refs": [
+          "patterns"
+        ],
+        "asset_ids": [
+          "patterns"
+        ],
+        "rows": [],
+        "edit_reason": "구매 질문에 필요한 확인된 정보만 짧게 제시; 미확정 사항은 내부 검수표에서 관리"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "id": "material",
+      "severity": "blocker",
+      "status": "open",
+      "question": "겉감·안감 소재와 세탁 방법은?",
+      "resolve_by": "공급처에 황마/린넨/라탄 충돌과 섬유 구성·관리법 확인",
+      "impact": "소재 속성·세탁 문구 게시 보류",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "options",
+      "severity": "blocker",
+      "status": "open",
+      "question": "실제 주문 가능한 패턴과 1주문 구성은?",
+      "resolve_by": "사업자 로그인 후 옵션별 SKU·재고·구성 수량 대조; OPTION과 색상 표 오류 확인",
+      "impact": "옵션·구성·대표 이미지 확정 불가",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "price",
+      "severity": "blocker",
+      "status": "open",
+      "question": "공급가와 판매가 산정 기준은?",
+      "resolve_by": "도매매 실제 공급가·옵션가·배송비·수수료·반품 부담 확인 후 합의 마진 기준 적용",
+      "impact": "가격 경쟁력·수익성 판단 불가",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "supply",
+      "severity": "blocker",
+      "status": "open",
+      "question": "모델 식별과 품절 동기화 조건은?",
+      "resolve_by": "LH-133351과 이미지 표기 SD-260121의 동일 상품 여부, 품절/단가 갱신 주기 확인",
+      "impact": "잘못된 상품 발주·품절 위험",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "shipping",
+      "severity": "blocker",
+      "status": "open",
+      "question": "소비자에게 약속할 배송 조건은?",
+      "resolve_by": "주문 마감·지역 추가비·휴일·출고 정책을 확인하고 스토어 배송 설정과 대조",
+      "impact": "공급처 통계로 고객 도착일 보장 금지",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "returns",
+      "severity": "blocker",
+      "status": "open",
+      "question": "고객 교환·반품 비용과 접수 조건은?",
+      "resolve_by": "공급처 조건과 스토어 실제 반품 정책 대조; 비용과 책임 범위 확인",
+      "impact": "공급처 반품 문구 단순 복사 금지",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "channel",
+      "severity": "blocker",
+      "status": "open",
+      "question": "고시·인증의 상품별 적용과 전체 필수 필드·상세 표시 검수",
+      "resolve_by": "공급처의 고시·인증 근거를 확보하고 선택 카테고리의 전체 필수 입력값 및 실제 상세 표시 대조. 패브릭바구니 속성 목록 확인: 특징(뚜껑있음/적층수납/손잡이), 용량(L), 가로사이즈·폭·높이(cm). 높이는 공급처 표기 13.5cm. 상단 12cm·하단 10cm를 가로·폭으로 변환하지 않으며 용량을 계산해 채우지 않음. 고리를 손잡이 속성으로 자동 대입하지 않음.",
+      "impact": "카테고리·태그 준비 완료와 별개로 전체 채널 검수·게시 준비 미완료",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "channel-basket-category",
+        "channel-basket-main-info",
+        "channel-all-tags"
+      ]
+    },
+    {
+      "id": "images",
+      "severity": "blocker",
+      "status": "open",
+      "question": "사진 분리·크롭·문구 제거 편집과 대표사진 사용이 허용되는가?",
+      "resolve_by": "공급처 편집 허용 범위 확인 또는 별도 사용 허용 제품 사진 확보",
+      "impact": "내부 사진 시안은 제작 가능. 상업적 게시 권한은 확인 전.",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "live"
+      ]
+    },
+    {
+      "id": "demand",
+      "severity": "warning",
+      "status": "open",
+      "question": "쇼핑 전용 수요·실제 검색 유입과 동일 옵션 경쟁 조건은?",
+      "resolve_by": "통합검색 수요와 목록 유형 관측은 완료. 게시 조건 충족 후 목표 검색 유입·노출 및 주문을 관찰하고 경쟁 상세의 동일 옵션 결제 조건 대조.",
+      "impact": "현재 상품명·보조 태그 적합성 유지; 상위노출·판매성 입증 아님",
+      "owner": "금붕녀: 확인 실무 / 사업 기준 변경은 금붕부부",
+      "source_refs": [
+        "demand-primary",
+        "demand-alt",
+        "search-20261014-mini",
+        "search-20261014-fabric",
+        "search-20261014-fabricmini",
+        "search-20261014-organize"
+      ]
+    }
+  ],
+  "timing": {
+    "unit": "minutes",
+    "preparation": null,
+    "research": null,
+    "review": null,
+    "correction": null,
+    "entry": null,
+    "manual_baseline": null
+  }
+}

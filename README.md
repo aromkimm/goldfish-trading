@@ -13,7 +13,7 @@
 | 어떤 검색·구매 정보를 제공하는가 | [상품 등록 원칙](docs/product-listing-principles.md) | 검색 전략·항목별 역할·콘텐츠 품질·상세페이지 포맷 |
 | 등록 에이전트를 어떻게 쓰는가 | [사용법](agents/product-listing/README.md) | 책임 범위·상품 브리프·출력·명령·코드 진입점 |
 | 상품별 작업을 어떻게 수행하는가 | [작업 절차](agents/product-listing/workflow.md) | 조사·작성·검수·전달·수정 순서 |
-| 데이터를 어떻게 기록하는가 | [데이터 계약](agents/product-listing/contract.md) | listing-2 필드·참조·상태와 게시 판단·검수 기록 형식 |
+| 데이터를 어떻게 기록하는가 | [데이터 계약](agents/product-listing/data-contract.md) | listing-2 필드·참조·상태와 게시 판단·검수 기록 형식 |
 | 에이전트가 어떤 원칙을 지키는가 | [AGENTS.md](AGENTS.md) | 공동 결정·행동·수치 표기·문서 관리 원칙 |
 | Claude Code에서 무엇을 불러오는가 | [CLAUDE.md](CLAUDE.md) | 공통 지침과 사업 기준·상태의 진입점 |
 | 어떤 근거로 판단했는가 | [records/](records/) | 의사결정·검증 이력과 [기록 양식](records/TEMPLATE.md) |
@@ -24,6 +24,6 @@
 
 문서 변경은 [현재 스냅샷·전체 검토 원칙](AGENTS.md#필수-준수-원칙--현재-스냅샷과-전체-문서-검토)을 따른다.
 
-상품별 자료의 원본·파생본 관계는 [데이터 계약](agents/product-listing/contract.md), 갱신은 [수정 절차](agents/product-listing/workflow.md#수정)를 따른다. `runs/`는 Git 제외 작업 공간이므로 공유·재검증에 필요한 근거는 최소 범위로 `records/`에 보존한다. `examples/`는 기능·회귀 시험용이며 현재 판매 기준의 원본이 아니다.
+상품별 자료의 원본·파생본 관계는 [데이터 계약](agents/product-listing/data-contract.md), 갱신은 [수정 절차](agents/product-listing/workflow.md#수정)를 따른다. `runs/`는 Git 제외 작업 공간이므로 공유·재검증에 필요한 근거는 최소 범위로 `records/`에 보존한다. 예시·시험 자료의 위치와 용도는 [에이전트 구조](agents/product-listing/README.md#구조와-검증-범위)를 따른다.
 
 Claude Code는 프로젝트 폴더에서 실행한다. [CLAUDE.md](CLAUDE.md)가 공통 지침을 불러온다.

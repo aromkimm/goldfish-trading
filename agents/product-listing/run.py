@@ -1,9 +1,10 @@
+#!/usr/bin/env python3
 """CLI bridge for the conversational agent; no autonomous web/model calls."""
 import argparse
 from pathlib import Path
 import sys
-from .package import prepare, build, check, record_review, approve, read, dump, CHECKS
-from .schema import validate
+from bundle import prepare, build, check, record_review, approve, read, dump, CHECKS
+from validation import validate
 
 
 def main(argv=None):
@@ -35,3 +36,7 @@ def main(argv=None):
         print(dump(result),end=''); return 0
     except (ValueError,OSError,TypeError,KeyError,AttributeError) as exc:
         print('실행 중단: '+str(exc),file=sys.stderr); return 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

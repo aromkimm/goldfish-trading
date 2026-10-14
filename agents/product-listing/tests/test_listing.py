@@ -11,12 +11,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-try:
-    from listing_agent.schema import validate, readiness, CHECKS
-    from listing_agent.package import build, check, record_review, approve, prepare
-except ImportError:
-    validate = readiness = build = check = record_review = approve = prepare = None
-    CHECKS = ()
+from validation import validate, readiness, CHECKS
+from bundle import build, check, record_review, approve, prepare
 
 
 def metric(value=None, status='unknown'):
@@ -61,7 +57,7 @@ def fixture(root):
         timing=dict(unit='minutes', preparation=None, research=None, review=None, correction=None, entry=None, manual_baseline=None))
 
 
-class AgentTests(unittest.TestCase):
+class ListingCase(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name); self.source = self.root/'source'; self.source.mkdir()
@@ -83,6 +79,8 @@ class AgentTests(unittest.TestCase):
         return record_review(out,dict(revision=data['revision'],reviewer='합성 검토자',checks=[
             dict(id=c,status='pass',detail='합성 시나리오 확인',evidence='테스트 픽스처') for c in CHECKS]))
 
+
+class AgentTests(ListingCase):
     def test_unknown_demand_does_not_become_zero_or_publication_block(self):
         self.assertEqual(self.errors(),[])
         out,d=self.bundle(); self.assertEqual(d['state']['output'],'complete')
@@ -248,10 +246,33 @@ class AgentTests(unittest.TestCase):
 
     def test_cli_full_flow_and_legacy_schema_rejected(self):
         p=self.save(); out=self.root/'cli'
-        run=subprocess.run([sys.executable,str(ROOT/'tools.py'),'build',str(p),'--out',str(out)],capture_output=True,text=True)
+        run=subprocess.run([sys.executable,str(ROOT/'run.py'),'build',str(p),'--out',str(out)],capture_output=True,text=True)
         self.assertEqual(run.returncode,0,run.stderr)
-        run=subprocess.run([sys.executable,str(ROOT/'tools.py'),'check',str(out)],capture_output=True,text=True)
+        run=subprocess.run([sys.executable,str(ROOT/'run.py'),'check',str(out)],capture_output=True,text=True)
         self.assertEqual(run.returncode,0,run.stderr)
         self.data['schema_version']='draft-1'; self.assertTrue(self.errors())
+
+    def test_legacy_cli_error_cases(self):
+        for value, command in [('{bad','build'), (json.dumps({'product_id':'x','scope':'단일','sources':[{'id':'s','location':'자료','path':'.','observed_at':'2026-10-14'}]}),'prepare')]:
+            p=self.root/'bad.json'; p.write_text(value)
+            result=subprocess.run([sys.executable,str(ROOT/'run.py'),command,str(p),'--out',str(self.root/'invalid')],capture_output=True,text=True)
+            self.assertNotEqual(result.returncode,0)
+            self.assertNotIn('Traceback',result.stderr)
+            self.assertFalse((self.root/'invalid').exists())
+
+    def test_required_unknown_stays_blocked_when_issue_is_warning(self):
+        issue=dict(id='Q',severity='warning',status='open',question='가격?',resolve_by='확인',impact='판매가 미정',owner='시험',source_refs=[])
+        self.data['issues']=[issue]
+        next(f for f in self.data['fields'] if f['id']=='price').update(value=None,status='needs_confirmation',issue_refs=['Q'])
+        out,data=self.bundle(); data=self.review(out,data)
+        with self.assertRaises(ValueError): approve(out,'시험',data['revision'],decision='시험')
+        self.assertIn('required:price',data['state']['blockers'])
+
+    def test_invalid_main_asset_and_field_types(self):
+        d=copy.deepcopy(self.data); d['content']['main_asset_id']='not-registered'
+        self.assertTrue(self.errors(d))
+        for value in ({},True,42,'   ',['','태그']):
+            d=copy.deepcopy(self.data); d['fields'][0]['value']=value
+            self.assertTrue(self.errors(d))
 
 if __name__=='__main__': unittest.main()

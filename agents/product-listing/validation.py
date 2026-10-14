@@ -4,6 +4,7 @@ import hashlib
 import sys
 from pathlib import Path
 import re
+from images import image_size
 
 CHECKS = ('identity', 'facts', 'strategy', 'rights', 'desktop', 'mobile', 'channel')
 CORE_FIELDS = ('title', 'category', 'price', 'options', 'shipping', 'returns', 'supply')
@@ -38,8 +39,12 @@ def sha_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def block_assets(block):
+    return set(block['asset_ids']) | {p['asset_id'] for p in block.get('photos', [])}
+
+
 def used_assets(data):
-    return {a for b in data['content']['blocks'] for a in b['asset_ids']} | ({data['content']['main_asset_id']} if data['content']['main_asset_id'] else set())
+    return set().union(*(block_assets(b) for b in data['content']['blocks'])) | ({data['content']['main_asset_id']} if data['content']['main_asset_id'] else set())
 
 
 
@@ -75,10 +80,18 @@ def readiness(data):
     if not data['content']['main_asset_id']:
         missing.append('main-image')
     assets = {a['id']: a for a in data['assets']}
+    used = used_assets(data)
     for a in data['assets']:
-        if a['id'] in used_assets(data):
+        if a['id'] in used:
             if not asset_ready(a, assets):
                 missing.append('asset:'+a['id'])
+    for block in data['content']['blocks']:
+        for photo in block.get('photos', []):
+            asset = assets[photo['asset_id']]
+            dimensions = asset.get('dimensions')
+            if dimensions and photo['region'] != [0, 0, *dimensions] and asset['rights'] != 'edit':
+                blocker = 'image-edit:' + asset['id']
+                if blocker not in missing: missing.append(blocker)
     missing += ['issue:'+i['id'] for i in data['issues'] if i['status']=='open' and i['severity']=='blocker']
     blocks = list(missing)
     passed = {c['id'] for c in data.get('review',{}).get('checks',[]) if c['status']=='pass'}
@@ -229,12 +242,17 @@ def validate(data, root):
             if a.get('derived_from') is not None:
                 require(a['derived_from'] in indexes['assets'] and a['derived_from']!=a['id'],label+': 원본 참조 오류')
                 require(a.get('task')=='edit',label+': 파생 이미지는 편집 작업')
+            if 'dimensions' in a:
+                dims=a['dimensions']
+                require(isinstance(dims,list) and len(dims)==2 and all(type(v) is int and v>0 for v in dims),label+': dimensions는 양의 정수 두 개')
             if a.get('status')=='ready':
                 p=local_file(root,a.get('path'))
                 require(p.suffix.lower() in IMAGE_SUFFIXES,label+': 이미지 형식 오류')
                 require(a.get('sha256')==sha_file(p),label+': 파일 변조')
+                if 'dimensions' in a: require(a['dimensions']==image_size(p),label+': 실제 이미지 크기 불일치')
             else: require(a.get('path') is None and a.get('sha256') is None,label+': 미완성 경로는 null')
         content=data['content']
+        require(content.get('layout') in (None,'photo'),'content: 지원하지 않는 layout')
         require(content.get('main_asset_id') is None or content['main_asset_id'] in indexes['assets'],'content: 대표 이미지 참조 오류')
         blocks=content['blocks']
         if not isinstance(blocks,list) or not all(isinstance(b,dict) for b in blocks): return errors+['blocks: 객체 배열 필요']
@@ -248,8 +266,39 @@ def validate(data, root):
             refs(b.get('fact_refs'),indexes['facts'],label+'.facts',True)
             usable(b.get('fact_refs',[]),label)
             refs(b.get('asset_ids'),indexes['assets'],label+'.assets')
+            extras = ('kicker','composition','option_text','photos','photo_layout','diagram')
+            if any(k in b for k in extras):
+                require(content.get('layout')=='photo',label+': 사진 확장은 layout=photo 필요')
+            for key in ('kicker','composition','option_text'):
+                if key in b:
+                    require(b.get('kind')=='hero' and text(b[key]),label+': 도입 정보는 hero의 비어 있지 않은 문자열')
+            require(b.get('photo_layout','stack') in ('stack','grid'),label+': 사진 배치 오류')
+            photos=b.get('photos',[])
+            require(isinstance(photos,list),label+': photos 배열 필요')
+            if isinstance(photos,list):
+                require(not photos or not b['asset_ids'],label+': photos와 asset_ids 중복 금지')
+                for photo in photos:
+                    require(isinstance(photo,dict),label+': 사진 객체 필요')
+                    if not isinstance(photo,dict): continue
+                    require(set(photo)<= {'asset_id','region','caption','alt'},label+': 지원하지 않는 사진 필드')
+                    aid=photo.get('asset_id'); region=photo.get('region')
+                    require(isinstance(aid,str) and aid in indexes['assets'],label+': 사진 자산 참조 오류')
+                    require(isinstance(photo.get('caption'),str),label+': 사진 설명 문자열 필요')
+                    if 'alt' in photo: require(text(photo['alt']),label+': 사진 대체 설명 필요')
+                    valid=isinstance(region,list) and len(region)==4 and all(type(v) is int for v in region)
+                    require(valid,label+': 사진 영역은 정수 [x,y,width,height]')
+                    if not valid or not isinstance(aid,str) or aid not in indexes['assets']: continue
+                    a=indexes['assets'][aid]; dims=a.get('dimensions')
+                    require(isinstance(dims,list) and len(dims)==2,label+': 사진 원본 dimensions 필요')
+                    x,y,w,h=region
+                    require(x>=0 and y>=0 and w>0 and h>0,label+': 사진 영역은 양의 크기')
+                    if isinstance(dims,list) and len(dims)==2:
+                        require(x+w<=dims[0] and y+h<=dims[1],label+': 사진 영역이 원본을 벗어남')
+            if 'diagram' in b:
+                diagram=b['diagram']
+                require(isinstance(diagram,dict) and set(diagram)=={'width','height'} and all(text(v) for v in diagram.values()),label+': 도식에는 근거 연결된 width/height 문자열 필요')
             require(isinstance(b.get('rows'),list) and all(isinstance(r,list) and len(r)==2 and all(text(x) for x in r) for r in b['rows']),label+': 표는 [항목, 값] 배열')
-            require(text(b['heading']) or text(b['text']) or bool(b['asset_ids']) or bool(b['rows']),label+': 빈 블록')
+            require(text(b['heading']) or text(b['text']) or bool(b['asset_ids']) or bool(photos) or bool(b.get('diagram')) or bool(b['rows']),label+': 빈 블록')
         require(len(bids)==len(set(bids)),'blocks: 중복 ID')
         timing=data['timing']; require(timing.get('unit')=='minutes','timing: minutes 단위')
         for k in ('preparation','research','review','correction','entry','manual_baseline'):

@@ -1,6 +1,6 @@
 # 판매 등록 데이터 계약
 
-`tools.py`의 `listing-2` 계약이다. JSON은 상품별 관리 원본이며 Markdown·HTML은 동일 버전의 파생본이다. 원칙은 [공통 기준](../../docs/product-listing-principles.md), 실행은 [작업 절차](workflow.md)를 따른다. 전체 입력 예시는 [가상 상품 초안](examples/format-demo/draft.json)이다. 예시의 상품값·채널 목록·권한 표시는 합성 테스트 설정이므로 실제 상품에 복사하지 않는다.
+`run.py`의 `listing-2` 계약이다. JSON은 상품별 관리 원본이며 Markdown·HTML은 동일 버전의 파생본이다. 원칙은 [공통 기준](../../docs/product-listing-principles.md), 실행은 [작업 절차](workflow.md)를 따른다. 전체 입력 예시는 [가상 상품 초안](examples/format-demo/draft.json)이다. 예시의 상품값·채널 목록·권한 표시는 합성 테스트 설정이므로 실제 상품에 복사하지 않는다.
 
 ## 작성하는 데이터
 
@@ -14,8 +14,8 @@
 | `questions[]` | `id`, `question`, `priority`, `reason`, `source_refs`, `hypothesis`(불리언), `fact_refs`, `issue_refs` |
 | `fields[]` | `id`, `label`, `value`, `status`, `fact_refs`, `query_refs`, `issue_refs`, `scope`, `note` |
 | `channel` | `status`, `category_field_id`, `source_refs`, `required_field_ids`, `note` |
-| `assets[]` | `id`, `path`, `sha256`, `source_refs`, `rights`, `rights_source_refs`, `scope`, `alt`, `task`, `instruction`, `status`, `derived_from` |
-| `content` | `main_asset_id`와 표시 순서대로 구성한 `blocks[]` |
+| `assets[]` | `id`, `path`, `sha256`, `source_refs`, `rights`, `rights_source_refs`, `scope`, `alt`, `task`, `instruction`, `status`, `derived_from`. 사진 원본은 `dimensions` 추가 |
+| `content` | `main_asset_id`와 표시 순서대로 구성한 `blocks[]`. 사진 시안은 `layout: photo` |
 | `issues[]` | `id`, `severity`, `status`, `question`, `resolve_by`, `impact`, `owner`, `source_refs`. 해결 시 `resolution` 추가 |
 | `timing` | `unit: minutes`, `preparation`, `research`, `review`, `correction`, `entry`, `manual_baseline`. 미측정은 null |
 
@@ -67,6 +67,22 @@
 - 편집한 자산은 derived_from에 원본 자산 ID를 연결하고 수정 내용을 instruction에 적는다. 원본의 편집 권한까지 확인해야 한다. 미사용 후보의 권한 미확인은 전체를 막지 않지만 실제 사용하는 대표·상세 자산의 누락·권한 미확인은 차단한다.
 - `blocks[]`는 `id`, `kind`(`hero`/`feature`/`specs`/`notice`), `heading`, `text`, `question_refs`, `fact_refs`, `asset_ids`, `rows`, `edit_reason`을 담는다. rows는 `[["항목", "값"]]` 형식이며 불필요한 요소는 빈 문자열·빈 배열로 둔다. 구매 질문·상품 사실 참조와 편집 목적은 필수다. 표·사진 속 주장도 연결된 사실과 대조한다.
 - 원본 이미지 활용도 블록으로 표현한다. 사진·제목·짧은 설명·표를 필요에 맞게 조합한다. [상세페이지 작성 기준](../../docs/product-listing-principles.md#상세페이지-포맷)의 도입 순서를 적용하며, 이후 블록은 상품별 구매 결정 요인에 맞춰 배치한다.
+
+## 사진 레이아웃
+
+`prepare`는 `content.layout=photo`로 시작한다. 사진을 포함한 상세 시안도 `draft.json` → `build` → `preview.html` 흐름을 사용하며 별도 구성 원본을 두지 않는다. layout이 없는 기존 listing-2 입력의 출력·검사 방식은 유지한다.
+
+| 위치 | 표현·검증 |
+| --- | --- |
+| `assets[].dimensions` | 원본 `[width,height]` 픽셀 크기. 양의 정수이며 파일이 있으면 PNG/JPEG/GIF/WebP 헤더와 대조. 이미지의 실제 디코딩·선명도는 화면 검수 |
+| `blocks[].photos[]` | `asset_id`, `region: [x,y,width,height]`, `caption`, 선택 `alt`. 영역은 원본 내부의 정수 좌표·양의 크기. photos 사용 블록의 asset_ids는 빈 배열로 두어 중복 관리 방지 |
+| `blocks[].photo_layout` | `stack`(기본 세로 배치) 또는 `grid`(작은 사진 묶음). 사진은 선택 영역의 픽셀 너비보다 확대하지 않음 |
+| hero의 `kicker`, `composition`, `option_text` | 영문 소제목·구성·규격/색상. 표시 순서는 kicker → heading → composition → option_text → text → 사진. 근거가 있는 항목만 작성 |
+| `blocks[].diagram` | 선택 규격 도식 `{ "width": "60cm", "height": "30cm" }`. 위 수치는 형식 예시이며 실제 값은 블록의 fact_refs로 뒷받침. 임의 HTML·SVG 입력 불가 |
+
+도입·사진 설명·도식에도 블록의 question_refs·fact_refs와 의미 검수가 적용된다. caption·alt에 판매 범위와 다른 색상의 참고 사진을 구분한다. 그림은 원본 파일을 유지하고 SVG 표시 영역으로 표현하며, 이미지 작업표에 블록별 원본·영역·설명을 출력한다. 사용하지 않는 영역의 이유는 assets.instruction에서 관리한다.
+
+내부 시안은 준비된 사진을 권한 미확인 상태에서도 표시한다. 이 표시가 사용·편집 권한을 인정하지는 않는다. 원본 전체가 아닌 영역을 게시하려면 해당 자산의 edit 권한이 필요하며, 파생 자산이면 원본 체인의 권한 조건도 적용한다. 파일 누락은 자리표시자로 표시한다. 필수 정보·권한이 부족한 패키지의 고객용 출력과 승인은 계속 차단한다. 사진 영역·문구·배치가 바뀌면 revision이 바뀌고 검수·승인을 다시 받아야 한다.
 
 ## 상태와 게시 판단
 

@@ -7,7 +7,7 @@
 | 영역 | 현재 상태·확인 범위 |
 | --- | --- |
 | 추천 에이전트 | 개발 과제. 구현·검증 결과 미보고 |
-| 등록 에이전트 | 대화형 조사·작성과 로컬 보조 도구로 실행 가능. 실제 상품의 의미 품질 전체 합격·채널 적합성·업무시간 개선은 미검증 |
+| 등록 에이전트 | 대화형 조사·작성과 등록 문서·사진 시안의 통합 생성 가능. 실제 상품의 의미 품질 전체 합격·채널 적합성·업무시간 개선은 미검증 |
 | 상품 검토 | 데스크 매트는 가설 검증 필요, 바구니는 상품 재검토. 두 등록 패키지 모두 부분 초안·게시 보류 |
 | 스토어 | 개인판매자 가입 승인·고객확인제도 이행 완료〔2026-10-10 사용자 확인〕 |
 | 행정 | 사업자등록·통신판매업 신고 상태 미보고 |
@@ -20,10 +20,10 @@
 
 | 대상 | 현재 등록안 | 사진 포함 내부 시안 |
 | --- | --- | --- |
-| 데스크 매트 | [제안서](agents/product-listing/runs/23824864-v8-package/proposal.md) · [입력표](agents/product-listing/runs/23824864-v8-package/fields.md) · [검수·확인 과제](agents/product-listing/runs/23824864-v8-package/review.md) | [시안](agents/product-listing/runs/23824864-visual-review/preview.html) |
-| 바구니 | [제안서](agents/product-listing/runs/67434894-v8-package/proposal.md) · [입력표](agents/product-listing/runs/67434894-v8-package/fields.md) · [검수·확인 과제](agents/product-listing/runs/67434894-v8-package/review.md) | [시안](agents/product-listing/runs/67434894-visual-review/preview.html) |
+| 데스크 매트 | [제안서](agents/product-listing/runs/23824864-integrated-v2-package/proposal.md) · [입력표](agents/product-listing/runs/23824864-integrated-v2-package/fields.md) · [검수·확인 과제](agents/product-listing/runs/23824864-integrated-v2-package/review.md) | [시안](agents/product-listing/runs/23824864-integrated-v2-package/preview.html) |
+| 바구니 | [제안서](agents/product-listing/runs/67434894-integrated-v2-package/proposal.md) · [입력표](agents/product-listing/runs/67434894-integrated-v2-package/fields.md) · [검수·확인 과제](agents/product-listing/runs/67434894-integrated-v2-package/review.md) | [시안](agents/product-listing/runs/67434894-integrated-v2-package/preview.html) |
 
-등록안에는 통합검색 수요·쇼핑 경쟁·카테고리·속성 목록·태그사전의 확인 자료가 있다. 필수 정보·권한 확인은 남아 있고 최신 패키지의 필수 검수는 미실행이다. 별도 사진 시안의 로컬 화면 검수는 패키지 검수와 구분한다. 조사·검증 범위는 [실행 근거](records/2026-10-13-listing-agent-implementation.md), 상품별 미해결 항목은 위 검수 보고에서 확인한다. 쇼핑 구매 수요·노출 우위·태그 유입·판매 효과는 미검증이다.
+등록안에는 통합검색 수요·쇼핑 경쟁·카테고리·속성 목록·태그사전의 확인 자료가 있다. 필수 정보·권한 확인과 의미·판매자센터 검수는 남아 있다. 사진 시안은 등록안과 같은 패키지에서 생성하며 로컬 PC·모바일 표시만 확인했다. 조사·검증 범위는 [실행 근거](records/2026-10-13-listing-agent-implementation.md), 상품별 미해결 항목은 위 검수 보고에서 확인한다. 쇼핑 구매 수요·노출 우위·태그 유입·판매 효과는 미검증이다.
 
 ## 다음 행동
 
@@ -42,7 +42,7 @@
 | 기준 충돌 | 첨부 요약의 수익 목표·주당 시간·시작일을 기존 합의에 적용할 것인가 | [충돌 항목](records/2026-10-12-listing-mvp.md#결과)을 금붕부부가 판단. 결정 전 PROJECT.md 적용 |
 | 시간·관찰 | 주당 시간의 구축 기간 적용 여부, 구축 후 허용 운영 시간, 관찰 시작 기준·시작일·검토일 | 금붕부부 결정 |
 | 자금 | 예산·손실 한도와 정산 전 도매 결제 자금 | 실제 필요 비용 확인 후 금붕부부 결정 |
-| 역할·권한 | 후속 행정·판매 운영·성과 기록 담당, 개인별 위임 범위, 자동 실행 권한과 사람의 승인 범위 | 해당 업무 실행 전 배정·합의. 등록 자료는 [게시 판단](agents/product-listing/contract.md#상태와-게시-판단) 적용 |
+| 역할·권한 | 후속 행정·판매 운영·성과 기록 담당, 개인별 위임 범위, 자동 실행 권한과 사람의 승인 범위 | 해당 업무 실행 전 배정·합의. 등록 자료는 [게시 판단](agents/product-listing/data-contract.md#상태와-게시-판단) 적용 |
 | 상품 평가 | 판매 상품군·초기 제외 범위·검색량과 경쟁 밀도 임계값·마진 기준·가중치 | [선정 기준](docs/product-selection.md)의 측정 가능성 검증 후 금붕부부 결정 |
 | 실험·협업 | 실험 수량·기간·업무시간 목표, 공통 상품 브리프의 공유 방식·필드 | [검증 흐름](docs/execution-plan.md#소규모-검증-흐름)에 따라 구체화. 브리프는 [개발 방향](docs/execution-plan.md#에이전트-개발-방향) 적용 |
 | 공급처·연동 | 온채널의 후속 후보 포함 여부, 도매매 무료 도구의 품절·단가 동기화 수준, 데이터 소스·API·스키마 | 후보 포함은 공동 결정, 연동 조건은 [개발 범위](docs/execution-plan.md#에이전트-개발-방향)에 맞춰 도구·소스별 확인 |
