@@ -31,6 +31,13 @@ def main(argv=None) -> None:
     rk.add_argument("keywords", help="쉼표 구분, 첫 번째가 대표 키워드")
     rk.add_argument("--reason", required=True)
 
+    jd = sub.add_parser("judge", help="상품별 판정 저장 (네이버 표본·검토 결과). 최신 판정이 추천 여부에 반영된다")
+    jd.add_argument("no", type=int)
+    jd.add_argument("verdict", choices=db.VERDICTS)
+    jd.add_argument("--reason", required=True)
+    jd.add_argument("--source", required=True, help="판정 근거 자료·판정자")
+    jd.add_argument("--date", help="판정일 YYYY-MM-DD (기존 판정 이관용, 기본: 지금)")
+
     sub.add_parser("measure", help="4. 대표 키워드 검색량 수집")
     sub.add_parser("trend", help="4-2. 검색어 트렌드·쇼핑 클릭 추이·블로그·카페 수집 (NAVER API HUB)")
 
@@ -77,6 +84,10 @@ def main(argv=None) -> None:
         print(pipeline.import_triage(conn, args.path))
     elif args.cmd == "rekeyword":
         pipeline.set_keywords(conn, args.no, args.keywords.split(","), args.reason)
+    elif args.cmd == "judge":
+        db.add_judgment(conn, args.no, args.verdict, args.reason, args.source, args.date)
+        conn.commit()
+        print(f"{args.no}: {args.verdict} 저장")
     elif args.cmd == "measure":
         print(pipeline.measure(conn))
     elif args.cmd == "trend":

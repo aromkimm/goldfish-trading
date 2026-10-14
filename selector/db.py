@@ -58,7 +58,9 @@ CREATE TABLE IF NOT EXISTS competition (       -- 11번가 경쟁 수집 (자동
     type_sellers INTEGER,             -- 같은 유형(상품명 유사) 판매자 수
     type_prices TEXT,                 -- JSON 배열. 같은 유형 가격
     keyword_fit REAL,                 -- 대표 키워드 검색 상위 상품명이 도매 상품명 단어를 담는 평균 비율(참고)
-    keyword_names TEXT                -- JSON 배열. 대표 키워드 검색 상위 상품명 (키워드 검토용)
+    keyword_names TEXT,               -- JSON 배열. 대표 키워드 검색 상위 상품명 (키워드 검토용)
+    items TEXT,                       -- JSON 배열. 상품명 검색 결과별 상품명·판매자·가격·배송·같은 사진/유형 여부
+    keyword_items TEXT                -- JSON 배열. 대표 키워드 검색 결과별 상품명·가격·배송
 );
 CREATE TABLE IF NOT EXISTS catalog_checks (     -- 네이버 커머스API 카탈로그 조회 (참고 지표)
     no INTEGER NOT NULL,
@@ -78,6 +80,13 @@ CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 
     similar_prices TEXT NOT NULL,     -- JSON 배열. 같은 상품이 적을 때의 경쟁가
     note TEXT
 );
+CREATE TABLE IF NOT EXISTS judgments (         -- 사람·검토 단계의 상품별 판정. 최신 판정이 추천 여부에 반영된다
+    no INTEGER NOT NULL,
+    judged_at TEXT NOT NULL,
+    verdict TEXT NOT NULL,            -- 판매 실험 검토 가능 / 추가 확인 / 제외 (docs/product-selection.md 판정)
+    reason TEXT NOT NULL,
+    source TEXT NOT NULL              -- 판정 근거 자료·판정자 (예: 네이버 캡처 표본, 상위 후보 검토)
+);
 CREATE TABLE IF NOT EXISTS verifications (     -- 판매 가능 조건 확인
     no INTEGER NOT NULL,
     checked_at TEXT NOT NULL,
@@ -91,7 +100,8 @@ CREATE TABLE IF NOT EXISTS verifications (     -- 판매 가능 조건 확인
 
 
 MIGRATIONS = {  # 이전 스키마로 만든 DB에 없는 열
-    "competition": {"type_sellers": "INTEGER", "type_prices": "TEXT", "keyword_fit": "REAL", "keyword_names": "TEXT"},
+    "competition": {"type_sellers": "INTEGER", "type_prices": "TEXT", "keyword_fit": "REAL", "keyword_names": "TEXT",
+                    "items": "TEXT", "keyword_items": "TEXT"},
 }
 
 
@@ -148,4 +158,21 @@ def latest_catalog(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
 def latest_manual_check(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
     return conn.execute(
         "SELECT * FROM manual_checks WHERE no=? ORDER BY checked_at DESC LIMIT 1", (no,)
+    ).fetchone()
+
+
+VERDICTS = ("판매 실험 검토 가능", "추가 확인", "제외")
+
+
+def add_judgment(conn: sqlite3.Connection, no: int, verdict: str, reason: str, source: str, at: str | None = None) -> None:
+    if verdict not in VERDICTS:
+        raise ValueError(f"판정은 {', '.join(VERDICTS)} 중 하나")
+    if not reason.strip() or not source.strip():
+        raise ValueError("판정 사유와 출처가 필요")
+    conn.execute("INSERT INTO judgments VALUES (?,?,?,?,?)", (no, at or now(), verdict, reason.strip(), source.strip()))
+
+
+def latest_judgment(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM judgments WHERE no=? ORDER BY judged_at DESC, rowid DESC LIMIT 1", (no,)
     ).fetchone()

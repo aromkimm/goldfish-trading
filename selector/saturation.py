@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import re
 from concurrent.futures import ThreadPoolExecutor
 
 from . import http
@@ -50,6 +51,36 @@ def word_overlap(query: str, name: str) -> float:
     return sum(w in text for w in words) / len(words) if words else 0.0
 
 
+_COUNT = re.compile(r"(\d+)\s*(?:개입|개|팩|매입|매|입|세트|set|p)(?![가-힣a-z])", re.I)
+_DIMS = re.compile(r"(\d+(?:\.\d+)?)\s*(?:cm|mm)?\s*[x×*]\s*(\d+(?:\.\d+)?)", re.I)
+
+
+def spec(name: str) -> dict:
+    """상품명에 적힌 수량·가로×세로. 표기가 없으면 None(모름)."""
+    name = name or ""
+    counts = [int(m.group(1)) for m in _COUNT.finditer(name)]
+    dims = _DIMS.search(name)
+    return {"count": max(counts) if counts else (2 if "묶음" in name else None),
+            "dims": tuple(sorted((float(dims.group(1)), float(dims.group(2))))) if dims else None}
+
+
+def spec_conflict(title: str, name: str, tolerance: float = 0.25) -> str | None:
+    """도매 상품과 경쟁 상품의 표기된 수량·치수가 다르면 사유. 한쪽이라도 표기가 없으면 비교하지 않는다.
+    수량은 도매 상품명에 표기가 없으면 1개로 본다〔추정 — 묶음 판매가가 낱개 경쟁가로 섞이는 것을 막는 용도〕."""
+    a, b = spec(title), spec(name)
+    if b["count"] and b["count"] > 1 and b["count"] != (a["count"] or 1):
+        return "수량 다름"
+    if a["dims"] and b["dims"] and any(abs(x - y) > tolerance * max(x, y) for x, y in zip(a["dims"], b["dims"])):
+        return "치수 다름"
+    return None
+
+
+def reverse_overlap(title: str, name: str) -> float:
+    """경쟁 상품명 단어 중 도매 상품명에 들어 있는 비율. 도매 상품명 단어를 담았어도 다른 종류(수납장·진열장 등)의 단어가 많으면 낮다."""
+    words = re.sub(r"[^0-9A-Za-z가-힣 ]", " ", name or "").split()
+    return word_overlap(" ".join(words), title)
+
+
 def same_type(query: str, items: list[dict], min_overlap: float) -> dict:
     """사진과 관계없이 상품명 단어 포함 비율로 같은 유형 후보를 찾는다."""
     typed = [it for it in items if word_overlap(query, it.get("name")) >= min_overlap]
@@ -72,8 +103,10 @@ def match(supplier_image: bytes, items: list[dict], max_distance: int, fetch=Non
 
     with ThreadPoolExecutor(8) as ex:
         hashes = list(ex.map(hash_of, items))
-    matched = [it for it, h in zip(items, hashes) if h is not None and distance(base, h) <= max_distance]
+    flags = [h is not None and distance(base, h) <= max_distance for h in hashes]
+    matched = [it for it, f in zip(items, flags) if f]
     return {
+        "flags": flags,  # items 순서대로 같은 사진 여부
         "checked": len(items),
         "image_failed": sum(h is None for h in hashes),
         "matched": len(matched),

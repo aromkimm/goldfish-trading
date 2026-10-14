@@ -42,6 +42,8 @@
     "keyword_top": 40,
     "dhash_max_distance": 10,
     "same_type_overlap": 0.8,
+    "type_reverse_overlap": 0.5,
+    "_type_reverse_status": "제안 — 같은 유형 가격 집합에서 경쟁 상품명 단어 중 도매 상품명에 있는 비율이 이 값 미만이면 다른 종류로 보고 가격 비교에서 뺀다. 2026-10-15 개발 사례(LP 거치대에 섞인 LP 수납장 등)로 정한 값이며 판정 정확도는 미검증",
     "_same_type_status": "제안 — 상품명 검색 결과 중 도매 상품명 검색어 단어의 80% 이상을 포함하면 같은 유형으로 본다. 2026-10-14 네이버 표본 4건 근거: 같은 사진만 세면 같은 유형 경쟁을 놓쳤다"
   },
 
@@ -75,8 +77,12 @@
 
   "pricing": {
     "platform_fee_rate": null,
-    "_fee_status": "미확인 — 스마트스토어 수수료를 공식 자료로 확인한 뒤 소수(예: 0.0x)로 입력한다. 비어 있으면 수수료 반영 마진은 모름으로 표시한다.",
+    "_fee_status": "미확인 — 스마트스토어 수수료(판매수수료·주문관리수수료 합계, 부가세 포함)를 판매자센터 공식 안내로 확인한 뒤 소수(예: 0.0x)로 입력한다. 2026-10-15 공식 도움말 직접 확인 실패, 2차 자료만 확인. 비어 있으면 수수료 반영 마진은 모름으로 표시한다.",
     "min_matched_for_same_product_price": 3,
+    "drop_outliers": true,
+    "_drop_outliers_status": "제안 — 유효 가격이 세 개 이상이면 중앙값의 절반 미만을 혼입(부속품·옵션 최저가)으로 보고 뺀다",
+    "dispersion_warn": 2.0,
+    "_dispersion_status": "제안 — 선택된 경쟁가 집합의 상위÷하위 4분위 비율이 이 값을 넘으면 비교표에 다른 상품 혼입 의심으로 표시한다. 추천 판정에는 쓰지 않는다",
     "_basis_status": "제안 — 이 개수 이상의 가격을 확보한 같은 사진 집합, 같은 유형 집합, 키워드 검색 결과 순으로 경쟁가를 선택한다."
   },
 
@@ -87,7 +93,16 @@
     "recommend_per_keyword": 2,
     "recommend_min_margin": 0.15,
     "recommend_min_lowest_margin": 0.0,
+    "margin_basis": "gross",
+    "_margin_basis_status": "미결정 — 추천 조건의 마진 기준. gross는 수수료 차감 전, net은 pricing.platform_fee_rate 차감 후이며 수수료율이 비어 있으면 추천하지 않는다. 금붕부부 결정 전까지 gross",
     "_gate_status": "제안 — 네이버 보정 후 경쟁 중앙가 기준 수수료 차감 전 마진율이 recommend_min_margin 미만이거나, 경쟁 최저가 기준 마진율이 recommend_min_lowest_margin 미만이거나, 경쟁가가 키워드 상위 결과 기준이면 추천하지 않는다. 사업상 판매 승인 기준과 구분한다.",
+    "sensitivity": {
+      "_status": "제안 — 추천 후보의 가격 가정 민감도 표시용 대안. 2026-10-14 두 결과물 평가에서 추천을 크게 바꾼 가정이며 더 나은 설정이라는 뜻이 아니다. 추천 판정에는 쓰지 않는다",
+      "저가 제거 안 함": {"pricing": {"drop_outliers": false}},
+      "같은 사진 최소 1건": {"pricing": {"min_matched_for_same_product_price": 1}},
+      "네이버 보정 0.82/0.97": {"naver_calibration": {"lowest_price": 0.82, "median_price": 0.97}},
+      "네이버 보정 없음": {"naver_calibration": {"lowest_price": 1.0, "median_price": 1.0}}
+    },
     "weights": {
       "saturation": 0.3,
       "gross_margin_rate": 0.25,
