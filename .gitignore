@@ -3,3 +3,6 @@ __pycache__/
 agents/product-listing/runs/
 .superpowers/
 .DS_Store
+.env
+.venv/
+data/
