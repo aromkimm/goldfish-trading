@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw
 
 from selector import db, filters, manual, pipeline, saturation, scoring, trend, verify
 from selector.config import settings
-from selector.sources import domeggook, elevenst, naver, naver_hub
+from selector.sources import commerce, domeggook, elevenst, naver, naver_hub
 
 
 def png(seed: int, shift: int = 0) -> bytes:
@@ -362,7 +362,13 @@ class EndToEnd(unittest.TestCase):
             page, n = pipeline.export_manual(conn)  # 검증 표본 화면도 경쟁 수집 후 만들 수 있다
             self.assertEqual(n, 1)
             self.assertIn("스테인리스 다용도 걸이", Path(page).read_text(encoding="utf-8"))
+            with mock.patch.object(commerce, "catalogs", return_value=(40, [
+                    {"name": "스테인리스 다용도 걸이 5개입"}, {"name": "스테인리스 다용도 걸이"}, {"name": "주방 수납함"}])), \
+                 mock.patch("time.sleep"):
+                self.assertEqual(pipeline.collect_catalogs(conn)["checked"], 1)
+                self.assertEqual(pipeline.collect_catalogs(conn)["skipped"], 1)  # 같은 날 재조회 안 함
             row = pipeline.build_rows(conn)[0]
+            self.assertEqual((row["catalog_similar"], row["catalog_exact"]), (2, 2))  # 전체 상품명 4단어 중 3단어(75%) 이상 담은 이름 2개
             self.assertEqual(row["saturation"], 3)
             self.assertEqual(row["same_reviews"], 7)
             self.assertEqual(row["shop_total"], 3000)

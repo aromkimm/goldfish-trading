@@ -38,6 +38,9 @@ def main(argv=None) -> None:
     cp.add_argument("--limit", type=int)
     cp.add_argument("--redo", action="store_true", help="이미 수집한 후보도 다시 수집")
 
+    ct = sub.add_parser("catalog", help="5-2. 네이버 카탈로그 조회 (커머스API, 참고 지표)")
+    ct.add_argument("--redo", action="store_true", help="오늘 조회한 후보도 다시 조회")
+
     me = sub.add_parser("manual-export", help="검증 표본: 네이버쇼핑 수동 확인 화면 만들기")
     me.add_argument("--shortlist", type=int, help="확인할 상위 후보 수 (기본: 설정값)")
     me.add_argument("--nos", help="상품번호를 직접 지정 (쉼표 구분)")
@@ -80,6 +83,8 @@ def main(argv=None) -> None:
         print(pipeline.collect_trends(conn))
     elif args.cmd == "compete":
         print(pipeline.compete(conn, limit=args.limit, redo=args.redo))
+    elif args.cmd == "catalog":
+        print(pipeline.collect_catalogs(conn, redo=args.redo))
     elif args.cmd == "manual-export":
         nos = [int(x) for x in args.nos.split(",")] if args.nos else None
         path, n = pipeline.export_manual(conn, args.shortlist, nos)

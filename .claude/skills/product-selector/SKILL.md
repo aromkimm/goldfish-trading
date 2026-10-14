@@ -20,7 +20,7 @@ description: 금붕상사 상품 추천 에이전트를 실행해 도매매 후�
 2. `detail`로 상세를 받고 규칙 제외를 적용한다. 매일 실행할 때는 `detail --refresh`로 변동성 스냅샷을 쌓는다.
 3. `triage-export` → `data/llm/triage_pending.jsonl`의 각 줄을 판정해 `data/llm/triage_done.jsonl`에 쓴다 → `triage-import data/llm/triage_done.jsonl`.
 4. `measure`로 대표 키워드 검색량을, `trend`로 검색어 트렌드·쇼핑 클릭 추이·블로그·카페 지표를 수집한다.
-5. `compete`로 11번가 경쟁·가격을 수집한다. 네이버 대비 검증 표본이 필요할 때만 `manual-export`·`manual-import`를 쓴다.
+5. `compete`로 11번가 경쟁·가격을, `catalog`로 네이버 카탈로그 참고 지표(커머스API)를 수집한다. 네이버 대비 검증 표본이 필요할 때만 `manual-export`·`manual-import`를 쓴다.
 6. `review-export --top <검토할 추천 수>`(전체 추천을 검토하려면 `config/selector.json`의 `scoring.recommend_top` 사용) → 각 줄을 검토해 `data/llm/review_done.jsonl`에 쓴다 → `review-import data/llm/review_done.jsonl`.
 7. `report`로 `data/reports/<날짜>-candidates.md·csv`를 만들고 요약 보고한다.
 8. 추천 목록과 검토 결과를 대조해 인계할 후보가 모두 검토됐는지 확인한다. `verify-export` 자체는 검토 완료를 검사하지 않는다. `verify-export`로 `data/verify/verify-<날짜>.html`을 만들어 사용자에게 판매 가능 조건 확인을 안내한다. 받은 CSV 경로로 `verify-import <경로>` → `data/reports/<날짜>-sell-conditions.md`. 반려된 상품과 사유를 보고한다. 판매 조건서가 최종 산출물이며 등록·운영은 이 스킬 범위가 아니다. 통과 상품이 부족하면 `verify-export --nos <상품번호,상품번호>`로 검토한 다음 후보를 지정한다.

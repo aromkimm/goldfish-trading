@@ -8,7 +8,7 @@ from datetime import date
 
 from . import db, filters, manual, saturation, scoring, trend, verify
 from .config import DATA_DIR, settings
-from .sources import domeggook, elevenst, naver, naver_hub
+from .sources import commerce, domeggook, elevenst, naver, naver_hub
 
 LLM_DIR = DATA_DIR / "llm"
 MANUAL_DIR = DATA_DIR / "manual"
@@ -266,6 +266,40 @@ def compete(conn: sqlite3.Connection, *, limit: int | None = None, redo: bool = 
     return counts
 
 
+# 5-2. 네이버 카탈로그 조회 — 커머스API (참고 지표) ------------------------------------------
+
+def collect_catalogs(conn: sqlite3.Connection, *, redo: bool = False) -> dict:
+    """도매 상품명 검색어로 네이버쇼핑 카탈로그를 조회해 같은 유형·이름 일치 카탈로그 수를 남긴다. 같은 날 조회한 후보는 건너뛴다."""
+    import time as _time
+
+    cfg = settings()["catalog"]
+    today = db.now()[:10]
+    counts = {"checked": 0, "skipped": 0, "failed": 0}
+    for c in conn.execute("SELECT no FROM candidates WHERE stage IN ('measured', 'checked', 'verified')").fetchall():
+        last = db.latest_catalog(conn, c["no"])
+        if last and last["fetched_at"][:10] == today and not redo:
+            counts["skipped"] += 1
+            continue
+        title = db.latest_snapshot(conn, c["no"])["title"]
+        query, full = elevenst.query_from_title(title), elevenst.query_from_title(title, words=50)
+        try:
+            total, items = commerce.catalogs(query, size=cfg["size"])
+        except Exception as e:
+            counts["failed"] += 1
+            print(f"카탈로그 조회 실패 {c['no']}: {e}")
+            continue
+        scored = sorted(((saturation.word_overlap(query, i.get("name")), i.get("name") or "") for i in items), reverse=True)
+        similar = [name for ov, name in scored if ov >= cfg["similar_overlap"]]
+        exact = [i.get("name") for i in items  # 도매 상품명 전체와 거의 같은 이름 = 이미 가격비교 묶음이 있을 가능성
+                 if saturation.word_overlap(full, i.get("name")) >= cfg["exact_title_overlap"]]
+        conn.execute("INSERT INTO catalog_checks VALUES (?,?,?,?,?,?,?)", (
+            c["no"], db.now(), query, total, len(similar), len(exact), json.dumps(similar[:10], ensure_ascii=False)))
+        conn.commit()
+        counts["checked"] += 1
+        _time.sleep(cfg["pause_seconds"])
+    return counts
+
+
 # 네이버쇼핑 수동 확인 — 11번가 결과가 네이버를 반영하는지 검증하는 표본용 ------------------------
 
 def export_manual(conn: sqlite3.Connection, shortlist: int | None = None, nos: list[int] | None = None) -> tuple[str, int]:
@@ -318,6 +352,14 @@ def volatility(conn: sqlite3.Connection, no: int) -> dict:
     return {"snapshots": len(snaps), "days": days, "changes": changes}
 
 
+def _catalog_metrics(conn, no: int) -> dict:
+    cat = db.latest_catalog(conn, no)
+    if cat is None:
+        return {"catalog_similar": None, "catalog_exact": None, "catalog_names": []}
+    return {"catalog_similar": cat["similar"], "catalog_exact": cat["exact"],
+            "catalog_names": json.loads(cat["names"] or "[]")}
+
+
 def build_rows(conn: sqlite3.Connection) -> list[dict]:
     cfg = settings()
     fee = cfg["pricing"]["platform_fee_rate"]
@@ -360,6 +402,7 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
             "gross_margin_rate": m_low["gross_rate"],  # 점수는 보수적으로 최저가 시나리오 기준
             "image_usable": s.get("image_usable"), "kc_cert": s.get("kc_cert"), "merge_enable": s.get("merge_enable"),
             **_trend_metrics(conn, keyword),
+            **_catalog_metrics(conn, c["no"]),
             "price_compare_min": s.get("price_compare_min"), "price_compare_max": s.get("price_compare_max"),
             "sole": s.get("sole"), "popular": s.get("popular"),
             "volatility": volatility(conn, c["no"]),
@@ -406,13 +449,14 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         "- 네이버 보정〔추정치〕: 네이버 캡처 표본에서 네이버 가격이 11번가보다 낮아, 경쟁 최저가 ×0.76, 중앙가 ×0.91로 계산한다. 네이버 예상 같은 사진 판매자 수는 11번가 ×1.8(표시용).",
         "- 수수료 반영 마진: " + ("설정된 수수료율 적용." if fee_set else "수수료율 미확인이라 모름. 표의 마진은 수수료 차감 전이다."),
         "- 포화도·상품 수·경쟁가: 11번가 상품검색 기준(수집일 표기). 같은 유형 판매자 수는 도매 상품명 검색 상위 100개 중 상품명이 비슷한 판매자 수(사진이 달라도 포함), 같은 사진은 도매 이미지를 그대로 쓴 판매자 수다. 네이버 표본 4건에서 같은 사진만 세면 경쟁을 크게 놓쳤다. 상위 100개 밖은 세지 않는다.",
+        "- 네이버 카탈로그(유형/일치): 커머스API로 도매 상품명 검색어를 조회해, 검색어 단어의 60% 이상을 담은 카탈로그 수와 도매 상품명 전체 단어의 75% 이상을 담은 카탈로그 수. 많을수록 네이버에 같은 유형 가격비교 모델이 많다는 뜻이다. 상품명 일치 카탈로그는 후보의 약 70%에서 나와 후보를 가려내지 못한다(위탁 상품 다수가 이미 네이버 카탈로그에 있다는 신호). 점수·추천 조건에 넣지 않는 참고 지표다.",
         "- 진입 장벽(상위 판매자의 리뷰 규모)은 모름: 네이버 표본에서는 결정적이었지만 11번가 리뷰는 거의 0이라 대신할 수 없다.",
         "- 대표 키워드가 상품과 맞는지는 상위 후보 검토 때 Claude가 11번가 키워드 검색 상위 상품명을 보고 판단한다(자동 적합도 값은 변별력이 낮아 CSV에만 남긴다).",
         "- 같은 상품 리뷰 수: 11번가에서 같은 사진을 쓴 상품들의 리뷰 합계. 판매 흔적이며 판매량이 아니다.",
         "- 검색 추세: 네이버 검색어 트렌드 기준 최근 3개월 ÷ 그 전 3개월(증감), 직전 달 ÷ 12개월 평균(계절). 상대값 비율이며 검색량이 아니다. 블로그 글 수·작성 속도는 참고용이고 점수에 넣지 않는다.",
         "",
-        "| 순위 | 추천 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 순위 | 추천 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 네이버 카탈로그(유형/일치) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for i, r in enumerate(rows, 1):
         notes = [f"지표 없음: {', '.join(r['missing'])}"] if r["missing"] else []
@@ -432,6 +476,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
             r["keyword"], r["search_volume_text"],
             f"{_fmt(r['trend_growth'])} / {_fmt(r['season_index'])}", _fmt(r["shop_total"]),
             _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_photo'])}, 네이버 예상 {_fmt(r['naver_same_photo_est'])})",
+            f"{_fmt(r['catalog_similar'])} / {_fmt(r['catalog_exact'])}",
             r["price_basis"],
             f"{_fmt(r['price_lowest'])} / {_fmt(ml['gross_rate'], True)}",
             f"{_fmt(r['price_median'])} / {_fmt(mm['gross_rate'], True)}",
@@ -449,7 +494,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         f.write("\n".join(lines) + "\n")
     csv_path = f"{stem}.csv"
     flat_keys = ["no", "recommended", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
-                 "saturation", "same_photo", "naver_same_photo_est", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
+                 "saturation", "same_photo", "naver_same_photo_est", "catalog_similar", "catalog_exact", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
                  "resale_min", "supply_price", "ship_cost", "return_fee", "image_usable", "kc_cert",
                  "merge_enable", "trend_growth", "season_index", "shop_growth", "shop_months", "blog_total", "blog_rate",
                  "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "score", "url"]

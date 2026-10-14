@@ -60,6 +60,15 @@ CREATE TABLE IF NOT EXISTS competition (       -- 11번가 경쟁 수집 (자동
     keyword_fit REAL,                 -- 대표 키워드 검색 상위 상품명이 도매 상품명 단어를 담는 평균 비율(참고)
     keyword_names TEXT                -- JSON 배열. 대표 키워드 검색 상위 상품명 (키워드 검토용)
 );
+CREATE TABLE IF NOT EXISTS catalog_checks (     -- 네이버 커머스API 카탈로그 조회 (참고 지표)
+    no INTEGER NOT NULL,
+    fetched_at TEXT NOT NULL,
+    query TEXT NOT NULL,              -- 도매 상품명에서 만든 검색어
+    total INTEGER,                    -- 검색된 카탈로그 전체 수 (넓게 잡힘)
+    similar INTEGER NOT NULL,         -- 상위 결과 중 검색어 단어를 많이 담은 카탈로그 수 (같은 유형)
+    exact INTEGER NOT NULL,           -- 검색어 단어를 전부 담은 카탈로그 수 (가격비교 묶음 가능성)
+    names TEXT NOT NULL               -- JSON 배열. 같은 유형 카탈로그 이름 상위
+);
 CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 결과 (11번가 대비 검증 표본)
     no INTEGER NOT NULL,
     checked_at TEXT NOT NULL,
@@ -127,6 +136,12 @@ def latest_trend(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
 def latest_competition(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
     return conn.execute(
         "SELECT * FROM competition WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
+    ).fetchone()
+
+
+def latest_catalog(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM catalog_checks WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
     ).fetchone()
 
 
