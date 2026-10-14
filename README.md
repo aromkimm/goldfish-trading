@@ -13,7 +13,8 @@
 | 추천 에이전트를 어떻게 쓰는가 | [추천 에이전트](docs/product-selection-agent.md) | 데이터 출처·수집·계산·판매 조건 확인과 실행 진입점 |
 | 어떤 검색·구매 정보를 제공하는가 | [상품 등록 원칙](docs/product-listing-principles.md) | 검색 전략·항목별 역할·콘텐츠 품질·상세페이지 포맷 |
 | 등록 에이전트를 어떻게 쓰는가 | [사용법](agents/product-listing/README.md) | 책임 범위·상품 브리프·출력·명령·코드 진입점 |
-| 상품별 작업을 어떻게 수행하는가 | [작업 절차](agents/product-listing/workflow.md) | 조사·작성·검수·전달·수정 순서 |
+| 추천 명령을 어떤 순서로 실행하는가 | [실행 스킬](.claude/skills/product-selector/SKILL.md) | 추천 CLI·검토 입력·실패 처리 절차 |
+| 상품별 등록 작업을 어떻게 수행하는가 | [작업 절차](agents/product-listing/workflow.md) | 조사·작성·검수·전달·수정 순서 |
 | 데이터를 어떻게 기록하는가 | [데이터 계약](agents/product-listing/data-contract.md) | listing-2 필드·참조·상태와 게시 판단·검수 기록 형식 |
 | 에이전트가 어떤 원칙을 지키는가 | [AGENTS.md](AGENTS.md) | 공동 결정·행동·수치 표기·문서 관리 원칙 |
 | Claude Code에서 무엇을 불러오는가 | [CLAUDE.md](CLAUDE.md) | 공통 지침과 사업 기준·상태의 진입점 |
@@ -21,7 +22,7 @@
 
 ## 파일 배치와 원본
 
-공통 문서는 루트와 `docs/`에 둔다. 등록 에이전트는 `agents/product-listing/`, 추천 에이전트는 `selector/`·`config/`와 [설계·사용법](docs/product-selection-agent.md)에서 관리한다. 카테고리명은 영문 소문자와 하이픈을 사용하며 실제 내용이 필요할 때 파일을 추가한다.
+공통 문서는 루트와 `docs/`에 둔다. 등록 에이전트는 `agents/product-listing/`, 추천 에이전트는 `selector/`·`config/`와 [설계·사용법](docs/product-selection-agent.md)에서 관리한다.
 
 문서 변경은 [현재 스냅샷·전체 검토 원칙](AGENTS.md#필수-준수-원칙--현재-스냅샷과-전체-문서-검토)을 따른다.
 

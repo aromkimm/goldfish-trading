@@ -37,7 +37,7 @@
   },
 
   "competition": {
-    "_status": "제안 — 11번가 경쟁 수집. 같은 상품은 도매 상품명 검색 상위 title_top개에서 dHash 거리 dhash_max_distance 이하로 판정(2026-10-10 표본 12건 근거)",
+    "_status": "제안 — 11번가 상품명 검색 상위 title_top개에서 같은 사진은 dHash 거리, 같은 유형은 단어 포함 비율로 추정. 동일 상품임을 확정하지 않음. 검증 근거는 records/2026-10-10-product-selection-agent.md",
     "title_top": 100,
     "keyword_top": 40,
     "dhash_max_distance": 10,
@@ -62,7 +62,7 @@
     "platform_fee_rate": null,
     "_fee_status": "미확인 — 스마트스토어 수수료를 공식 자료로 확인한 뒤 소수(예: 0.0x)로 입력한다. 비어 있으면 수수료 반영 마진은 모름으로 표시한다.",
     "min_matched_for_same_product_price": 3,
-    "_basis_status": "제안 — 수동 확인한 같은 상품 가격이 이 개수 이상이면 그 가격으로, 아니면 비슷한 상품 가격으로 경쟁가를 잡는다."
+    "_basis_status": "제안 — 이 개수 이상의 가격을 확보한 같은 사진 집합, 같은 유형 집합, 키워드 검색 결과 순으로 경쟁가를 선택한다."
   },
 
   "scoring": {
@@ -71,7 +71,7 @@
     "recommend_top": 20,
     "recommend_per_keyword": 2,
     "recommend_min_margin": 0.15,
-    "_gate_status": "제안 — 경쟁 중앙가 기준 마진율(수수료 차감 전) 15% 미만, 경쟁가가 키워드 상위 결과 기준인 후보는 추천하지 않는다. docs/product-selection.md 마진 15% 제안 기준",
+    "_gate_status": "제안 — 경쟁 중앙가 기준 수수료 차감 전 마진율이 recommend_min_margin 미만이거나 경쟁가가 키워드 상위 결과 기준이면 추천하지 않는다. 사업상 판매 승인 기준과 구분한다.",
     "weights": {
       "saturation": 0.3,
       "gross_margin_rate": 0.25,
