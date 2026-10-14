@@ -27,11 +27,12 @@ def competitor_prices(matched_prices: list[int], keyword_prices: list[int], min_
     return drop_outliers(keyword_prices), "키워드 상위 결과"
 
 
-def price_scenarios(prices: list[int], resale_min: int | None) -> dict:
-    """최저가·경쟁 중앙가. 도매처 최저판매준수가격이 있으면 하한으로 올린다."""
+def price_scenarios(prices: list[int], resale_min: int | None,
+                    lowest_factor: float = 1.0, median_factor: float = 1.0) -> dict:
+    """최저가·경쟁 중앙가. 네이버 보정 계수를 곱한 뒤, 도매처 최저판매준수가격이 있으면 하한으로 올린다."""
     if not prices:
         return {"lowest": None, "median": None, "floored": False}
-    lowest, mid = min(prices), int(median(prices))
+    lowest, mid = round(min(prices) * lowest_factor), round(median(prices) * median_factor)
     floor = resale_min or 0
     return {"lowest": max(lowest, floor), "median": max(mid, floor), "floored": floor > lowest}
 

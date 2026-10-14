@@ -58,6 +58,13 @@
     "sale_end_warn_days": 14
   },
 
+  "naver_calibration": {
+    "_status": "추정치 — 2026-10-14 네이버 캡처 표본 5개(같은 사진이 양쪽에 있던 상품)의 네이버÷11번가 비율 평균. 표본이 쌓이면 다시 계산한다",
+    "lowest_price": 0.76,
+    "median_price": 0.91,
+    "same_photo_sellers": 1.8
+  },
+
   "pricing": {
     "platform_fee_rate": null,
     "_fee_status": "미확인 — 스마트스토어 수수료를 공식 자료로 확인한 뒤 소수(예: 0.0x)로 입력한다. 비어 있으면 수수료 반영 마진은 모름으로 표시한다.",
@@ -71,7 +78,8 @@
     "recommend_top": 20,
     "recommend_per_keyword": 2,
     "recommend_min_margin": 0.15,
-    "_gate_status": "제안 — 경쟁 중앙가 기준 마진율(수수료 차감 전) 15% 미만, 경쟁가가 키워드 상위 결과 기준인 후보는 추천하지 않는다. docs/product-selection.md 마진 15% 제안 기준",
+    "recommend_min_lowest_margin": 0.0,
+    "_gate_status": "제안 — 네이버 보정 후 경쟁 중앙가 기준 마진율(수수료 차감 전) 15% 미만, 경쟁 최저가 기준 적자, 경쟁가가 키워드 상위 결과 기준인 후보는 추천하지 않는다. 네이버 캡처 표본 8개 근거",
     "weights": {
       "saturation": 0.3,
       "gross_margin_rate": 0.25,

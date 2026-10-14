@@ -332,7 +332,8 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
         prices, basis = scoring.competitor_prices(
             json.loads(comp["same_prices"]), json.loads(comp["similar_prices"]),
             cfg["pricing"]["min_matched_for_same_product_price"], json.loads(comp["type_prices"] or "[]"))
-        sc = scoring.price_scenarios(prices, s.get("resale_min"))
+        cal = cfg["naver_calibration"]
+        sc = scoring.price_scenarios(prices, s.get("resale_min"), cal["lowest_price"], cal["median_price"])
         m_low = scoring.margin(sc["lowest"], s["supply_price"], s["ship_cost"], fee)
         m_mid = scoring.margin(sc["median"], s["supply_price"], s["ship_cost"], fee)
         volume, volume_text = _search_volume(ks)
@@ -346,6 +347,7 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
             "shop_total": total, "competition_density": density,
             "saturation": comp["type_sellers"] if comp["type_sellers"] is not None else comp["same_sellers"],
             "same_photo": comp["same_sellers"], "same_reviews": comp["same_reviews"],
+            "naver_same_photo_est": round(comp["same_sellers"] * cfg["naver_calibration"]["same_photo_sellers"]),
             "keyword_fit": comp["keyword_fit"],
             "keyword_names": json.loads(comp["keyword_names"] or "[]"),
             "sat_checked": comp["checked"], "sat_title_total": comp["title_total"], "title_query": comp["title_query"],
@@ -372,6 +374,7 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
         median_margin = r["margin_median"]["gross_rate"]
         ok = (r["score"] is not None and picked < cfg["scoring"]["recommend_top"]
               and median_margin is not None and median_margin >= cfg["scoring"]["recommend_min_margin"]
+              and (r["margin_lowest"]["gross_rate"] or -1) >= cfg["scoring"]["recommend_min_lowest_margin"]
               and r["price_basis"] != "키워드 상위 결과"  # 같은 상품·같은 유형 가격이 없으면 마진을 믿을 수 없다
               and per_keyword.get(r["keyword"], 0) < cfg["scoring"]["recommend_per_keyword"])
         r["recommended"] = ok
@@ -398,8 +401,9 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         f"# 상품 후보 비교표 — {date.today().isoformat()}",
         "",
         "- 점수·마진은 추정치다. 점수는 이번 배치 안의 상대 순위이며 판매량 예측이 아니다(가중치 미확정 제안값). 마진·같은 상품 판매자 수가 없으면 점수를 매기지 않는다.",
-        "- 추천: 점수 순 상위 후보 중 경쟁 중앙가 기준 마진율 15% 이상이고 경쟁가가 같은 사진·같은 유형 기준인 후보, 같은 대표 키워드는 2개까지. 판매 가능 조건 확인 대상이다.",
+        "- 추천: 점수 순 상위 후보 중 네이버 보정 후 경쟁 중앙가 기준 마진율 15% 이상, 경쟁 최저가에 팔아도 적자가 아니고, 경쟁가가 같은 사진·같은 유형 기준인 후보. 같은 대표 키워드는 2개까지. 판매 가능 조건 확인 대상이다.",
         "- 마진 가정: 무료배송으로 판매해 도매 배송비를 판매가에서 부담한다. 마진율 분모는 판매가다.",
+        "- 네이버 보정〔추정치〕: 네이버 캡처 표본에서 네이버 가격이 11번가보다 낮아, 경쟁 최저가 ×0.76, 중앙가 ×0.91로 계산한다. 네이버 예상 같은 사진 판매자 수는 11번가 ×1.8(표시용).",
         "- 수수료 반영 마진: " + ("설정된 수수료율 적용." if fee_set else "수수료율 미확인이라 모름. 표의 마진은 수수료 차감 전이다."),
         "- 포화도·상품 수·경쟁가: 11번가 상품검색 기준(수집일 표기). 같은 유형 판매자 수는 도매 상품명 검색 상위 100개 중 상품명이 비슷한 판매자 수(사진이 달라도 포함), 같은 사진은 도매 이미지를 그대로 쓴 판매자 수다. 네이버 표본 4건에서 같은 사진만 세면 경쟁을 크게 놓쳤다. 상위 100개 밖은 세지 않는다.",
         "- 진입 장벽(상위 판매자의 리뷰 규모)은 모름: 네이버 표본에서는 결정적이었지만 11번가 리뷰는 거의 0이라 대신할 수 없다.",
@@ -427,7 +431,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
             f"| {i}", "✓" if r["recommended"] else "", f"[{r['title']}]({r['url']})",
             r["keyword"], r["search_volume_text"],
             f"{_fmt(r['trend_growth'])} / {_fmt(r['season_index'])}", _fmt(r["shop_total"]),
-            _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_photo'])})",
+            _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_photo'])}, 네이버 예상 {_fmt(r['naver_same_photo_est'])})",
             r["price_basis"],
             f"{_fmt(r['price_lowest'])} / {_fmt(ml['gross_rate'], True)}",
             f"{_fmt(r['price_median'])} / {_fmt(mm['gross_rate'], True)}",
@@ -445,7 +449,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         f.write("\n".join(lines) + "\n")
     csv_path = f"{stem}.csv"
     flat_keys = ["no", "recommended", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
-                 "saturation", "same_photo", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
+                 "saturation", "same_photo", "naver_same_photo_est", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
                  "resale_min", "supply_price", "ship_cost", "return_fee", "image_usable", "kc_cert",
                  "merge_enable", "trend_growth", "season_index", "shop_growth", "shop_months", "blog_total", "blog_rate",
                  "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "score", "url"]

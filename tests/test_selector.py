@@ -201,6 +201,12 @@ class Scoring(unittest.TestCase):
         sc = scoring.price_scenarios([5000, 8000, 9000], resale_min=7000)
         self.assertEqual(sc, {"lowest": 7000, "median": 8000, "floored": True})
 
+    def test_naver_calibration(self):
+        sc = scoring.price_scenarios([10000, 12000, 14000], None, 0.76, 0.91)
+        self.assertEqual((sc["lowest"], sc["median"]), (7600, 10920))
+        sc = scoring.price_scenarios([10000, 12000, 14000], 9000, 0.76, 0.91)
+        self.assertEqual((sc["lowest"], sc["floored"]), (9000, True))  # 보정 후에도 최저판매준수가 하한
+
     def test_basis_falls_back_to_keyword_results(self):
         prices, basis = scoring.competitor_prices([9000], [8000, 0, 12000], min_matched=3)
         self.assertEqual((prices, basis), ([8000, 12000], "키워드 상위 결과"))
@@ -362,11 +368,11 @@ class EndToEnd(unittest.TestCase):
             self.assertEqual(row["shop_total"], 3000)
             self.assertEqual((row["trend_growth"], row["shop_growth"], row["blog_total"]), (3.0, 3.0, 1000))
             self.assertEqual(row["price_basis"], "동일 상품")
-            self.assertEqual(row["price_lowest"], 8500)
-            self.assertEqual(row["price_median"], 9000)
+            self.assertEqual(row["price_lowest"], 7000)  # 8,500×0.76=6,460 → 최저판매준수가 7,000 하한
+            self.assertEqual(row["price_median"], 8190)  # 9,000×0.91
             self.assertEqual(row["search_volume"], 3000)
             self.assertEqual(row["competition_density"], 1.0)
-            self.assertEqual(row["margin_lowest"]["gross"], 8500 - 3000 - 2500)
+            self.assertEqual(row["margin_lowest"]["gross"], 7000 - 3000 - 2500)
             self.assertEqual(row["price_compare_min"], 8900)
             md, _, count = pipeline.write_report(conn)
             self.assertEqual(count, 1)
