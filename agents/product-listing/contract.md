@@ -66,16 +66,18 @@
 - 자산 상태는 `ready`/`missing`, 권한은 `unknown`/`use`/`edit`, 작업은 `use`/`edit`/`acquire`다. 권한을 확인한 출처를 rights_source_refs에 연결한다. PNG/JPEG/GIF/WebP를 사용하고 미완성 자산은 path·sha256=null로 둔다.
 - 편집한 자산은 derived_from에 원본 자산 ID를 연결하고 수정 내용을 instruction에 적는다. 원본의 편집 권한까지 확인해야 한다. 미사용 후보의 권한 미확인은 전체를 막지 않지만 실제 사용하는 대표·상세 자산의 누락·권한 미확인은 차단한다.
 - `blocks[]`는 `id`, `kind`(`hero`/`feature`/`specs`/`notice`), `heading`, `text`, `question_refs`, `fact_refs`, `asset_ids`, `rows`, `edit_reason`을 담는다. rows는 `[["항목", "값"]]` 형식이며 불필요한 요소는 빈 문자열·빈 배열로 둔다. 구매 질문·상품 사실 참조와 편집 목적은 필수다. 표·사진 속 주장도 연결된 사실과 대조한다.
-- 원본 이미지 활용도 블록으로 표현한다. 사진·제목·짧은 설명·표를 필요에 맞게 조합한다. [포맷 기준](../../docs/product-listing-principles.md#상세페이지-포맷)은 내용의 고정 순서를 강제하지 않는다.
+- 원본 이미지 활용도 블록으로 표현한다. 사진·제목·짧은 설명·표를 필요에 맞게 조합한다. [상세페이지 작성 기준](../../docs/product-listing-principles.md#상세페이지-포맷)의 도입 순서를 적용하며, 이후 블록은 상품별 구매 결정 요인에 맞춰 배치한다.
 
-## 파생 상태·검수·승인
+## 상태와 게시 판단
 
 `build`가 `revision`, `state`, `review`, `approval`, `integrity`를 생성한다. 초안에 넣은 검수·승인은 승계하지 않는다. 내용이 바뀌면 새 출력 폴더로 빌드한다. 검사·승인 기록만 바뀌는 경우 콘텐츠 버전은 유지하며, 검수 재기록은 이전 승인을 해제한다.
 
-- 전략: `supported` / `hypothesis` / `reconsider`.
-- 산출물: `partial` / `complete`. 필수 정보·채널 목록·사용 자산·주요 콘텐츠가 준비됐는지의 구조적 상태이며 의미 검수 합격이 아니다.
-- 게시: `blocked` / `reviewable` / `approved`. 산출물 차단과 필수 검수 결과로 도구가 계산한다.
+- 전략: `supported`(근거 확보) / `hypothesis`(가설 검증 필요) / `reconsider`(상품 재검토). 근거 확보도 판매 성과 입증은 아니다.
+- 산출물: `partial`(부분 초안) / `complete`(검수 대상 완성). 필수 정보·채널 목록·사용 자산·주요 콘텐츠가 준비됐는지의 구조적 상태이며 의미 검수 합격이 아니다.
+- 게시: `blocked`(보류) / `reviewable`(사람 검토 가능) / `approved`(해당 버전 승인). 산출물 차단과 필수 검수 결과로 도구가 계산한다.
 - 검수 ID: `identity`, `facts`, `strategy`, `rights`, `desktop`, `mobile`, `channel`. 각각 `pass`/`fail`/`not_run`, 검사 범위 `detail`, 구체적인 확인 근거 `evidence`를 기록한다. 실제 채널을 확인하지 않았으면 channel은 not_run이다.
 - 보고서에는 현재 revision·reviewer가 필요하다. 승인에는 명시적 사람 지시와 현재 버전이 필요하며, 전략이 hypothesis/reconsider이면 반대 근거를 확인한 판매 실험 판단을 decision에 남긴다. 이는 로컬 판단 기록이며 사용자 인증·전자 서명·자동 게시가 아니다.
+
+전략·산출물·게시 상태는 독립적이다. 검색량·차별성의 불확실성은 판매 실험 가설로 남길 수 있으나 필수 정보·권한·자산·화면/채널 검수의 누락·실패는 승인으로 우회할 수 없다. 선택 정보는 관련 주장을 제외할 수 있다. 실제 판매 개시는 [사업 착수 조건](../../docs/execution-plan.md#착수-조건)을 함께 따른다.
 
 JSON 구조·파일 해시 검사만으로 원문의 진실성, 상품 불일치, 무관 키워드, 실제 권한, 가독성을 증명할 수 없다. [작업 절차](workflow.md)의 대조·화면·채널 검수를 수행한다.
