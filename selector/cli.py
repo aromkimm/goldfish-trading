@@ -26,11 +26,17 @@ def main(argv=None) -> None:
     ti = sub.add_parser("triage-import", help="3. Claude 판정 결과 반영")
     ti.add_argument("path")
 
+    rk = sub.add_parser("rekeyword", help="대표 키워드 교체 (검색 의도가 상품과 다를 때)")
+    rk.add_argument("no", type=int)
+    rk.add_argument("keywords", help="쉼표 구분, 첫 번째가 대표 키워드")
+    rk.add_argument("--reason", required=True)
+
     sub.add_parser("measure", help="4. 대표 키워드 검색량 수집")
     sub.add_parser("trend", help="4-2. 검색어 트렌드·쇼핑 클릭 추이·블로그·카페 수집 (NAVER API HUB)")
 
     cp = sub.add_parser("compete", help="5. 11번가 경쟁·가격 수집 (같은 상품 판매자·경쟁가·상품 수)")
     cp.add_argument("--limit", type=int)
+    cp.add_argument("--redo", action="store_true", help="이미 수집한 후보도 다시 수집")
 
     me = sub.add_parser("manual-export", help="검증 표본: 네이버쇼핑 수동 확인 화면 만들기")
     me.add_argument("--shortlist", type=int, help="확인할 상위 후보 수 (기본: 설정값)")
@@ -66,12 +72,14 @@ def main(argv=None) -> None:
         print(f"{n}건 → {path}")
     elif args.cmd == "triage-import":
         print(pipeline.import_triage(conn, args.path))
+    elif args.cmd == "rekeyword":
+        pipeline.set_keywords(conn, args.no, args.keywords.split(","), args.reason)
     elif args.cmd == "measure":
         print(pipeline.measure(conn))
     elif args.cmd == "trend":
         print(pipeline.collect_trends(conn))
     elif args.cmd == "compete":
-        print(pipeline.compete(conn, limit=args.limit))
+        print(pipeline.compete(conn, limit=args.limit, redo=args.redo))
     elif args.cmd == "manual-export":
         nos = [int(x) for x in args.nos.split(",")] if args.nos else None
         path, n = pipeline.export_manual(conn, args.shortlist, nos)

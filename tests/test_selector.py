@@ -157,6 +157,23 @@ class Saturation(unittest.TestCase):
         self.assertEqual(r["prices"], [9000, 9100, 9500])
 
 
+class SameType(unittest.TestCase):
+    def test_word_overlap_ignores_spacing(self):
+        self.assertEqual(saturation.word_overlap("차량용 트렁크 정리함", "자동차 트렁크정리함 접이식"), 2 / 3)
+        self.assertEqual(saturation.word_overlap("", "x"), 0.0)
+
+    def test_same_type_counts_different_photos(self):
+        items = [{"name": "차량용 트렁크 정리함 접이식", "seller": "a", "price": 20000},
+                 {"name": "차량용트렁크정리함", "seller": "b", "price": 18000},
+                 {"name": "캠핑 의자", "seller": "c", "price": 30000}]
+        r = saturation.same_type("차량용 트렁크 정리함", items, 0.8)
+        self.assertEqual((r["sellers"], r["prices"]), (2, [18000, 20000]))
+
+    def test_price_basis_prefers_same_type_over_keyword(self):
+        prices, basis = scoring.competitor_prices([], [100000, 120000], 3, [17000, 22000, 28000])
+        self.assertEqual((prices, basis), ([17000, 22000, 28000], "같은 유형"))
+
+
 class ManualCheck(unittest.TestCase):
     def test_parse_prices_mixed_input(self):
         self.assertEqual(manual.parse_prices("12,900 13500원 / 9,900"), [12900, 13500, 9900])
@@ -311,10 +328,10 @@ class EndToEnd(unittest.TestCase):
              mock.patch.object(naver, "keyword_stats", return_value=[
                  {"relKeyword": "스테인리스걸이", "monthlyPcQcCnt": "300", "monthlyMobileQcCnt": "2700", "compIdx": "중간"}]), \
              mock.patch.object(elevenst, "search", side_effect=lambda q, size=100, sort=None: (
-                 (120, [{"image": "u1", "seller": "a", "price": 9000, "reviews": 5},
-                        {"image": "u2", "seller": "b", "price": 9900, "reviews": 0},
-                        {"image": "u3", "seller": "c", "price": 8500, "reviews": 2},
-                        {"image": "u4", "seller": "d", "price": 4000, "reviews": 90}])
+                 (120, [{"name": "스테인리스 다용도 걸이 5개입", "image": "u1", "seller": "a", "price": 9000, "reviews": 5},
+                        {"name": "다용도 스테인리스 걸이 5개입 욕실", "image": "u2", "seller": "b", "price": 9900, "reviews": 0},
+                        {"name": "스테인리스다용도걸이5개입", "image": "u3", "seller": "c", "price": 8500, "reviews": 2},
+                        {"name": "주방 수납함", "image": "u4", "seller": "d", "price": 4000, "reviews": 90}])
                  if sort is None else (3000, [{"price": 7000}, {"price": 12000}]))), \
              mock.patch.object(saturation, "fetch_image", side_effect={
                  "https://img/supplier.png": png(1), "u1": png(1), "u2": png(1), "u3": png(1, 1), "u4": png(7)}.__getitem__):

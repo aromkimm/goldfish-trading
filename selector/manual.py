@@ -80,7 +80,8 @@ function save() {{
 _CHECK_GUIDE = """<b>확인 방법</b> — 각 후보의 '네이버쇼핑 검색'을 열고:
 <ol>
 <li><b>전체 상품 수</b>: 검색 결과 상단의 전체 개수.</li>
-<li><b>같은 상품 판매자 수</b>: 왼쪽 도매 이미지와 같은 상품(같은 사진·구성)을 파는 판매자 수. 첫 페이지 기준으로 세고, 더 보면 메모에 적는다.</li>
+<li><b>같은 상품 판매자 수</b>: '상품명으로 검색' 결과에서 왼쪽 도매 이미지와 같은 사진을 쓴 판매자 수. 첫 페이지 기준.</li>
+<li><b>메모</b>: 사진은 다르지만 같은 유형으로 보이는 상품(판매처·가격)과, 상위가 광고·브랜드·리뷰 많은 상품인지 적는다.</li>
 <li><b>같은 상품 가격</b>: 그 판매자들의 판매가를 공백으로 구분해 숫자로 (예: 12900 13500).</li>
 <li><b>비슷한 상품 가격</b>: 같은 상품이 3개 미만일 때만, 같은 용도의 상위 상품 가격 5개 정도.</li>
 </ol>"""
@@ -90,7 +91,8 @@ _CHECK_CARD = """<div class="card" data-no="{no}">
 <div>
 <b>{title}</b>
 <div class="meta">도매가 {supply_price}원 · 대표 키워드 「{keyword}」 · <a href="{url}" target="_blank" rel="noopener">도매 상품</a></div>
-<a class="search" href="{search_url}" target="_blank" rel="noopener">네이버쇼핑 검색</a>
+<a class="search" href="{search_url}" target="_blank" rel="noopener">네이버쇼핑 검색 (키워드)</a>
+<a class="search" href="{title_url}" target="_blank" rel="noopener">상품명으로 검색 (같은 상품 찾기)</a>
 <label>전체 상품 수<input data-no="{no}" name="total_results" inputmode="numeric"></label>
 <label>같은 상품 판매자 수<input data-no="{no}" name="same_sellers" inputmode="numeric"></label>
 <label>같은 상품 가격<input data-no="{no}" name="same_prices"></label>
@@ -117,6 +119,7 @@ def render(items: list[dict], stamp: str) -> str:
         supply_price=f"{i['supply_price']:,}" if i.get("supply_price") is not None else "모름",
         keyword=html.escape(i["keyword"]), url=html.escape(i.get("url") or ""),
         search_url=html.escape(search_url(i["keyword"])),
+        title_url=html.escape(search_url(i.get("title_query") or i.get("title") or i["keyword"])),
     ) for i in items]
     return page(kind="manual", title="네이버쇼핑 수동 확인", guide=_CHECK_GUIDE, cards=cards, fields=FIELDS,
                 done_field="same_sellers", stamp=stamp)

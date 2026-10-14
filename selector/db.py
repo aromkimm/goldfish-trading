@@ -54,7 +54,11 @@ CREATE TABLE IF NOT EXISTS competition (       -- 11번가 경쟁 수집 (자동
     same_reviews INTEGER NOT NULL,    -- 같은 상품들의 리뷰 수 합계 (판매 흔적)
     keyword TEXT NOT NULL,
     keyword_total INTEGER,            -- 대표 키워드의 11번가 전체 상품 수
-    similar_prices TEXT NOT NULL      -- JSON 배열. 대표 키워드 인기도 상위 상품 가격
+    similar_prices TEXT NOT NULL,     -- JSON 배열. 대표 키워드 인기도 상위 상품 가격
+    type_sellers INTEGER,             -- 같은 유형(상품명 유사) 판매자 수
+    type_prices TEXT,                 -- JSON 배열. 같은 유형 가격
+    keyword_fit REAL,                 -- 대표 키워드 검색 상위 상품명이 도매 상품명 단어를 담는 평균 비율(참고)
+    keyword_names TEXT                -- JSON 배열. 대표 키워드 검색 상위 상품명 (키워드 검토용)
 );
 CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 결과 (11번가 대비 검증 표본)
     no INTEGER NOT NULL,
@@ -77,6 +81,11 @@ CREATE TABLE IF NOT EXISTS verifications (     -- 판매 가능 조건 확인
 """
 
 
+MIGRATIONS = {  # 이전 스키마로 만든 DB에 없는 열
+    "competition": {"type_sellers": "INTEGER", "type_prices": "TEXT", "keyword_fit": "REAL", "keyword_names": "TEXT"},
+}
+
+
 def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
@@ -88,6 +97,11 @@ def connect(path=None) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    for table, cols in MIGRATIONS.items():
+        have = {r["name"] for r in conn.execute(f"PRAGMA table_info({table})")}
+        for col, kind in cols.items():
+            if col not in have:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {kind}")
     return conn
 
 

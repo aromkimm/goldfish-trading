@@ -42,6 +42,22 @@ def distance(a: int, b: int) -> int:
     return bin(a ^ b).count("1")
 
 
+def word_overlap(query: str, name: str) -> float:
+    """검색어 단어(2글자 이상) 중 상품명에 들어 있는 비율. 띄어쓰기 차이는 무시한다."""
+    words = [w for w in query.split() if len(w) >= 2]
+    text = (name or "").replace(" ", "")
+    return sum(w in text for w in words) / len(words) if words else 0.0
+
+
+def same_type(query: str, items: list[dict], min_overlap: float) -> dict:
+    """사진은 달라도 상품명이 비슷한 같은 유형 상품. 같은 공장 제품을 자기 사진으로 파는 경쟁자를 잡는다."""
+    typed = [it for it in items if word_overlap(query, it.get("name")) >= min_overlap]
+    return {
+        "sellers": len({it.get("seller") for it in typed}),
+        "prices": sorted(it["price"] for it in typed if it.get("price")),
+    }
+
+
 def match(supplier_image: bytes, items: list[dict], max_distance: int, fetch=None) -> dict:
     """items는 11번가 검색 결과(image, seller, price, reviews). 같은 상품으로 판정된 결과를 요약한다."""
     fetch = fetch or fetch_image

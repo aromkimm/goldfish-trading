@@ -17,9 +17,13 @@ def drop_outliers(prices: list[int]) -> list[int]:
     return [p for p in prices if p >= mid * 0.5]
 
 
-def competitor_prices(matched_prices: list[int], keyword_prices: list[int], min_matched: int) -> tuple[list[int], str]:
+def competitor_prices(matched_prices: list[int], keyword_prices: list[int], min_matched: int,
+                      type_prices: list[int] = ()) -> tuple[list[int], str]:
+    """경쟁가 출처 우선순위: 같은 사진 → 같은 유형 → 키워드 상위 결과."""
     if len(matched_prices) >= min_matched:
         return drop_outliers(matched_prices), "동일 상품"
+    if len(type_prices) >= min_matched:
+        return drop_outliers(list(type_prices)), "같은 유형"
     return drop_outliers(keyword_prices), "키워드 상위 결과"
 
 

@@ -104,6 +104,19 @@ def import_triage(conn: sqlite3.Connection, path) -> dict:
     return counts
 
 
+def set_keywords(conn: sqlite3.Connection, no: int, keywords: list[str], reason: str) -> None:
+    """대표 키워드 교체. 검토에서 검색 의도가 상품과 다르다고 판단한 경우에 쓴다. 이후 measure·trend·compete를 다시 돈다."""
+    keywords = [k.strip() for k in keywords if k.strip()][:3]
+    if not keywords:
+        raise ValueError("키워드가 1개 이상 필요")
+    cur = conn.execute("UPDATE candidates SET keywords=?, stage='triaged' WHERE no=? AND stage IN "
+                       "('triaged', 'measured', 'checked')", (json.dumps(keywords, ensure_ascii=False), no))
+    if cur.rowcount == 0:
+        raise ValueError(f"{no}: 키워드를 바꿀 수 있는 단계가 아님")
+    print(f"{no}: 대표 키워드 → {keywords} ({reason})")
+    conn.commit()
+
+
 # 4. 검색량 수집 ------------------------------------------------------------------------
 
 def _keyword_stats(conn, keywords: list[str]) -> None:
@@ -216,11 +229,12 @@ def _trend_metrics(conn, keyword: str) -> dict:
 
 # 5. 경쟁·가격 수집 — 11번가 ------------------------------------------------------------------
 
-def compete(conn: sqlite3.Connection, *, limit: int | None = None) -> dict:
-    """도매 상품명 검색으로 같은 상품 판매자·가격을, 대표 키워드 검색으로 전체 상품 수·비슷한 상품 가격을 모은다."""
+def compete(conn: sqlite3.Connection, *, limit: int | None = None, redo: bool = False) -> dict:
+    """도매 상품명 검색으로 같은 사진·같은 유형 판매자와 가격을, 대표 키워드 검색으로 전체 상품 수·비슷한 상품 가격·키워드 적합도를 모은다."""
     cfg = settings()["competition"]
-    rows = conn.execute("SELECT no, keywords FROM candidates WHERE stage='measured'").fetchall()[:limit]
-    keyword_cache: dict[str, tuple[int, list[int]]] = {}
+    stages = "('measured', 'checked')" if redo else "('measured')"
+    rows = conn.execute(f"SELECT no, keywords FROM candidates WHERE stage IN {stages}").fetchall()[:limit]
+    keyword_cache: dict[str, tuple[int, list[int], list[str]]] = {}
     counts = {"checked": 0, "failed": 0}
     for row in rows:
         s = db.latest_snapshot(conn, row["no"])
@@ -229,18 +243,23 @@ def compete(conn: sqlite3.Connection, *, limit: int | None = None) -> dict:
         try:
             title_total, items = elevenst.search(query, size=cfg["title_top"])
             result = saturation.match(saturation.fetch_image(s["thumb"]), items, cfg["dhash_max_distance"])
+            typed = saturation.same_type(query, items, cfg["same_type_overlap"])
             if keyword not in keyword_cache:
                 total, kw_items = elevenst.search(keyword, size=cfg["keyword_top"], sort="CP")
-                keyword_cache[keyword] = (total, [i["price"] for i in kw_items if i.get("price")])
+                keyword_cache[keyword] = (total, [i["price"] for i in kw_items if i.get("price")],
+                                          [i.get("name") or "" for i in kw_items])
         except Exception as e:  # 한 상품 실패로 전체를 멈추지 않는다.
             counts["failed"] += 1
             print(f"경쟁 수집 실패 {row['no']}: {e}")
             continue
-        kw_total, kw_prices = keyword_cache[keyword]
-        conn.execute("INSERT INTO competition VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", (
+        kw_total, kw_prices, kw_names = keyword_cache[keyword]
+        fit = (round(sum(saturation.word_overlap(query, n) for n in kw_names) / len(kw_names), 2)
+               if kw_names else None)
+        conn.execute("INSERT INTO competition VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (
             row["no"], db.now(), query, title_total, result["checked"], result["image_failed"],
             result["sellers"], json.dumps(result["prices"]), result["reviews"],
-            keyword, kw_total, json.dumps(kw_prices)))
+            keyword, kw_total, json.dumps(kw_prices), typed["sellers"], json.dumps(typed["prices"]), fit,
+            json.dumps(kw_names[:15], ensure_ascii=False)))
         conn.execute("UPDATE candidates SET stage='checked' WHERE no=?", (row["no"],))
         counts["checked"] += 1
         conn.commit()
@@ -259,7 +278,8 @@ def export_manual(conn: sqlite3.Connection, shortlist: int | None = None, nos: l
         volume, _ = _search_volume(db.latest_keyword_stats(conn, keyword))
         s = db.latest_snapshot(conn, c["no"])
         items.append({"no": c["no"], "title": s["title"], "thumb": s.get("thumb"), "url": c["url"],
-                      "keyword": keyword, "supply_price": s.get("supply_price"), "_volume": volume})
+                      "keyword": keyword, "supply_price": s.get("supply_price"), "_volume": volume,
+                      "title_query": elevenst.query_from_title(s["title"])})
     items.sort(key=lambda i: (i["_volume"] is None, -(i["_volume"] or 0), i["no"]))
     picked, per_keyword = [], {}
     for i in items:
@@ -311,7 +331,7 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
             continue
         prices, basis = scoring.competitor_prices(
             json.loads(comp["same_prices"]), json.loads(comp["similar_prices"]),
-            cfg["pricing"]["min_matched_for_same_product_price"])
+            cfg["pricing"]["min_matched_for_same_product_price"], json.loads(comp["type_prices"] or "[]"))
         sc = scoring.price_scenarios(prices, s.get("resale_min"))
         m_low = scoring.margin(sc["lowest"], s["supply_price"], s["ship_cost"], fee)
         m_mid = scoring.margin(sc["median"], s["supply_price"], s["ship_cost"], fee)
@@ -324,7 +344,10 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
             "url": c["url"],
             "search_volume": volume, "search_volume_text": volume_text, "comp_idx": ks["comp_idx"] if ks else None,
             "shop_total": total, "competition_density": density,
-            "saturation": comp["same_sellers"], "same_reviews": comp["same_reviews"],
+            "saturation": comp["type_sellers"] if comp["type_sellers"] is not None else comp["same_sellers"],
+            "same_photo": comp["same_sellers"], "same_reviews": comp["same_reviews"],
+            "keyword_fit": comp["keyword_fit"],
+            "keyword_names": json.loads(comp["keyword_names"] or "[]"),
             "sat_checked": comp["checked"], "sat_title_total": comp["title_total"], "title_query": comp["title_query"],
             "checked_at": comp["fetched_at"][:10],
             "price_basis": basis, "price_floored": sc["floored"],
@@ -346,7 +369,10 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
     rows.sort(key=lambda r: (r["score"] is None, -(r["score"] or 0)))
     picked, per_keyword = 0, {}
     for r in rows:  # 추천 목록: 점수 순, 대표 키워드당 개수 제한
+        median_margin = r["margin_median"]["gross_rate"]
         ok = (r["score"] is not None and picked < cfg["scoring"]["recommend_top"]
+              and median_margin is not None and median_margin >= cfg["scoring"]["recommend_min_margin"]
+              and r["price_basis"] != "키워드 상위 결과"  # 같은 상품·같은 유형 가격이 없으면 마진을 믿을 수 없다
               and per_keyword.get(r["keyword"], 0) < cfg["scoring"]["recommend_per_keyword"])
         r["recommended"] = ok
         if ok:
@@ -372,14 +398,16 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         f"# 상품 후보 비교표 — {date.today().isoformat()}",
         "",
         "- 점수·마진은 추정치다. 점수는 이번 배치 안의 상대 순위이며 판매량 예측이 아니다(가중치 미확정 제안값). 마진·같은 상품 판매자 수가 없으면 점수를 매기지 않는다.",
-        "- 추천: 점수 순 상위 후보 중 같은 대표 키워드는 2개까지. 판매 가능 조건 확인 대상이다.",
+        "- 추천: 점수 순 상위 후보 중 경쟁 중앙가 기준 마진율 15% 이상이고 경쟁가가 같은 사진·같은 유형 기준인 후보, 같은 대표 키워드는 2개까지. 판매 가능 조건 확인 대상이다.",
         "- 마진 가정: 무료배송으로 판매해 도매 배송비를 판매가에서 부담한다. 마진율 분모는 판매가다.",
         "- 수수료 반영 마진: " + ("설정된 수수료율 적용." if fee_set else "수수료율 미확인이라 모름. 표의 마진은 수수료 차감 전이다."),
-        "- 포화도·상품 수·경쟁가: 11번가 상품검색 기준(수집일 표기). 같은 상품 판매자 수는 도매 상품명 검색 상위 결과에서 도매 이미지와 같은 사진을 쓴 판매자 수다. 이미지 가공·검색 범위 밖 판매자는 세지 않아 과소 추정될 수 있고, 네이버와의 일치 여부는 검증 전이다.",
+        "- 포화도·상품 수·경쟁가: 11번가 상품검색 기준(수집일 표기). 같은 유형 판매자 수는 도매 상품명 검색 상위 100개 중 상품명이 비슷한 판매자 수(사진이 달라도 포함), 같은 사진은 도매 이미지를 그대로 쓴 판매자 수다. 네이버 표본 4건에서 같은 사진만 세면 경쟁을 크게 놓쳤다. 상위 100개 밖은 세지 않는다.",
+        "- 진입 장벽(상위 판매자의 리뷰 규모)은 모름: 네이버 표본에서는 결정적이었지만 11번가 리뷰는 거의 0이라 대신할 수 없다.",
+        "- 대표 키워드가 상품과 맞는지는 상위 후보 검토 때 Claude가 11번가 키워드 검색 상위 상품명을 보고 판단한다(자동 적합도 값은 변별력이 낮아 CSV에만 남긴다).",
         "- 같은 상품 리뷰 수: 11번가에서 같은 사진을 쓴 상품들의 리뷰 합계. 판매 흔적이며 판매량이 아니다.",
         "- 검색 추세: 네이버 검색어 트렌드 기준 최근 3개월 ÷ 그 전 3개월(증감), 직전 달 ÷ 12개월 평균(계절). 상대값 비율이며 검색량이 아니다. 블로그 글 수·작성 속도는 참고용이고 점수에 넣지 않는다.",
         "",
-        "| 순위 | 추천 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 상품 판매자(리뷰) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
+        "| 순위 | 추천 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for i, r in enumerate(rows, 1):
@@ -396,9 +424,10 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         notes.append(f"변동 {v['changes']}회/{v['days']}일")
         ml, mm = r["margin_lowest"], r["margin_median"]
         lines.append(" | ".join([
-            f"| {i}", "✓" if r["recommended"] else "", f"[{r['title']}]({r['url']})", r["keyword"], r["search_volume_text"],
+            f"| {i}", "✓" if r["recommended"] else "", f"[{r['title']}]({r['url']})",
+            r["keyword"], r["search_volume_text"],
             f"{_fmt(r['trend_growth'])} / {_fmt(r['season_index'])}", _fmt(r["shop_total"]),
-            _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_reviews'])})",
+            _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_photo'])})",
             r["price_basis"],
             f"{_fmt(r['price_lowest'])} / {_fmt(ml['gross_rate'], True)}",
             f"{_fmt(r['price_median'])} / {_fmt(mm['gross_rate'], True)}",
@@ -416,7 +445,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         f.write("\n".join(lines) + "\n")
     csv_path = f"{stem}.csv"
     flat_keys = ["no", "recommended", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
-                 "saturation", "same_reviews", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
+                 "saturation", "same_photo", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
                  "resale_min", "supply_price", "ship_cost", "return_fee", "image_usable", "kc_cert",
                  "merge_enable", "trend_growth", "season_index", "shop_growth", "shop_months", "blog_total", "blog_rate",
                  "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "score", "url"]

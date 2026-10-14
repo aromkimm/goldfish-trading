@@ -40,7 +40,9 @@
     "_status": "제안 — 11번가 경쟁 수집. 같은 상품은 도매 상품명 검색 상위 title_top개에서 dHash 거리 dhash_max_distance 이하로 판정(2026-10-10 표본 12건 근거)",
     "title_top": 100,
     "keyword_top": 40,
-    "dhash_max_distance": 10
+    "dhash_max_distance": 10,
+    "same_type_overlap": 0.8,
+    "_same_type_status": "제안 — 상품명 검색 결과 중 도매 상품명 검색어 단어의 80% 이상을 포함하면 같은 유형으로 본다. 2026-10-14 네이버 표본 4건 근거: 같은 사진만 세면 같은 유형 경쟁을 놓쳤다"
   },
 
   "manual_check": {
@@ -68,6 +70,8 @@
     "required": ["saturation", "gross_margin_rate"],
     "recommend_top": 20,
     "recommend_per_keyword": 2,
+    "recommend_min_margin": 0.15,
+    "_gate_status": "제안 — 경쟁 중앙가 기준 마진율(수수료 차감 전) 15% 미만, 경쟁가가 키워드 상위 결과 기준인 후보는 추천하지 않는다. docs/product-selection.md 마진 15% 제안 기준",
     "weights": {
       "saturation": 0.3,
       "gross_margin_rate": 0.25,
