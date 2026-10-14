@@ -27,12 +27,14 @@ def main(argv=None) -> None:
     ti.add_argument("path")
 
     sub.add_parser("measure", help="4. 대표 키워드 검색량 수집")
+    sub.add_parser("trend", help="4-2. 검색어 트렌드·쇼핑 클릭 추이·블로그·카페 수집 (NAVER API HUB)")
 
     cp = sub.add_parser("compete", help="5. 11번가 경쟁·가격 수집 (같은 상품 판매자·경쟁가·상품 수)")
     cp.add_argument("--limit", type=int)
 
     me = sub.add_parser("manual-export", help="검증 표본: 네이버쇼핑 수동 확인 화면 만들기")
     me.add_argument("--shortlist", type=int, help="확인할 상위 후보 수 (기본: 설정값)")
+    me.add_argument("--nos", help="상품번호를 직접 지정 (쉼표 구분)")
     mi = sub.add_parser("manual-import", help="검증 표본: 수동 확인 CSV 반영")
     mi.add_argument("path")
 
@@ -66,10 +68,13 @@ def main(argv=None) -> None:
         print(pipeline.import_triage(conn, args.path))
     elif args.cmd == "measure":
         print(pipeline.measure(conn))
+    elif args.cmd == "trend":
+        print(pipeline.collect_trends(conn))
     elif args.cmd == "compete":
         print(pipeline.compete(conn, limit=args.limit))
     elif args.cmd == "manual-export":
-        path, n = pipeline.export_manual(conn, args.shortlist)
+        nos = [int(x) for x in args.nos.split(",")] if args.nos else None
+        path, n = pipeline.export_manual(conn, args.shortlist, nos)
         print(f"{n}건 → {path}")
     elif args.cmd == "manual-import":
         print(f"{pipeline.import_manual(conn, args.path)}건 반영")

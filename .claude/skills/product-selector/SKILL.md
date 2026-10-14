@@ -19,9 +19,9 @@ description: 금붕상사 상품 추천 에이전트를 실행해 도매매 후�
 1. `search --kw <검색어>` 또는 `--ca <카테고리>`로 후보를 추가한다. 검색어는 사용자가 정하거나, 정하지 않았으면 제안하고 확인받는다.
 2. `detail`로 상세를 받고 규칙 제외를 적용한다. 매일 실행할 때는 `detail --refresh`로 변동성 스냅샷을 쌓는다.
 3. `triage-export` → `data/llm/triage_pending.jsonl`의 각 줄을 판정해 `data/llm/triage_done.jsonl`에 쓴다 → `triage-import data/llm/triage_done.jsonl`.
-4. `measure`로 대표 키워드 검색량을 수집한다.
+4. `measure`로 대표 키워드 검색량을, `trend`로 검색어 트렌드·쇼핑 클릭 추이·블로그·카페 지표를 수집한다(키워드 80개 기준 약 1.5분).
 5. `compete`로 11번가 경쟁·가격을 수집한다(후보 150개 기준 약 6분). 네이버 대비 검증 표본이 필요할 때만 `manual-export`·`manual-import`를 쓴다.
-6. `review-export --top 10` → 각 줄을 검토해 `data/llm/review_done.jsonl`에 쓴다 → `review-import data/llm/review_done.jsonl`.
+6. `review-export --top 10`(추천 목록 상위) → 각 줄을 검토해 `data/llm/review_done.jsonl`에 쓴다 → `review-import data/llm/review_done.jsonl`.
 7. `report`로 `data/reports/<날짜>-candidates.md·csv`를 만들고 요약 보고한다.
 8. `verify-export`로 `data/verify/verify-<날짜>.html`을 만들어 사용자에게 판매 가능 조건 확인을 안내한다. 받은 CSV 경로로 `verify-import <경로>` → `data/reports/<날짜>-sell-conditions.md`. 반려된 상품과 사유를 보고한다. 판매 조건서가 최종 산출물이며 등록·운영은 이 스킬 범위가 아니다. 통과 상품이 부족하면 `verify-export --nos`로 비교표의 다음 후보를 확인한다.
 
@@ -39,5 +39,5 @@ description: 금붕상사 상품 추천 에이전트를 실행해 도매매 후�
 각 줄에 `{"no": ..., "rationale": "...", "risks": "...", "unknowns": "..."}`를 쓴다.
 
 - 입력된 지표만 근거로 쓴다. 새 점수나 판매량 예측을 만들지 않는다.
-- risks: 수동 확인 메모, 이미지 사용 불허, KC 인증, 최저판매준수가 적용, 배송비 모름, 시즌성, 반품 부담 등.
+- risks: 같은 상품 판매자 0명(측정 누락 가능성), 경쟁가가 비슷한 상품 기준, 이미지 사용 불허, KC 인증, 최저판매준수가 적용, 배송비 모름, 시즌성, 반품 부담 등.
 - unknowns: `모름`으로 남은 지표와 확인 방법.

@@ -30,6 +30,18 @@ CREATE TABLE IF NOT EXISTS keyword_stats (
     pc INTEGER, mobile INTEGER, comp_idx TEXT,
     raw TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS trends (            -- NAVER API HUB 추세·관심도 (대표 키워드 단위)
+    keyword TEXT NOT NULL,
+    fetched_at TEXT NOT NULL,
+    period_start TEXT NOT NULL,
+    period_end TEXT NOT NULL,
+    search_series TEXT,               -- JSON. 월별 검색어 트렌드 상대값
+    shop_category TEXT,               -- 쇼핑 인사이트 분야 코드
+    shop_series TEXT,                 -- JSON. 월별 쇼핑 클릭 상대값
+    blog_total INTEGER,
+    blog_dates TEXT,                  -- JSON. 최신 블로그 글 작성일
+    cafe_total INTEGER
+);
 CREATE TABLE IF NOT EXISTS competition (       -- 11번가 경쟁 수집 (자동)
     no INTEGER NOT NULL,
     fetched_at TEXT NOT NULL,
@@ -89,6 +101,12 @@ def latest_snapshot(conn: sqlite3.Connection, no: int) -> dict | None:
 def latest_keyword_stats(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
     return conn.execute(
         "SELECT * FROM keyword_stats WHERE keyword=? ORDER BY fetched_at DESC LIMIT 1", (keyword,)
+    ).fetchone()
+
+
+def latest_trend(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT * FROM trends WHERE keyword=? ORDER BY fetched_at DESC LIMIT 1", (keyword,)
     ).fetchone()
 
 

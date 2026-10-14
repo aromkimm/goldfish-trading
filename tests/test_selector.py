@@ -10,9 +10,9 @@ from unittest import mock
 
 from PIL import Image, ImageDraw
 
-from selector import db, filters, manual, pipeline, saturation, scoring, verify
+from selector import db, filters, manual, pipeline, saturation, scoring, trend, verify
 from selector.config import settings
-from selector.sources import domeggook, elevenst, naver
+from selector.sources import domeggook, elevenst, naver, naver_hub
 
 
 def png(seed: int, shift: int = 0) -> bytes:
@@ -187,6 +187,8 @@ class Scoring(unittest.TestCase):
     def test_basis_falls_back_to_keyword_results(self):
         prices, basis = scoring.competitor_prices([9000], [8000, 0, 12000], min_matched=3)
         self.assertEqual((prices, basis), ([8000, 12000], "키워드 상위 결과"))
+        prices, _ = scoring.competitor_prices([], [100, 9000, 10000, 11000, 900], min_matched=3)
+        self.assertEqual(prices, [9000, 10000, 11000])  # 중앙값 절반 미만(부속품·옵션 최저가) 제외
 
     def test_margin_unknown_fee(self):
         m = scoring.margin(10000, 3000, 2500, None)
@@ -200,10 +202,42 @@ class Scoring(unittest.TestCase):
             2: {"saturation": 9, "gross_margin_rate": 0.1, "competition_density": 50, "search_volume": 100},
             3: {"saturation": 3, "gross_margin_rate": None, "competition_density": 5, "search_volume": 500},
         }
-        r = scoring.score(metrics, settings()["scoring"]["weights"])
+        weights = {"saturation": 0.35, "gross_margin_rate": 0.25, "competition_density": 0.2, "search_volume": 0.2}
+        r = scoring.score(metrics, weights)
         self.assertEqual(r[1]["score"], 100.0)
         self.assertEqual(r[2]["score"], 0.0)
         self.assertEqual(r[3]["missing"], ["gross_margin_rate"])
+        r = scoring.score(metrics, weights, required=["gross_margin_rate"])
+        self.assertIsNone(r[3]["score"])  # 필수 지표가 없으면 점수 없음
+        self.assertEqual(r[1]["score"], 100.0)
+
+
+class Trend(unittest.TestCase):
+    def test_window_is_last_12_full_months(self):
+        from datetime import date
+        self.assertEqual(trend.window(date(2026, 10, 14)), ("2025-10-01", "2026-09-30"))
+        self.assertEqual(trend.window(date(2027, 1, 3)), ("2026-01-01", "2026-12-31"))
+
+    def test_growth_and_season(self):
+        series = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 30]
+        self.assertEqual(trend.growth(series), 2.0)        # (10+20+30)/3 ÷ (10+10+10)/3
+        self.assertEqual(trend.season_index(series), 2.4)  # 30 ÷ 평균 12.5
+        self.assertIsNone(trend.growth([0, 0, 0, 5, 5, 5]))
+        self.assertEqual(trend.months_with_data([0, 1, 0, 2]), 2)
+
+    def test_blog_rate(self):
+        from datetime import date
+        self.assertEqual(trend.blog_rate(["20261010", "20261012", "20261004"], date(2026, 10, 14)), 0.3)
+        self.assertIsNone(trend.blog_rate([]))
+
+    def test_monthly_fills_missing_months(self):
+        pts = [{"period": "2026-07-01", "ratio": 5}, {"period": "2026-09-01", "ratio": 9}]
+        self.assertEqual(naver_hub._monthly(pts, "2026-07-01", "2026-09-30"), [5, 0.0, 9])
+
+    def test_shop_category_order(self):
+        self.assertEqual(pipeline._shop_categories(["가구/인테리어", "침구단품"])[0], "50000004")
+        self.assertEqual(pipeline._shop_categories(["스포츠/레저", "캠핑"])[0], "50000007")
+        self.assertEqual(pipeline._shop_categories(["생활용품", "욕실용품"])[0], "50000008")
 
 
 class Verification(unittest.TestCase):
@@ -294,6 +328,14 @@ class EndToEnd(unittest.TestCase):
             self.assertEqual(pipeline.import_triage(conn, done), {"triaged": 1, "excluded": 0})
             self.assertEqual(pipeline.measure(conn), {"measured": 1})
             self.assertEqual(pipeline.compete(conn), {"checked": 1, "failed": 0})
+            series = [10.0] * 9 + [20.0, 30.0, 40.0]
+            with mock.patch.object(naver_hub, "search_trend", side_effect=lambda ks, a, b: {k: series for k in ks}), \
+                 mock.patch.object(naver_hub, "shopping_keywords",
+                                   side_effect=lambda cat, ks, a, b: {k: (series if cat == "50000008" else [0.0] * 12) for k in ks}), \
+                 mock.patch.object(naver_hub, "search_total", return_value=1000), \
+                 mock.patch.object(naver_hub, "blog_recent", return_value=["20261001"] * 10):
+                self.assertEqual(pipeline.collect_trends(conn), {"keywords": 1, "failed": 0})
+                self.assertEqual(pipeline.collect_trends(conn), {"keywords": 0, "failed": 0})  # 같은 날 재수집 안 함
             page, n = pipeline.export_manual(conn)  # 검증 표본 화면도 경쟁 수집 후 만들 수 있다
             self.assertEqual(n, 1)
             self.assertIn("스테인리스 다용도 걸이", Path(page).read_text(encoding="utf-8"))
@@ -301,6 +343,7 @@ class EndToEnd(unittest.TestCase):
             self.assertEqual(row["saturation"], 3)
             self.assertEqual(row["same_reviews"], 7)
             self.assertEqual(row["shop_total"], 3000)
+            self.assertEqual((row["trend_growth"], row["shop_growth"], row["blog_total"]), (3.0, 3.0, 1000))
             self.assertEqual(row["price_basis"], "동일 상품")
             self.assertEqual(row["price_lowest"], 8500)
             self.assertEqual(row["price_median"], 9000)

@@ -6,9 +6,9 @@ import json
 import sqlite3
 from datetime import date
 
-from . import db, filters, manual, saturation, scoring, verify
+from . import db, filters, manual, saturation, scoring, trend, verify
 from .config import DATA_DIR, settings
-from .sources import domeggook, elevenst, naver
+from .sources import domeggook, elevenst, naver, naver_hub
 
 LLM_DIR = DATA_DIR / "llm"
 MANUAL_DIR = DATA_DIR / "manual"
@@ -141,6 +141,79 @@ def _search_volume(ks) -> tuple[int | None, str]:
     return ks["pc"] + ks["mobile"], f"{ks['pc'] + ks['mobile']:,}"
 
 
+# 4-2. 추세·관심도 수집 — NAVER API HUB -------------------------------------------------------
+
+def _shop_categories(category_path: list[str]) -> list[str]:
+    """쇼핑 인사이트 분야를 조회할 순서〔추정 — 도매 카테고리 기준 매핑, 설정 trend 참조〕."""
+    path = " ".join(category_path or [])
+    order = ["생활/건강", "가구/인테리어", "스포츠/레저"]
+    if "침구" in path:
+        order = ["가구/인테리어", "생활/건강", "스포츠/레저"]
+    elif (category_path or [""])[0] == "스포츠/레저":
+        order = ["스포츠/레저", "생활/건강", "가구/인테리어"]
+    return [naver_hub.SHOP_CATEGORY[n] for n in order]
+
+
+def collect_trends(conn: sqlite3.Connection) -> dict:
+    """대표 키워드별 검색어 트렌드·쇼핑 클릭 추이·블로그·카페 지표. 같은 날 수집한 키워드는 건너뛴다."""
+    cfg = settings()["trend"]
+    start, end = trend.window()
+    today = db.now()[:10]
+    keywords: dict[str, list[str]] = {}
+    for c in conn.execute("SELECT no, keywords FROM candidates WHERE stage IN ('measured', 'checked', 'verified')"):
+        k = json.loads(c["keywords"])[0]
+        if k not in keywords:
+            keywords[k] = _shop_categories(db.latest_snapshot(conn, c["no"])["category_path"])
+    todo = [k for k in keywords if not ((r := db.latest_trend(conn, k)) and r["fetched_at"][:10] == today)]
+    counts = {"keywords": len(todo), "failed": 0}
+    search, shop = {}, {}
+    for i in range(0, len(todo), 5):  # 한 호출에 5개. 상대값이 같은 배수로 바뀌어도 증감·계절 비율은 그대로다.
+        search.update(naver_hub.search_trend(todo[i:i + 5], start, end))
+    for attempt in range(3):  # 1순위 분야부터, 데이터가 부족한 키워드만 다음 분야로
+        by_cat: dict[str, list[str]] = {}
+        for k in todo:
+            if k in shop and trend.months_with_data(shop[k][1]) >= cfg["min_months"]:
+                continue
+            by_cat.setdefault(keywords[k][attempt], []).append(k)
+        for cat, ks in by_cat.items():
+            for i in range(0, len(ks), 5):
+                for k, series in naver_hub.shopping_keywords(cat, ks[i:i + 5], start, end).items():
+                    if k not in shop or trend.months_with_data(series) > trend.months_with_data(shop[k][1]):
+                        shop[k] = (cat, series)
+    for k in todo:
+        try:
+            blog_total = naver_hub.search_total("blog", k)
+            blog_dates = naver_hub.blog_recent(k)
+            cafe_total = naver_hub.search_total("cafearticle", k)
+        except Exception as e:
+            counts["failed"] += 1
+            print(f"관심도 수집 실패 {k}: {e}")
+            blog_total = blog_dates = cafe_total = None
+        cat, series = shop.get(k, (None, None))
+        conn.execute("INSERT INTO trends VALUES (?,?,?,?,?,?,?,?,?,?)", (
+            k, db.now(), start, end, json.dumps(search.get(k)), cat, json.dumps(series),
+            blog_total, json.dumps(blog_dates), cafe_total))
+        conn.commit()
+    return counts
+
+
+def _trend_metrics(conn, keyword: str) -> dict:
+    t = db.latest_trend(conn, keyword)
+    if t is None:
+        return {"trend_growth": None, "season_index": None, "shop_growth": None, "shop_months": None,
+                "blog_total": None, "blog_rate": None, "cafe_total": None}
+    search = json.loads(t["search_series"] or "null") or []
+    shop = json.loads(t["shop_series"] or "null") or []
+    min_months = settings()["trend"]["min_months"]
+    shop_ok = trend.months_with_data(shop) >= min_months
+    return {
+        "trend_growth": trend.growth(search), "season_index": trend.season_index(search),
+        "shop_growth": trend.growth(shop) if shop_ok else None, "shop_months": trend.months_with_data(shop),
+        "blog_total": t["blog_total"], "blog_rate": trend.blog_rate(json.loads(t["blog_dates"] or "[]")),
+        "cafe_total": t["cafe_total"],
+    }
+
+
 # 5. 경쟁·가격 수집 — 11번가 ------------------------------------------------------------------
 
 def compete(conn: sqlite3.Connection, *, limit: int | None = None) -> dict:
@@ -176,7 +249,7 @@ def compete(conn: sqlite3.Connection, *, limit: int | None = None) -> dict:
 
 # 네이버쇼핑 수동 확인 — 11번가 결과가 네이버를 반영하는지 검증하는 표본용 ------------------------
 
-def export_manual(conn: sqlite3.Connection, shortlist: int | None = None) -> tuple[str, int]:
+def export_manual(conn: sqlite3.Connection, shortlist: int | None = None, nos: list[int] | None = None) -> tuple[str, int]:
     """검색량 순으로 상위 후보를 골라 확인 화면을 만든다. 대표 키워드당 개수를 제한한다〔선별 기준은 제안값〕."""
     cfg = settings()["manual_check"]
     shortlist = shortlist or cfg["shortlist"]
@@ -193,7 +266,7 @@ def export_manual(conn: sqlite3.Connection, shortlist: int | None = None) -> tup
         if per_keyword.get(i["keyword"], 0) < cfg["per_keyword"]:
             picked.append(i)
             per_keyword[i["keyword"]] = per_keyword.get(i["keyword"], 0) + 1
-    items = picked[:shortlist]
+    items = [i for i in items if i["no"] in nos] if nos else picked[:shortlist]
     MANUAL_DIR.mkdir(parents=True, exist_ok=True)
     stamp = date.today().isoformat()
     path = MANUAL_DIR / f"check-{stamp}.html"
@@ -261,15 +334,24 @@ def build_rows(conn: sqlite3.Connection) -> list[dict]:
             "margin_lowest": m_low, "margin_median": m_mid,
             "gross_margin_rate": m_low["gross_rate"],  # 점수는 보수적으로 최저가 시나리오 기준
             "image_usable": s.get("image_usable"), "kc_cert": s.get("kc_cert"), "merge_enable": s.get("merge_enable"),
+            **_trend_metrics(conn, keyword),
             "price_compare_min": s.get("price_compare_min"), "price_compare_max": s.get("price_compare_max"),
             "sole": s.get("sole"), "popular": s.get("popular"),
             "volatility": volatility(conn, c["no"]),
             "review": json.loads(c["review"]) if c["review"] else None,
         })
-    scores = scoring.score({r["no"]: r for r in rows}, cfg["scoring"]["weights"])
+    scores = scoring.score({r["no"]: r for r in rows}, cfg["scoring"]["weights"], cfg["scoring"]["required"])
     for r in rows:
         r.update(scores[r["no"]])
     rows.sort(key=lambda r: (r["score"] is None, -(r["score"] or 0)))
+    picked, per_keyword = 0, {}
+    for r in rows:  # 추천 목록: 점수 순, 대표 키워드당 개수 제한
+        ok = (r["score"] is not None and picked < cfg["scoring"]["recommend_top"]
+              and per_keyword.get(r["keyword"], 0) < cfg["scoring"]["recommend_per_keyword"])
+        r["recommended"] = ok
+        if ok:
+            picked += 1
+            per_keyword[r["keyword"]] = per_keyword.get(r["keyword"], 0) + 1
     return rows
 
 
@@ -289,14 +371,16 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
     lines = [
         f"# 상품 후보 비교표 — {date.today().isoformat()}",
         "",
-        "- 점수·마진은 추정치다. 점수는 이번 배치 안의 상대 순위이며 판매량 예측이 아니다(가중치 미확정 제안값).",
+        "- 점수·마진은 추정치다. 점수는 이번 배치 안의 상대 순위이며 판매량 예측이 아니다(가중치 미확정 제안값). 마진·같은 상품 판매자 수가 없으면 점수를 매기지 않는다.",
+        "- 추천: 점수 순 상위 후보 중 같은 대표 키워드는 2개까지. 판매 가능 조건 확인 대상이다.",
         "- 마진 가정: 무료배송으로 판매해 도매 배송비를 판매가에서 부담한다. 마진율 분모는 판매가다.",
         "- 수수료 반영 마진: " + ("설정된 수수료율 적용." if fee_set else "수수료율 미확인이라 모름. 표의 마진은 수수료 차감 전이다."),
         "- 포화도·상품 수·경쟁가: 11번가 상품검색 기준(수집일 표기). 같은 상품 판매자 수는 도매 상품명 검색 상위 결과에서 도매 이미지와 같은 사진을 쓴 판매자 수다. 이미지 가공·검색 범위 밖 판매자는 세지 않아 과소 추정될 수 있고, 네이버와의 일치 여부는 검증 전이다.",
         "- 같은 상품 리뷰 수: 11번가에서 같은 사진을 쓴 상품들의 리뷰 합계. 판매 흔적이며 판매량이 아니다.",
+        "- 검색 추세: 네이버 검색어 트렌드 기준 최근 3개월 ÷ 그 전 3개월(증감), 직전 달 ÷ 12개월 평균(계절). 상대값 비율이며 검색량이 아니다. 블로그 글 수·작성 속도는 참고용이고 점수에 넣지 않는다.",
         "",
-        "| 순위 | 상품 | 키워드 | 월 검색수 | 11번가 상품 수 | 경쟁 밀도 | 같은 상품 판매자(리뷰) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 순위 | 추천 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 상품 판매자(리뷰) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for i, r in enumerate(rows, 1):
         notes = [f"지표 없음: {', '.join(r['missing'])}"] if r["missing"] else []
@@ -312,7 +396,8 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         notes.append(f"변동 {v['changes']}회/{v['days']}일")
         ml, mm = r["margin_lowest"], r["margin_median"]
         lines.append(" | ".join([
-            f"| {i}", f"[{r['title']}]({r['url']})", r["keyword"], r["search_volume_text"], _fmt(r["shop_total"]),
+            f"| {i}", "✓" if r["recommended"] else "", f"[{r['title']}]({r['url']})", r["keyword"], r["search_volume_text"],
+            f"{_fmt(r['trend_growth'])} / {_fmt(r['season_index'])}", _fmt(r["shop_total"]),
             _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_reviews'])})",
             r["price_basis"],
             f"{_fmt(r['price_lowest'])} / {_fmt(ml['gross_rate'], True)}",
@@ -330,10 +415,11 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     csv_path = f"{stem}.csv"
-    flat_keys = ["no", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
+    flat_keys = ["no", "recommended", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
                  "saturation", "same_reviews", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_lowest", "price_median",
                  "resale_min", "supply_price", "ship_cost", "return_fee", "image_usable", "kc_cert",
-                 "merge_enable", "price_compare_min", "price_compare_max", "sole", "popular", "score", "url"]
+                 "merge_enable", "trend_growth", "season_index", "shop_growth", "shop_months", "blog_total", "blog_rate",
+                 "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "score", "url"]
     with open(csv_path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
         w.writerow(flat_keys + ["gross_rate_lowest", "gross_rate_median", "net_rate_lowest", "net_rate_median"])
@@ -348,7 +434,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
 def export_review(conn: sqlite3.Connection, top: int) -> tuple[str, int]:
     LLM_DIR.mkdir(parents=True, exist_ok=True)
     path = LLM_DIR / "review_pending.jsonl"
-    rows = build_rows(conn)[:top]
+    rows = [r for r in build_rows(conn) if r["recommended"]][:top]
     with path.open("w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps({k: v for k, v in r.items() if k != "review"}, ensure_ascii=False) + "\n")
@@ -374,7 +460,7 @@ def import_review(conn: sqlite3.Connection, path) -> int:
 def export_verify(conn: sqlite3.Connection, top: int | None = None, nos: list[int] | None = None) -> tuple[str, int]:
     rules = settings()["verification"]
     if not nos:
-        nos = [r["no"] for r in build_rows(conn) if r["stage"] == "checked"][:top or rules["top"]]
+        nos = [r["no"] for r in build_rows(conn) if r["stage"] == "checked" and r["recommended"]][:top or rules["top"]]
     items, urls = [], {}
     for no in nos:
         view = domeggook.item_view(no)  # 확인 시점의 최신 정보로 판단한다

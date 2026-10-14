@@ -8,10 +8,19 @@ from __future__ import annotations
 from statistics import median
 
 
+def drop_outliers(prices: list[int]) -> list[int]:
+    """중앙값의 절반 미만 가격을 뺀다. 옵션 최저가만 표시한 상품, 다른 부속품이 섞여 최저가가 왜곡되는 것을 막는다〔추정치 — 기준 제안값〕."""
+    prices = [p for p in prices if p and p > 0]
+    if len(prices) < 3:
+        return prices
+    mid = median(prices)
+    return [p for p in prices if p >= mid * 0.5]
+
+
 def competitor_prices(matched_prices: list[int], keyword_prices: list[int], min_matched: int) -> tuple[list[int], str]:
     if len(matched_prices) >= min_matched:
-        return matched_prices, "동일 상품"
-    return [p for p in keyword_prices if p > 0], "키워드 상위 결과"
+        return drop_outliers(matched_prices), "동일 상품"
+    return drop_outliers(keyword_prices), "키워드 상위 결과"
 
 
 def price_scenarios(prices: list[int], resale_min: int | None) -> dict:
@@ -58,11 +67,13 @@ DIRECTION = {
     "gross_margin_rate": True,
     "competition_density": False,  # 상품 수 ÷ 월 검색수
     "search_volume": True,
+    "trend_growth": True,          # 최근 3개월 검색 관심 증감
 }
 
 
-def score(metrics: dict[int, dict], weights: dict) -> dict[int, dict]:
-    """metrics: {후보번호: {지표: 값|None}}. 빠진 지표는 가중치에서 제외하고 missing에 남긴다."""
+def score(metrics: dict[int, dict], weights: dict, required: list[str] = ()) -> dict[int, dict]:
+    """metrics: {후보번호: {지표: 값|None}}. 빠진 지표는 가중치에서 제외하고 missing에 남긴다.
+    required 지표가 하나라도 없으면 점수를 매기지 않는다(빠진 지표가 유리하게 작용하지 않도록)."""
     ranks = {
         name: percentile_ranks({no: m.get(name) for no, m in metrics.items()}, DIRECTION[name])
         for name in weights
@@ -77,8 +88,9 @@ def score(metrics: dict[int, dict], weights: dict) -> dict[int, dict]:
                 weight_sum += w
             else:
                 missing.append(name)
+        blocked = [name for name in required if metrics[no].get(name) is None]
         result[no] = {
-            "score": round(total / weight_sum * 100, 1) if weight_sum else None,
-            "missing": missing,
+            "score": round(total / weight_sum * 100, 1) if weight_sum and not blocked else None,
+            "missing": missing + [n for n in blocked if n not in missing],
         }
     return result
