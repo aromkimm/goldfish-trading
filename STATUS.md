@@ -23,7 +23,7 @@
 | 데스크 매트 | [제안서](agents/product-listing/runs/23824864-integrated-v2-package/proposal.md) · [입력표](agents/product-listing/runs/23824864-integrated-v2-package/fields.md) · [검수·확인 과제](agents/product-listing/runs/23824864-integrated-v2-package/review.md) | [시안](agents/product-listing/runs/23824864-integrated-v2-package/preview.html) |
 | 바구니 | [제안서](agents/product-listing/runs/67434894-integrated-v2-package/proposal.md) · [입력표](agents/product-listing/runs/67434894-integrated-v2-package/fields.md) · [검수·확인 과제](agents/product-listing/runs/67434894-integrated-v2-package/review.md) | [시안](agents/product-listing/runs/67434894-integrated-v2-package/preview.html) |
 
-등록안에는 통합검색 수요·쇼핑 경쟁·카테고리·속성 목록·태그사전의 확인 자료가 있다. 필수 정보·권한 확인과 의미·판매자센터 검수는 남아 있다. 사진 시안은 등록안과 같은 패키지에서 생성하며 로컬 PC·모바일 표시만 확인했다. 조사·검증 범위는 [실행 근거](records/2026-10-13-listing-agent-implementation.md), 상품별 미해결 항목은 위 검수 보고에서 확인한다. 쇼핑 구매 수요·노출 우위·태그 유입·판매 효과는 미검증이다.
+현재 버전은 로컬 PC·모바일 표시 검수만 통과했으며, 의미·권한·판매자센터 검수는 미실행이다. 상품별 확인 과제는 위 검수 보고에서, 수요·경쟁·채널 조사와 효과 검증의 범위는 [실행 근거](records/2026-10-13-listing-agent-implementation.md)에서 확인한다.
 
 ## 다음 행동
 
@@ -47,5 +47,5 @@
 | 상품 평가 | 판매 상품군·검색량·경쟁 밀도·같은 유형 포화도 임계값·마진 기준·가중치 | [선정 기준](docs/product-selection.md)의 측정 가능성 검증 후 금붕부부 결정 |
 | 실험·협업 | 실험 수량·기간·업무시간 목표, 공통 상품 브리프의 공유 방식·필드 | [검증 흐름](docs/execution-plan.md#소규모-검증-흐름)에 따라 구체화. 브리프는 [개발 방향](docs/execution-plan.md#에이전트-개발-방향) 적용 |
 | 공급처·연동 | 온채널의 후속 후보 포함 여부, 도매매 무료 도구의 품절·단가 동기화 수준, 데이터 소스·API·스키마 | 후보 포함은 공동 결정, 연동 조건은 [개발 범위](docs/execution-plan.md#에이전트-개발-방향)에 맞춰 도구·소스별 확인 |
-| 추천 데이터 | 도매꾹 `denyMarket` 의미, 진입 장벽 자동 측정 출처, API 호출 한도와 포화도 정확도, 판매 조건 검사에서 빠진 필수값의 보완 | [추천 설계](docs/product-selection-agent.md)에 따라 공급처 문의·공식 조건 확인·표본 대조 |
+| 추천 데이터 | 도매꾹 `denyMarket` 의미, 진입 장벽 자동 측정 출처, API 호출 한도와 포화도·네이버 보정 정확도, 판매 조건 검사에서 빠진 필수값의 보완 | [추천 설계](docs/product-selection-agent.md)에 따라 공급처 문의·공식 조건 확인·표본 대조 |
 | 행정·비용 | 실제 상호·상표·사업장 주소·과세유형·업종·필수 비용·최신 수수료·세무 요건 | [판매 준비](docs/execution-plan.md#스마트스토어-개설사업자등록통신판매업-신고)에 따라 공식 자료와 실제 신청·이용 조건 확인. 담당은 미배정 |
