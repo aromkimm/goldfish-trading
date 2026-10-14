@@ -1,0 +1,1711 @@
+{
+  "schema_version": "listing-2",
+  "package_id": "23824864-v2",
+  "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+  "scope_source_refs": [
+    "scope"
+  ],
+  "sources": [
+    {
+      "id": "IMG-product",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "IMG-supplier-01",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "IMG-supplier-02",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "IMG-supplier-03",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "IMG-supplier-04",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "IMG-supplier-05",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "IMG-supplier-06",
+      "kind": "supplier",
+      "location": "도매매 23824864 기존 보관 원본 이미지",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "보관 원본을 2026-10-13 직접 판독. 현재 공급 조건이나 실측 확인은 아님."
+    },
+    {
+      "id": "scope",
+      "kind": "provided",
+      "location": "기존 사용자 판매 범위",
+      "observed_at": "2026-10-12",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "핑크 60×30cm 및 매트+스트랩 범위 유지"
+    },
+    {
+      "id": "live",
+      "kind": "supplier",
+      "location": "https://domeme.domeggook.com/s/23824864",
+      "observed_at": "2026-10-13",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "blocked",
+      "note": "웹 원문 재조회 실패. 기존 사진만으로 현재 재고·가격·권한을 확정하지 않음."
+    },
+    {
+      "id": "market",
+      "kind": "search",
+      "location": "https://m.gsshop.com/search/searchSect.gs?mseq=406355&tq=%EB%A7%88%EC%9A%B0%EC%8A%A4%ED%8C%A8%EB%93%9C%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%8C%A8%EB%93%9C",
+      "observed_at": "2026-10-13",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "웹 도구 검색 목록. 약 2개월 전 수집으로 표시되므로 현재 주문 총비용은 모름. 네이버 결과 아님."
+    },
+    {
+      "id": "naver-search-mat",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%8D%B0%EC%8A%A4%ED%81%AC%EB%A7%A4%ED%8A%B8%2060x30%20%ED%95%91%ED%81%AC&fo=true",
+      "observed_at": "2026-10-13",
+      "scope": "네이버 가격비교 검색 결과의 상품 유형·분류 관측",
+      "access": "available",
+      "note": "Chrome PC 비로그인, 랭킹순. 광고와 일반 목록 구분. 검색 결과 수는 검색량·판매자 수가 아님. 원문 관측은 search-review-20261013/observations.json."
+    },
+    {
+      "id": "channel-mat-category",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "로그인 Chrome PC 상품 등록 화면의 카테고리·속성 목록 및 검색 적용 태그 확인; 미저장 조회",
+      "access": "available",
+      "note": "실제 선택값과 태그사전 등록 여부만 검증. 기본 선택된 원산지·KC값은 상품 사실 아님. 검색량·상위노출·최종 게시 적합성 미검증."
+    },
+    {
+      "id": "channel-mat-main-info",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "로그인 Chrome PC 상품 등록 화면의 카테고리·속성 목록 및 검색 적용 태그 확인; 미저장 조회",
+      "access": "available",
+      "note": "실제 선택값과 태그사전 등록 여부만 검증. 기본 선택된 원산지·KC값은 상품 사실 아님. 검색량·상위노출·최종 게시 적합성 미검증."
+    },
+    {
+      "id": "channel-all-tags",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "로그인 Chrome PC 상품 등록 화면의 카테고리·속성 목록 및 검색 적용 태그 확인; 미저장 조회",
+      "access": "available",
+      "note": "실제 선택값과 태그사전 등록 여부만 검증. 기본 선택된 원산지·KC값은 상품 사실 아님. 검색량·상위노출·최종 게시 적합성 미검증."
+    },
+    {
+      "id": "demand-primary",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "2026-10-14 네이버 광고주센터 키워드 도구의 월간검색수. 툴팁 정의는 최근 한달 네이버 통합검색 횟수. 쇼핑 전용 검색수·고유 구매자·태그 유입량이 아님. 광고 경쟁도는 자연검색 경쟁도로 사용하지 않음."
+    },
+    {
+      "id": "demand-alt",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "2026-10-14 네이버 광고주센터 키워드 도구의 월간검색수. 툴팁 정의는 최근 한달 네이버 통합검색 횟수. 쇼핑 전용 검색수·고유 구매자·태그 유입량이 아님. 광고 경쟁도는 자연검색 경쟁도로 사용하지 않음."
+    },
+    {
+      "id": "demand-definition",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "2026-10-14 네이버 광고주센터 키워드 도구의 월간검색수. 툴팁 정의는 최근 한달 네이버 통합검색 횟수. 쇼핑 전용 검색수·고유 구매자·태그 유입량이 아님. 광고 경쟁도는 자연검색 경쟁도로 사용하지 않음."
+    },
+    {
+      "id": "search-20261014-mat",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%8D%B0%EC%8A%A4%ED%81%AC%EB%A7%A4%ED%8A%B8%2060x30",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "상품명에 60x30이 있는 일반 결과와 카탈로그 혼재. 가죽·PU·펠트 등 재질 구분 필요. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "search-20261014-pink",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%ED%95%91%ED%81%AC%20%EB%8D%B0%EC%8A%A4%ED%81%AC%EB%A7%A4%ED%8A%B8",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "핑크 색상 옵션을 적용한 데스크 매트 검색으로 자동 해석. 동일 규격의 정확 일치 결과가 아님. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "search-20261014-deskterior",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%8D%B0%EC%8A%A4%ED%81%AC%ED%85%8C%EB%A6%AC%EC%96%B4",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "일반 목록에 만년필·탁상달력·시계·조명·오거나이저 혼재. 매트 전용 검색 의도 아님. 2026-10-14 Chrome PC 로그인, 랭킹순, 첫 페이지 부분 표본. 목록가격은 결제 총액 아님."
+    },
+    {
+      "id": "deep-kaizens",
+      "kind": "competitor",
+      "location": "https://smartstore.naver.com/kaizens/products/8562547944",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-yast",
+      "kind": "competitor",
+      "location": "https://smartstore.naver.com/yast/products/5532681713",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-mat-search",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EB%8D%B0%EC%8A%A4%ED%81%AC%EB%A7%A4%ED%8A%B8%2060x30",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-desk-cover-search",
+      "kind": "search",
+      "location": "https://search.shopping.naver.com/search/all?query=%EC%B1%85%EC%83%81%EA%B9%94%EA%B0%9C",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "deep-tag-dictionary",
+      "kind": "channel",
+      "location": "https://sell.smartstore.naver.com/#/products/create",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "Chrome PC 로그인 상태의 화면 관측. 상품 목록은 랭킹순 첫 페이지 부분 표본, 광고·카탈로그와 일반 결과 구분. 공개 관련 태그는 검색 반영·성과 증거가 아님. 새 태그 수요는 tag-demand 출처에서 별도로 관리. 경쟁 사실은 우리 상품 사실로 사용하지 않음."
+    },
+    {
+      "id": "tag-demand-mat",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "공식 키워드 도구에서 지정 검색어·기존 태그를 같은 세션에 조회. PC·모바일 월간검색수 셀 원문. 최근 한달 통합검색 기준이며 쇼핑 수요·태그 유입 아님. 정확한 집계 시작/종료일 미표시."
+    },
+    {
+      "id": "tag-demand-existing",
+      "kind": "search",
+      "location": "https://ads.naver.com/",
+      "observed_at": "2026-10-14",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "access": "available",
+      "note": "공식 키워드 도구에서 지정 검색어·기존 태그를 같은 세션에 조회. PC·모바일 월간검색수 셀 원문. 최근 한달 통합검색 기준이며 쇼핑 수요·태그 유입 아님. 정확한 집계 시작/종료일 미표시."
+    }
+  ],
+  "facts": [
+    {
+      "id": "F-scope",
+      "value": "컴퓨터 책상 매트 / 핑크 / 60×30cm",
+      "status": "supplier_stated",
+      "numeric_status": "confirmed",
+      "source_refs": [
+        "IMG-supplier-01",
+        "IMG-supplier-05",
+        "IMG-supplier-06",
+        "scope"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기·사용자 지정 범위; 실측 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "F-material",
+      "value": "PU 인조가죽 겉감, 스웨이드 안감",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "IMG-supplier-03",
+        "IMG-supplier-04",
+        "IMG-supplier-05"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 기재; 자체 시험 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "F-components",
+      "value": "매트와 스트랩",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "IMG-supplier-04",
+        "IMG-supplier-05"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "노트북·컵 등 촬영 소품은 미포함",
+      "issue_refs": []
+    },
+    {
+      "id": "F-origin",
+      "value": "중국",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 기재; 자체 시험 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "F-care",
+      "value": "물티슈로 오염 제거 가능하다는 공급처 설명",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "IMG-supplier-04"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "세탁기·물세척·세제에 대한 근거 없음",
+      "issue_refs": []
+    },
+    {
+      "id": "F-other",
+      "value": "공용 이미지에 다른 색상과 90×45cm 규격 표시",
+      "status": "supplier_stated",
+      "numeric_status": "confirmed",
+      "source_refs": [
+        "IMG-supplier-02",
+        "IMG-supplier-05",
+        "IMG-supplier-06"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "실제 판매 범위로 확장하지 않음. 마지막 원본에서 핑크 배송 명시",
+      "issue_refs": []
+    },
+    {
+      "id": "F-claims",
+      "value": "내구성·생활 방수·스크래치 방지·고온 저항·미끄럼 방지·마우스 인식률은 공급처 주장",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "IMG-supplier-01",
+        "IMG-supplier-03",
+        "IMG-supplier-04"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "자체 검증·인증·정량 보장 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "F-tolerance",
+      "value": "측정 방법에 따른 오차 안내; 구체적 수치 없음",
+      "status": "supplier_stated",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "locator": "보관 원본 이미지의 해당 제목·설명·표",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 기재; 자체 시험 아님",
+      "issue_refs": []
+    },
+    {
+      "id": "channel-category",
+      "value": "생활/건강 > 문구/사무용품 > 데스크용품 > 데스크패드 / ID 50003592",
+      "status": "verified",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "channel-mat-category"
+      ],
+      "locator": "선택한 카테고리와 category 입력값",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "2026-10-14 판매자센터 조회. 입력 가능 분류·사전 상태이며 상품 게시 또는 검색 성과 확인 아님.",
+      "issue_refs": []
+    },
+    {
+      "id": "channel-tags",
+      "value": "태그사전에 등록됨: 책상꾸미기, 데스크테리어",
+      "status": "verified",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "channel-all-tags"
+      ],
+      "locator": "검색설정 > 검색에 적용되는 태그 확인 > 등록됨",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "2026-10-14 판매자센터 조회. 입력 가능 분류·사전 상태이며 상품 게시 또는 검색 성과 확인 아님.",
+      "issue_refs": []
+    },
+    {
+      "id": "deep-tag-check",
+      "value": "태그사전 등록됨: 책상깔개",
+      "status": "verified",
+      "numeric_status": "not_numeric",
+      "source_refs": [
+        "deep-tag-dictionary"
+      ],
+      "locator": "검색 적용 태그 확인 > 등록됨",
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "사전 상태 확인이며 실제 정제 후 검색 반영·유입 효과는 별도.",
+      "issue_refs": []
+    }
+  ],
+  "observations": [
+    {
+      "id": "o-market",
+      "query": "데스크 매트 60 30 핑크 PU",
+      "source_refs": [
+        "market"
+      ],
+      "observed_at": "2026-10-13",
+      "surface": "웹 검색에서 연결된 GS SHOP 목록",
+      "device": "웹 조회 도구 / 소비자 기기 모름",
+      "login": "모름",
+      "sampling": "동일 규격·소재 유형 1건 선택; 순위 대표 표본 아님",
+      "ad": "모름",
+      "competitors": [
+        {
+          "name": "PU가죽 장패드 60x30 데스크 매트",
+          "relation": "substitute",
+          "scope": "60×30; 색상·스트랩 포함 여부 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [],
+            "period": "모름",
+            "definition": "현재 배송 포함 구매 총비용(원)",
+            "device": "모름",
+            "note": "목록에 5,900원·무료배송 표시. 수집 시점이 과거이며 옵션 추가금 미확인으로 현재 총비용은 모름."
+          },
+          "delivery": "목록 무료배송 표기; 현재 조건 미확인",
+          "information": "동일 소재·규격 유형의 대체 상품",
+          "trust": "리뷰 내용·판매자 이행 미검증",
+          "source_refs": [
+            "market"
+          ],
+          "note": "우리 상품과 동일 제조 상품으로 확정하지 않음; 네이버 경쟁 순위 근거 아님"
+        }
+      ]
+    },
+    {
+      "id": "obs-mat",
+      "query": "데스크매트 60x30 핑크",
+      "source_refs": [
+        "naver-search-mat"
+      ],
+      "observed_at": "2026-10-13",
+      "surface": "네이버 가격비교 / 입력어로만 검색",
+      "device": "Chrome PC",
+      "login": "비로그인",
+      "sampling": "검색 첫 페이지에서 스크롤해 표시된 일반 상품과 광고의 분류·상품 유형 대조; 대표성 있는 순위 표본 아님",
+      "ad": "광고 포함 화면; 아래 비교 대상은 광고 표시 없는 일반 결과",
+      "competitors": [
+        {
+          "name": "소노스 컴퓨터 책상 매트 60X30",
+          "relation": "substitute",
+          "scope": "PU·60X30; 핑크·스트랩 구성 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "naver-search-mat"
+            ],
+            "period": "2026-10-13",
+            "definition": "동일 판매 범위의 실제 구매 총비용",
+            "device": "PC",
+            "note": "4,650원 + 배송비 3,000원 표시; 목록 관측이며 상세 옵션·결제 조건 미확인"
+          },
+          "delivery": "목록 배송비만 확인; 출고·도착 약속 미확인",
+          "information": "관측 분류: 생활/건강 > 문구/사무용품 > 데스크용품 > 데스크패드",
+          "trust": "리뷰 진위·판매 이행 미검증",
+          "source_refs": [
+            "naver-search-mat"
+          ],
+          "note": "검색 목록의 경쟁 자료이며 우리 상품의 사실 근거로 사용하지 않음"
+        },
+        {
+          "name": "카이젠스 가죽 데스크매트",
+          "relation": "substitute",
+          "scope": "PU; 동일 크기·색상·구성 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "naver-search-mat"
+            ],
+            "period": "2026-10-13",
+            "definition": "동일 판매 범위의 실제 구매 총비용",
+            "device": "PC",
+            "note": "8,800원 + 배송비 2,500원 표시; 목록 관측이며 상세 옵션·결제 조건 미확인"
+          },
+          "delivery": "목록 배송비만 확인; 출고·도착 약속 미확인",
+          "information": "관측 분류: 생활/건강 > 문구/사무용품 > 데스크용품 > 데스크패드",
+          "trust": "리뷰 진위·판매 이행 미검증",
+          "source_refs": [
+            "naver-search-mat"
+          ],
+          "note": "검색 목록의 경쟁 자료이며 우리 상품의 사실 근거로 사용하지 않음"
+        }
+      ]
+    },
+    {
+      "id": "obs-20261014-mat",
+      "query": "데스크매트 60x30",
+      "source_refs": [
+        "search-20261014-mat"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 상품명에 60x30이 있는 일반 결과와 카탈로그 혼재. 가죽·PU·펠트 등 재질 구분 필요.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": [
+        {
+          "name": "카이젠스 데스크패드 보호매트 작업매트 가죽 책상깔판 60x30",
+          "relation": "substitute",
+          "scope": "60x30·PU; 핑크·스트랩 포함 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "search-20261014-mat"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 규격·색상·구성의 배송 포함 실제 결제 총비용(원)",
+            "device": "Chrome PC",
+            "note": "확인된 목록 표시: 8,200원 + 배송비 2,500원; 상세 옵션·추가금·결제조건 미확인으로 총액 확정 안 함."
+          },
+          "delivery": "목록 배송 표기만 관측; 실제 출고·도착 미검증",
+          "information": "상품명에 60x30이 있는 일반 결과와 카탈로그 혼재. 가죽·PU·펠트 등 재질 구분 필요.",
+          "trust": "리뷰 2,650 표시; 리뷰 품질·옵션별 구성 미검증",
+          "source_refs": [
+            "search-20261014-mat"
+          ],
+          "note": "광고 표시 없는 일반 결과. 카탈로그 리뷰·판매처 집계는 단일 판매자의 실적 아님."
+        },
+        {
+          "name": "데스크매트 책상패드 대형 가죽 깔개 덮개 보호 깔판 60x30 / 직구네맛집",
+          "relation": "substitute",
+          "scope": "60x30; 가죽 표기, 정확한 조성·핑크·구성 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "search-20261014-mat"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 규격·색상·구성의 배송 포함 실제 결제 총비용(원)",
+            "device": "Chrome PC",
+            "note": "확인된 목록 표시: 7,900원 + 배송비 3,000원; 상세 옵션·추가금·결제조건 미확인으로 총액 확정 안 함."
+          },
+          "delivery": "목록 배송 표기만 관측; 실제 출고·도착 미검증",
+          "information": "상품명에 60x30이 있는 일반 결과와 카탈로그 혼재. 가죽·PU·펠트 등 재질 구분 필요.",
+          "trust": "리뷰 1.1만 표시; 옵션별 집계 미확인",
+          "source_refs": [
+            "search-20261014-mat"
+          ],
+          "note": "광고 표시 없는 일반 결과. 카탈로그 리뷰·판매처 집계는 단일 판매자의 실적 아님."
+        },
+        {
+          "name": "야스트 가죽 책상 데스크 매트 패드 덮개 깔개 S60x30",
+          "relation": "substitute",
+          "scope": "S60x30; 동일 색상·재질·구성 미확인",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "search-20261014-mat"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 규격·색상·구성의 배송 포함 실제 결제 총비용(원)",
+            "device": "Chrome PC",
+            "note": "확인된 목록 표시: 8,900원 / 무료배송; 상세 옵션·추가금·결제조건 미확인으로 총액 확정 안 함."
+          },
+          "delivery": "목록 배송 표기만 관측; 실제 출고·도착 미검증",
+          "information": "상품명에 60x30이 있는 일반 결과와 카탈로그 혼재. 가죽·PU·펠트 등 재질 구분 필요.",
+          "trust": "실물·판매 이행 미검증",
+          "source_refs": [
+            "search-20261014-mat"
+          ],
+          "note": "광고 표시 없는 일반 결과. 카탈로그 리뷰·판매처 집계는 단일 판매자의 실적 아님."
+        }
+      ]
+    },
+    {
+      "id": "obs-20261014-pink",
+      "query": "핑크 데스크매트",
+      "source_refs": [
+        "search-20261014-pink"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 핑크 색상 옵션을 적용한 데스크 매트 검색으로 자동 해석. 동일 규격의 정확 일치 결과가 아님.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": []
+    },
+    {
+      "id": "obs-20261014-deskterior",
+      "query": "데스크테리어",
+      "source_refs": [
+        "search-20261014-deskterior"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 / 일반 목록에 만년필·탁상달력·시계·조명·오거나이저 혼재. 매트 전용 검색 의도 아님.",
+      "device": "Chrome PC",
+      "login": "네이버 로그인 세션; 개인화 배제 못함",
+      "sampling": "첫 페이지를 두 화면가량 스크롤해 로딩된 목록. 전수·고정 순위 표본 아님.",
+      "ad": "광고와 일반 목록 구분; competitors는 광고 표시 없는 일반 결과",
+      "competitors": []
+    },
+    {
+      "id": "obs-demand-20261014",
+      "query": "데스크매트 / 책상매트 / 데스크매트60X30 / 핑크데스크매트 / PU데스크매트 / 책상꾸미기 / 데스크테리어",
+      "source_refs": [
+        "demand-primary",
+        "demand-alt",
+        "demand-definition"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 광고주센터 키워드 도구 / 월간검색수",
+      "device": "PC·모바일 분리 집계",
+      "login": "로그인",
+      "sampling": "상품 종류·선택 조건·기존 태그 후보 지정 조회. 연관어 전체를 수요로 합산하지 않음.",
+      "ad": "검색광고 도구; 월간검색수는 통합검색 기준. 광고 경쟁도·광고 클릭률을 자연검색 효과로 사용하지 않음.",
+      "competitors": []
+    },
+    {
+      "id": "deep-obs",
+      "query": "데스크매트 60x30 / 책상깔개",
+      "source_refs": [
+        "deep-kaizens",
+        "deep-yast",
+        "deep-mat-search",
+        "deep-desk-cover-search",
+        "deep-tag-dictionary"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 가격비교 일반 목록 및 연결된 스마트스토어 상세 관련 태그; 태그 사전",
+      "device": "Chrome PC",
+      "login": "로그인; 개인화 배제 못함",
+      "sampling": "첫 페이지 부분 표본에서 소재·크기·형태 비교 가능한 판매처 상세 2곳 선택. 전수·고정 순위·무작위 표본 아님. 경쟁 제목/태그 효과의 인과 추론 불가.",
+      "ad": "광고를 구분하고 상세는 광고 표시 없는 일반 결과에서 선택. 카탈로그 판매처·리뷰 수는 단일 판매자 실적으로 보지 않음.",
+      "competitors": [
+        {
+          "name": "카이젠스 데스크패드 보호매트 작업매트 가죽 책상깔판 60x30",
+          "relation": "substitute",
+          "scope": "PU·기본 60x30, 베이비핑크 사진; 옵션별 최종 결제액·스트랩 미검증",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "deep-kaizens"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 옵션·구성 배송 포함 결제 총액(원)",
+            "device": "Chrome PC",
+            "note": "상세 표시 8,200원·배송비 2,500원; 옵션별 결제총액 미확정."
+          },
+          "delivery": "상세 배송 표기만 확인; 실제 이행 미검증",
+          "information": "책상깔개·책상커버 등 제품형 관련 태그",
+          "trust": "리뷰·브랜드·배송 등 혼입 요인으로 제목/태그 단독 효과 추론 불가",
+          "source_refs": [
+            "deep-kaizens"
+          ],
+          "note": "일반 검색 결과에서 진입한 공개 상세 관측. 우리 상품의 성능·소재 근거로 전용하지 않음."
+        },
+        {
+          "name": "야스트 가죽 책상 데스크 매트 패드 덮개 깔개 S60x30",
+          "relation": "substitute",
+          "scope": "사이즈·색상 복수 옵션; 동일 옵션/스트랩의 현재 판매 조건 미확정",
+          "total_price": {
+            "value": null,
+            "status": "unknown",
+            "source_refs": [
+              "deep-yast"
+            ],
+            "period": "2026-10-14",
+            "definition": "동일 옵션·구성 배송 포함 결제 총액(원)",
+            "device": "Chrome PC",
+            "note": "상세 표시 8,900원·무료배송; 옵션별 결제총액 미확정."
+          },
+          "delivery": "상세 배송 표기만 확인; 실제 이행 미검증",
+          "information": "데스크테리어·사무실책상꾸미기·책상용품 등 용도형/제품형 관련 태그",
+          "trust": "리뷰·브랜드·배송 등 혼입 요인으로 제목/태그 단독 효과 추론 불가",
+          "source_refs": [
+            "deep-yast"
+          ],
+          "note": "일반 검색 결과에서 진입한 공개 상세 관측. 우리 상품의 성능·소재 근거로 전용하지 않음."
+        }
+      ]
+    },
+    {
+      "id": "tag-demand-obs",
+      "query": "책상깔개 / 책상커버 / 가죽패드 / 사무실책상꾸미기 / 책상용품 / 책상꾸미기 / 데스크테리어",
+      "source_refs": [
+        "tag-demand-mat",
+        "tag-demand-existing",
+        "demand-definition"
+      ],
+      "observed_at": "2026-10-14",
+      "surface": "네이버 광고주센터 키워드 도구",
+      "device": "PC·모바일 분리 집계",
+      "login": "로그인",
+      "sampling": "새 후보와 기존 태그 지정 조회. 연관어 수치는 합산하지 않음.",
+      "ad": "광고 경쟁도·클릭률은 자연검색 경쟁도·태그 효과로 사용하지 않음.",
+      "competitors": []
+    }
+  ],
+  "strategy": {
+    "status": "hypothesis",
+    "summary": "데스크매트·책상매트의 상품 종류 수요에 맞추고 60×30cm·핑크·PU는 정확한 선택 조건으로 제시한다. 세부 조합의 높은 독립 수요를 가정하지 않는다.",
+    "reason_to_choose": "필요한 크기와 색상을 빠르게 확인하고 스트랩 보관·관리법까지 비교할 수 있도록 한다. 정보 구성의 장점이며 가격·품질 우위가 입증된 것은 아니다.",
+    "counter_evidence": "규격 검색에 리뷰가 누적된 PU·가죽 대체 상품과 카탈로그가 있다. 핑크 검색은 색상 옵션이 적용된 넓은 매트 결과이며 60×30 독립 검색수는 적다. 데스크테리어의 큰 통합검색 수요는 조명·시계·정리함에도 분산된다. 공급원가·같은 옵션 결제 총액 미확인으로 가격 우위 및 상위노출 가능성은 입증하지 못했다.",
+    "uncertainties": "2026-10-14 지정 검색어의 네이버 통합검색 월간검색수와 실제 쇼핑 결과를 확인했다. 쇼핑 전용 수요·신규 상품의 자연검색 노출 가능성·태그 유입 효과·동일 옵션 경쟁 결제 총액은 미검증. 공급 조건·권한·고시·인증 확인은 별도. 경쟁 상세 2곳의 실제 관련 태그를 확인했으나 상품명·태그가 순위를 만든 인과 효과는 미검증. 책상깔개 추가는 의미 적합성에 따른 실험안. 새 태그 후보의 통합검색 수요는 확인했으며 수치·비교 판단은 검색어별 demand에서 관리한다. 검색량 우위는 관련 구매 유입 우위를 뜻하지 않는다.",
+    "queries": [
+      {
+        "id": "q-size",
+        "query": "데스크 매트 60x30 핑크",
+        "origin": "hypothesis",
+        "intent": "규격·소재·색상 조건에 맞는 책상 매트 선택",
+        "decision": "target",
+        "fit": "match",
+        "reason": "판매 범위와 일치. 수요는 가설. 네이버 실제 검색 결과 대조 완료. 데스크패드 분류와 PU·60X30 유형 확인.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-mat"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-material",
+        "query": "PU 인조가죽 책상 매트",
+        "origin": "hypothesis",
+        "intent": "규격·소재·색상 조건에 맞는 책상 매트 선택",
+        "decision": "target",
+        "fit": "match",
+        "reason": "공급처 소재 표기와 일치.",
+        "fact_refs": [
+          "F-material"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-large",
+        "query": "데스크 매트 90x45",
+        "origin": "hypothesis",
+        "intent": "규격·소재·색상 조건에 맞는 책상 매트 선택",
+        "decision": "exclude",
+        "fit": "mismatch",
+        "reason": "공용 도면에 있으나 판매 범위 밖.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "q-leather",
+        "query": "천연가죽 데스크 매트",
+        "origin": "hypothesis",
+        "intent": "규격·소재·색상 조건에 맞는 책상 매트 선택",
+        "decision": "exclude",
+        "fit": "mismatch",
+        "reason": "PU 인조가죽이므로 소재 불일치.",
+        "fact_refs": [
+          "F-material"
+        ],
+        "observation_refs": [],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [],
+          "period": "모름",
+          "definition": "검색 수요",
+          "device": "모름",
+          "note": "이 전체 문구의 검색량은 직접 집계하지 않음. 신규 수요 관측의 유사·구성 단어 수치를 이 문구에 대입하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-0",
+        "query": "데스크매트",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "핵심 상품 종류. 수요 확인은 통합검색 기준이며 신규 스토어 노출 가능성은 별도.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior"
+        ],
+        "demand": {
+          "value": 12450,
+          "status": "confirmed",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC 5,170회 / 모바일 7,280회. 확인된 표시값 합산 12,450회. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-1",
+        "query": "책상매트",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "동일 용도의 보조 검색어. 제목에 동의어를 반복 추가할 필요는 없음.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior"
+        ],
+        "demand": {
+          "value": 5030,
+          "status": "confirmed",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC 1,340회 / 모바일 3,690회. 확인된 표시값 합산 5,030회. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-2",
+        "query": "데스크매트60X30",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "실제 판매 규격이므로 유지하되 저검색량 조건어. 독립적인 주력 수요로 보지 않음.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC < 10회 / 모바일 < 10회. 10 미만은 검열 구간이므로 0·10으로 대체하지 않으며 정확한 합계는 모름. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-3",
+        "query": "핑크데스크매트",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "판매 색상 조건. 쇼핑은 핑크 색상 옵션을 적용한 데스크 매트 검색으로 해석됨.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC < 10회 / 모바일 10회. 10 미만은 검열 구간이므로 0·10으로 대체하지 않으며 정확한 합계는 모름. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-4",
+        "query": "PU데스크매트",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "소재 설명·조건어. 검색량을 이유로 천연가죽으로 바꾸지 않음.",
+        "fact_refs": [
+          "F-material"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior"
+        ],
+        "demand": {
+          "value": null,
+          "status": "unknown",
+          "source_refs": [
+            "demand-primary",
+            "demand-alt",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회 / 도구 표시 최근 한달; 정확한 집계 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "화면 관측 PC < 10회 / 모바일 < 10회. 10 미만은 검열 구간이므로 0·10으로 대체하지 않으며 정확한 합계는 모름. 띄어쓰기·숫자 표기 변형과 다른 검색어까지 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-5",
+        "query": "책상꾸미기",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "사전 등록된 보조 태그 유지. 폭넓은 관심사로 매트 구매 수요·태그 효과 미입증. 이 표현의 쇼핑 결과는 이번 직접 조회 대상 아님.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 1050,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 270회 / 모바일 780회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "demand-q-6",
+        "query": "데스크테리어",
+        "origin": "observed",
+        "intent": "상품 종류·선택 조건 또는 용도 보완; 상세 역할은 채택 이유 참조",
+        "decision": "target",
+        "fit": "match",
+        "reason": "사전 등록된 보조 태그 유지. 일반 결과에 시계·달력·조명·정리함 혼재하므로 주력 매트 구매 검색어로 승격하지 않음.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "obs-demand-20261014",
+          "obs-20261014-mat",
+          "obs-20261014-pink",
+          "obs-20261014-deskterior",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 11590,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 4,760회 / 모바일 6,830회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-11",
+        "query": "책상깔개",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "target",
+        "fit": "match",
+        "reason": "월간 통합검색 PC 130+모바일 280=410회 확인. 기존 책상꾸미기 1,050회·데스크테리어 11,590회보다 적지만, 제품 용도에 가까운 표현이며 실제 PU 매트 일반 결과·경쟁 관련 태그·사전 등록을 확인해 보완 채택 유지. 독립 유입·전환·순위 효과는 미검증.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 410,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 130회 / 모바일 280회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-12",
+        "query": "책상커버",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "match",
+        "reason": "경쟁 관련 태그·사전 등록 확인. 책상 전체를 덮는 용도로 오해할 수 있고 책상깔개와 역할이 겹쳐 추가 보류. 직접 검색 결과는 미조회.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 780,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 190회 / 모바일 590회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-13",
+        "query": "가죽패드",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "unknown",
+        "reason": "경쟁 관련 태그·사전 등록은 확인했으나 천연가죽·다른 패드 유형과 혼동 가능. PU 인조가죽 표현을 유지하고 확장 보류.",
+        "fact_refs": [],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 160,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 50회 / 모바일 110회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "deep-q-14",
+        "query": "사무실책상꾸미기",
+        "origin": "observed",
+        "intent": "경쟁 상세·실제 검색 의도 기반 대안 비교",
+        "decision": "hold",
+        "fit": "match",
+        "reason": "월간 통합검색 1,420회로 기존 책상꾸미기 1,050회보다 많지만, 사무실 한정 검색 의도·직접 검색 결과 및 태그 교체 효과가 미검증. 야스트 사용·사전 등록만으로 교체하지 않고 보류.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 1420,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 500회 / 모바일 920회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      },
+      {
+        "id": "tag-demand-q-15",
+        "query": "책상용품",
+        "origin": "observed",
+        "intent": "태그 후보 수요·적합성 비교",
+        "decision": "hold",
+        "fit": "match",
+        "reason": "태그 사전 등록은 확인했으나 책상용품은 범위가 넓고 기존 태그보다 보완 우위 근거 부족.",
+        "fact_refs": [
+          "F-scope"
+        ],
+        "observation_refs": [
+          "deep-obs",
+          "tag-demand-obs"
+        ],
+        "demand": {
+          "value": 40,
+          "status": "confirmed",
+          "source_refs": [
+            "tag-demand-mat",
+            "tag-demand-existing",
+            "demand-definition"
+          ],
+          "period": "2026-10-14 조회; 도구 최근 한달, 정확한 시작·종료일 미표시",
+          "definition": "네이버 통합검색 월간검색수(회); 쇼핑 검색량·태그 유입·구매자 수 아님",
+          "device": "PC+모바일",
+          "note": "확인된 화면 표시 PC 10회 / 모바일 30회. 확인된 두 표시값 합산. 다른 표기·유사 검색어와 중복 합산하지 않음."
+        }
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "size",
+      "question": "책상에 맞는 크기와 색상인가?",
+      "priority": "high",
+      "reason": "구매 조건 판단",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "F-scope"
+      ],
+      "issue_refs": []
+    },
+    {
+      "id": "material",
+      "question": "겉감과 안감은 무엇인가?",
+      "priority": "high",
+      "reason": "구매 조건 판단",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "F-material"
+      ],
+      "issue_refs": []
+    },
+    {
+      "id": "care",
+      "question": "오염을 어떻게 닦는가?",
+      "priority": "high",
+      "reason": "구매 조건 판단",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "F-care"
+      ],
+      "issue_refs": []
+    },
+    {
+      "id": "storage",
+      "question": "말아서 보관할 수 있는가?",
+      "priority": "high",
+      "reason": "구매 조건 판단",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "F-components"
+      ],
+      "issue_refs": []
+    },
+    {
+      "id": "include",
+      "question": "무엇이 포함되는가?",
+      "priority": "high",
+      "reason": "구매 조건 판단",
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "hypothesis": true,
+      "fact_refs": [
+        "F-components"
+      ],
+      "issue_refs": []
+    }
+  ],
+  "fields": [
+    {
+      "id": "title",
+      "label": "상품명",
+      "value": "PU 인조가죽 데스크 매트 60×30cm 핑크 스트랩 포함",
+      "status": "ready",
+      "fact_refs": [
+        "F-scope",
+        "F-material",
+        "F-components"
+      ],
+      "query_refs": [
+        "q-size",
+        "q-material",
+        "demand-q-0",
+        "demand-q-2"
+      ],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인 2026-10-14 수요·검색결과 재검토: 현재 문구 유지. 사실·종류·조건을 정확히 표현하며 대안의 우월성 미입증. 단어 순서·띄어쓰기 변경의 순위 효과를 주장하지 않음. 확장 비교: 책상매트로 교체, 데스크패드/책상깔판 동의어 나열, 상품 종류를 맨 앞으로 이동하는 안을 검토했으나 노출 우위 증거 없음. 현재 정확한 소재·규격·색상·구성 유지."
+    },
+    {
+      "id": "options",
+      "label": "판매 옵션",
+      "value": "핑크 / 60×30cm / 매트+스트랩",
+      "status": "ready",
+      "fact_refs": [
+        "F-scope",
+        "F-components"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "사용자 지정 범위. 현재 주문 가능 여부는 supply 과제에서 확인"
+    },
+    {
+      "id": "category",
+      "label": "카테고리",
+      "value": "생활/건강 > 문구/사무용품 > 데스크용품 > 데스크패드",
+      "status": "ready",
+      "fact_refs": [
+        "F-scope",
+        "channel-category"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "판매자센터 실제 선택 확인, ID 50003592 (2026-10-14). 상품의 주된 용도·형태 기준. 책상용 매트 분류."
+    },
+    {
+      "id": "price",
+      "label": "판매가",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "price"
+      ],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "shipping",
+      "label": "배송",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "shipping"
+      ],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "returns",
+      "label": "교환·반품",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "returns"
+      ],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "supply",
+      "label": "공급 조건",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "supply"
+      ],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "manufacturer",
+      "label": "제조사·수입자",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "role"
+      ],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "tags",
+      "label": "태그",
+      "value": [
+        "책상꾸미기",
+        "데스크테리어",
+        "책상깔개"
+      ],
+      "status": "ready",
+      "fact_refs": [
+        "F-scope",
+        "channel-tags",
+        "deep-tag-check"
+      ],
+      "query_refs": [
+        "demand-q-5",
+        "demand-q-6",
+        "deep-q-11"
+      ],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "기존 책상꾸미기·데스크테리어 유지, 제품에 가까운 표현 책상깔개 보완. 경쟁 상세의 실제 태그·검색 일반 결과 적합성·사전 등록 확인에 따른 실험안. 태그별 검색량·추가 유입·순위 효과 미검증. 새 후보·기존 태그의 공식 통합검색 월간검색수를 같은 세션에서 대조함. 책상깔개 410회와 제품 적합성을 근거로 보완 채택 유지. 높은 검색량 후보로 기존 태그 교체는 하지 않음."
+    },
+    {
+      "id": "notice",
+      "label": "고시·인증",
+      "value": null,
+      "status": "needs_confirmation",
+      "fact_refs": [],
+      "query_refs": [],
+      "issue_refs": [
+        "channel"
+      ],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "material",
+      "label": "소재",
+      "value": "겉감 PU 인조가죽 / 안감 스웨이드",
+      "status": "ready",
+      "fact_refs": [
+        "F-material"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "origin",
+      "label": "원산지",
+      "value": "중국",
+      "status": "ready",
+      "fact_refs": [
+        "F-origin"
+      ],
+      "query_refs": [],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "공급처 표기 기반. 현재 공급 조건 별도 확인"
+    },
+    {
+      "id": "attribute_material",
+      "label": "상품속성 > 재질",
+      "value": "PU",
+      "status": "ready",
+      "fact_refs": [
+        "F-material"
+      ],
+      "query_refs": [
+        "q-material"
+      ],
+      "issue_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "note": "2026-10-14 데스크패드 실제 재질 목록에 PU 확인(channel-mat-main-info). 가죽 대신 PU를 선택. 공급처 겉감 표기 기반이며 실제 저장하지 않음."
+    }
+  ],
+  "channel": {
+    "status": "unverified",
+    "category_field_id": "category",
+    "source_refs": [
+      "channel-mat-category",
+      "channel-mat-main-info",
+      "channel-all-tags"
+    ],
+    "required_field_ids": [],
+    "note": "2026-10-14 로그인 판매자센터에서 카테고리 선택과 태그사전 조회 완료. 데스크패드 재질 목록 확인: 가죽/PVC/고무/PU/네오프렌/실리콘/기타. 겉감 표기에 따라 PU 준비. 전체 필수 필드·상품정보고시·인증 및 실제 상세 표시 검수는 미완료이므로 unverified 유지."
+  },
+  "assets": [
+    {
+      "id": "asset-1",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-product"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "asset-2",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-supplier-01"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "asset-3",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-supplier-02"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "asset-4",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-supplier-03"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "asset-5",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-supplier-04"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "asset-6",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-supplier-05"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    },
+    {
+      "id": "asset-7",
+      "path": null,
+      "sha256": null,
+      "source_refs": [
+        "IMG-supplier-06"
+      ],
+      "rights": "unknown",
+      "rights_source_refs": [],
+      "scope": "핑크 60×30cm / 매트와 스트랩만 판매. 다른 옵션은 판매하지 않음.",
+      "alt": "확인할 상품 이미지",
+      "task": "use",
+      "instruction": "원본 보존. 내부 시안에서 사진 영역 활용 및 문구 본문 이동. 상업적 사용·편집 권한은 별도 확인.",
+      "status": "missing",
+      "derived_from": null
+    }
+  ],
+  "content": {
+    "main_asset_id": "asset-1",
+    "blocks": [
+      {
+        "id": "hero",
+        "kind": "hero",
+        "heading": "PU 인조가죽 데스크 매트",
+        "text": "매트와 스트랩 구성 · 60×30cm 핑크",
+        "question_refs": [
+          "size",
+          "include"
+        ],
+        "fact_refs": [
+          "F-scope",
+          "F-material",
+          "F-components"
+        ],
+        "asset_ids": [
+          "asset-2"
+        ],
+        "rows": [],
+        "edit_reason": "담백한 상품명과 구성·규격 구분. 영문 소제목과 사진 레이아웃은 별도 사진 포함 내부 시안 참조."
+      },
+      {
+        "id": "care",
+        "kind": "feature",
+        "heading": "간편한 관리",
+        "text": "생활 방수가 가능하여 쉽게 젖지 않으며 물티슈로 간편하게 오염을 제거할 수 있어요.",
+        "question_refs": [
+          "care"
+        ],
+        "fact_refs": [
+          "F-care",
+          "F-claims"
+        ],
+        "asset_ids": [
+          "asset-5"
+        ],
+        "rows": [],
+        "edit_reason": "사진 포함 내부 시안에서 사진 영역과 본문을 분리하여 구성"
+      },
+      {
+        "id": "storage",
+        "kind": "feature",
+        "heading": "편리한 보관",
+        "text": "함께 제공되는 스트랩을 이용해 말아서 보관할 수 있습니다.",
+        "question_refs": [
+          "storage"
+        ],
+        "fact_refs": [
+          "F-components"
+        ],
+        "asset_ids": [
+          "asset-5"
+        ],
+        "rows": [],
+        "edit_reason": "사진 포함 내부 시안에서 사진 영역과 본문을 분리하여 구성"
+      }
+    ]
+  },
+  "issues": [
+    {
+      "id": "supply",
+      "severity": "blocker",
+      "status": "open",
+      "question": "현재 공급가·재고·핑크 60×30 주문 가능 여부",
+      "resolve_by": "공급처 현재 판매 조건 확인",
+      "impact": "게시 전 확정 필요; 내부 시안은 검토 가능",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": []
+    },
+    {
+      "id": "price",
+      "severity": "blocker",
+      "status": "open",
+      "question": "판매가·배송 포함 총비용·마진",
+      "resolve_by": "공급가 및 실제 수수료와 경쟁 구매 조건 확인",
+      "impact": "게시 전 확정 필요; 내부 시안은 검토 가능",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": []
+    },
+    {
+      "id": "shipping",
+      "severity": "blocker",
+      "status": "open",
+      "question": "발송일·배송비·지역 추가비",
+      "resolve_by": "공급처와 판매자 설정 대조",
+      "impact": "게시 전 확정 필요; 내부 시안은 검토 가능",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": []
+    },
+    {
+      "id": "returns",
+      "severity": "blocker",
+      "status": "open",
+      "question": "반품·교환·A/S 조건",
+      "resolve_by": "공급처 조건과 소비자 정책 구분",
+      "impact": "게시 전 확정 필요; 내부 시안은 검토 가능",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": []
+    },
+    {
+      "id": "channel",
+      "severity": "blocker",
+      "status": "open",
+      "question": "고시·인증의 상품별 적용과 전체 필수 필드·상세 표시 검수",
+      "resolve_by": "공급처의 고시·인증 근거를 확보하고 선택 카테고리의 전체 필수 입력값 및 실제 상세 표시 대조. 데스크패드 재질 목록 확인: 가죽/PVC/고무/PU/네오프렌/실리콘/기타. 겉감 표기에 따라 PU 준비.",
+      "impact": "카테고리·태그 준비 완료와 별개로 전체 채널 검수·게시 준비 미완료",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": [
+        "channel-mat-category",
+        "channel-mat-main-info",
+        "channel-all-tags"
+      ]
+    },
+    {
+      "id": "rights",
+      "severity": "blocker",
+      "status": "open",
+      "question": "대표·상세 사진 상업적 사용·편집 범위",
+      "resolve_by": "공급처 이미지 권한 확인",
+      "impact": "게시 전 확정 필요; 내부 시안은 검토 가능",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": []
+    },
+    {
+      "id": "role",
+      "severity": "blocker",
+      "status": "open",
+      "question": "제조사와 수입자 역할",
+      "resolve_by": "과거 페이지 제조사 표기와 이미지 수입처 표기 대조",
+      "impact": "게시 전 확정 필요; 내부 시안은 검토 가능",
+      "owner": "금붕녀: 확인 실무; 가격·상품 판단은 금붕부부",
+      "source_refs": []
+    }
+  ],
+  "timing": {
+    "unit": "minutes",
+    "preparation": null,
+    "research": null,
+    "review": null,
+    "correction": null,
+    "entry": null,
+    "manual_baseline": null
+  }
+}

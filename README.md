@@ -1,44 +1,33 @@
-# 금붕상사 프로젝트 관리
+# 금붕상사 문서 안내
 
-금붕상사 (goldfish trading)는 부부가 운영하는 스마트스토어 위탁판매 프로젝트다. 현재 진행 상황은 [STATUS.md](STATUS.md)에서 확인한다.
+프로젝트를 이해할 때는 [사업 기준](PROJECT.md) → [현재 상태](STATUS.md) → [실행 계획](docs/execution-plan.md) 순으로 읽는다. 실제 작업에서는 아래 담당 문서만 추가로 확인한다.
 
-## 문서 구조
+## 문서별 관리 범위
 
-| 문서 | 관리 내용 | 갱신 시점 |
+| 질문 | 관리 문서 | 이 문서에 두는 내용 |
 | --- | --- | --- |
-| [AGENTS.md](AGENTS.md) | 에이전트 역할·행동·기록 원칙 | 협업 규칙 변경 시 |
-| [CLAUDE.md](CLAUDE.md) | Claude Code의 공통 문서 불러오기 | 연결 대상 변경 시 |
-| [PROJECT.md](PROJECT.md) | 사업 목표·채널·제약·성과 검토 기준 | 사업 결정 변경 시 |
-| [STATUS.md](STATUS.md) | 현재 단계·다음 행동·미결 과제 | 진행 상황 변경 시 |
-| [상품 선정 기준](docs/product-selection.md) | 평가 지표·제외 기준·가중치 | 기준 검증 또는 확정 시 |
-| [상품 추천 에이전트](docs/product-selection-agent.md) | 추천·판매 가능 조건 확인의 범위·구조·데이터 출처 | 설계·구현 변경 시 |
-| [실행 계획](docs/execution-plan.md) | 단계별 작업·자동화 우선순위·착수 조건 | 실행 계획 변경 시 |
-| [records/](records/) | 날짜별 검증 결과·결정 근거·성과 검토 이력 | 의미 있는 검증·결정 시 |
+| 왜 하며 무엇을 목표로 하는가 | [PROJECT.md](PROJECT.md) | 목적·목표·사업 방향·제약·평가 기준 |
+| 지금 어디까지 왔고 무엇을 해야 하는가 | [STATUS.md](STATUS.md) | 현재 상태·실행 담당·현재 검토 자료·미결 과제 |
+| 어떤 순서와 조건으로 실행하는가 | [실행 계획](docs/execution-plan.md) | 단계별 결과·개발 범위·검증 흐름·행정 준비·착수 조건 |
+| 어떤 상품을 고르는가 | [상품 선정 기준](docs/product-selection.md) | 확정 제외 기준·평가 방법·미확정 평가안·추천 결과 요건 |
+| 추천 에이전트를 어떻게 쓰는가 | [추천 에이전트](docs/product-selection-agent.md) | 데이터 출처·수집·계산·판매 조건 확인과 실행 진입점 |
+| 어떤 검색·구매 정보를 제공하는가 | [상품 등록 원칙](docs/product-listing-principles.md) | 검색 전략·항목별 역할·콘텐츠 품질·상세페이지 포맷 |
+| 등록 에이전트를 어떻게 쓰는가 | [사용법](agents/product-listing/README.md) | 책임 범위·상품 브리프·출력·명령·코드 진입점 |
+| 추천 명령을 어떤 순서로 실행하는가 | [실행 스킬](.claude/skills/product-selector/SKILL.md) | 추천 CLI·검토 입력·실패 처리 절차 |
+| 상품별 등록 작업을 어떻게 수행하는가 | [작업 절차](agents/product-listing/workflow.md) | 조사·작성·검수·전달·수정 순서 |
+| 데이터를 어떻게 기록하는가 | [데이터 계약](agents/product-listing/data-contract.md) | listing-2 필드·참조·상태와 게시 판단·검수 기록 형식 |
+| 에이전트가 어떤 원칙을 지키는가 | [AGENTS.md](AGENTS.md) | 공동 결정·행동·수치 표기·문서 관리 원칙 |
+| Claude Code에서 무엇을 불러오는가 | [CLAUDE.md](CLAUDE.md) | 공통 지침과 사업 기준·상태의 진입점 |
+| 어떤 근거로 판단했는가 | [records/](records/) | 의사결정·검증 이력과 [기록 양식](records/TEMPLATE.md) |
 
-## 관리 방식
+## 파일 배치와 원본
 
-- **[현재 스냅샷과 전체 문서 검토 원칙](AGENTS.md#필수-준수-원칙--현재-스냅샷과-전체-문서-검토)을 반드시 준수한다.**
-- 금붕부부는 STATUS.md에서 다음 행동을 확인한다. 에이전트는 AGENTS.md → PROJECT.md → STATUS.md 순서로 읽는다.
-- 실행 전 판단 기준을 정하고, 필요한 결과와 결정은 [기록 양식](records/TEMPLATE.md)에 남긴다.
-- 담당자·기한·사업 기준은 임의로 확정하지 않는다.
+공통 문서는 루트와 `docs/`에 둔다. 등록 에이전트는 `agents/product-listing/`, 추천 에이전트는 `selector/`·`config/`와 [설계·사용법](docs/product-selection-agent.md)에서 관리한다.
 
-## Claude Code 사용
+문서 변경은 [현재 스냅샷·전체 검토 원칙](AGENTS.md#필수-준수-원칙--현재-스냅샷과-전체-문서-검토)을 따른다.
 
-이 프로젝트 폴더에서 Claude Code를 시작한다.
+상품별 자료의 원본·파생본 관계는 [데이터 계약](agents/product-listing/data-contract.md), 갱신은 [수정 절차](agents/product-listing/workflow.md#수정)를 따른다. `runs/`는 Git 제외 작업 공간이므로 공유·재검증에 필요한 근거는 최소 범위로 `records/`에 보존한다. 예시·시험 자료의 위치와 용도는 [에이전트 구조](agents/product-listing/README.md#구조와-검증-범위)를 따른다.
 
-```sh
-cd /Users/aromkim/workspace/goldfish-trading
-claude
-```
+추천 수집 데이터·비교표는 Git 제외 `data/`에 생성한다. API 키는 Git 제외 `.env`에만 두며 필요한 항목은 `.env.example`을 따른다.
 
-- CLAUDE.md는 AGENTS.md·PROJECT.md·STATUS.md를 직접 불러온다. 공통 지침과 사업 정보는 원본 문서에서만 수정한다.
-- 세션에서 `/context`로 불러온 지침을 확인한다. 기존 세션은 새로 시작해 최신 문서를 적용한다.
-- 일반 Claude 웹 채팅은 이 로컬 폴더와 자동 동기화되지 않는다. 이 설정은 같은 폴더를 사용하는 Claude Code용이다.
-- 불러오기 방식과 확인 명령은 [Claude Code 공식 문서](https://code.claude.com/docs/en/memory)를 따른다.
-
-## 확장 기준
-
-- 상품 후보와 실측 데이터가 쌓이면 별도 데이터 파일을 만들고 평가 기록에서 연결한다.
-- 운영 절차가 검증되면 주문·CS·정산 절차를 docs/에 추가한다.
-- 기술 설계는 docs/에 둔다. 상품 추천 에이전트 코드는 `selector/`, 설정은 `config/`, 실행 절차는 `.claude/skills/`에 둔다. 수집 데이터와 비교표는 `data/`에 생성되며 커밋하지 않는다. 추천·확인 결과 중 남길 근거는 records/에 기록한다.
-- API 키는 `.env`에만 두고 커밋하지 않는다. 필요한 항목은 `.env.example`을 따른다.
+Claude Code는 프로젝트 폴더에서 실행한다. [CLAUDE.md](CLAUDE.md)가 공통 지침을 불러온다.

@@ -1,7 +1,8 @@
-"""동일 상품 포화도: 도매 원본 썸네일과 11번가 검색 결과 썸네일의 dHash 거리로 같은 상품을 센다.
+"""11번가 검색 표본의 같은 사진·같은 유형 판매자 수를 추정한다.
 
-한계: 판매자가 이미지를 가공하면 놓치고(과소 추정), 검색 결과 상위 범위 밖 판매자는 세지 않는다.
-거리 임계값은 2026-10-10 표본 12건에서 같은 사진이 0~6, 다른 상품이 대부분 12 이상으로 나온 것을 근거로 한 제안값이다.
+사진은 dHash 거리, 유형은 검색어 단어의 상품명 포함 비율로 판정한다.
+동일 제조사·동일 상품을 확정하지 않으며 조회 범위 밖 경쟁자는 세지 않는다.
+임계값은 config/selector.json, 검증 근거는 records/2026-10-10-product-selection-agent.md를 따른다.
 """
 from __future__ import annotations
 
@@ -50,7 +51,7 @@ def word_overlap(query: str, name: str) -> float:
 
 
 def same_type(query: str, items: list[dict], min_overlap: float) -> dict:
-    """사진은 달라도 상품명이 비슷한 같은 유형 상품. 같은 공장 제품을 자기 사진으로 파는 경쟁자를 잡는다."""
+    """사진과 관계없이 상품명 단어 포함 비율로 같은 유형 후보를 찾는다."""
     typed = [it for it in items if word_overlap(query, it.get("name")) >= min_overlap]
     return {
         "sellers": len({it.get("seller") for it in typed}),
@@ -59,7 +60,7 @@ def same_type(query: str, items: list[dict], min_overlap: float) -> dict:
 
 
 def match(supplier_image: bytes, items: list[dict], max_distance: int, fetch=None) -> dict:
-    """items는 11번가 검색 결과(image, seller, price, reviews). 같은 상품으로 판정된 결과를 요약한다."""
+    """items는 11번가 검색 결과(image, seller, price, reviews). 같은 사진으로 추정한 결과를 요약한다."""
     fetch = fetch or fetch_image
     base = dhash(supplier_image)
 

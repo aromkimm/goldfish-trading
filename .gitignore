@@ -1,4 +1,8 @@
+__pycache__/
+*.py[cod]
+agents/product-listing/runs/
+.superpowers/
+.DS_Store
 .env
 .venv/
-__pycache__/
 data/
