@@ -161,9 +161,10 @@ def evaluate(c: dict, m: dict | None, rules: dict) -> tuple[str, list[str], list
                     fail.append(f"옵션 {i} 도매매 판매 불가·숨김")
                 elif opt["qty"] is not None and opt["qty"] <= 0:
                     fail.append(f"옵션 {i} 품절")
-        for key, label in (("cutoff", "주문 마감 시간"), ("return_method", "반품 접수 방법")):
-            if not (m.get(key) or "").strip():
-                fail.append(f"{label} 미확보")
+        if not (m.get("cutoff") or "").strip():
+            fail.append("주문 마감 시간 미확보")
+        if not (m.get("return_method") or "").strip():  # 반품 주소·비용은 API로 확인했고, 접수 경로는 등록 단계에서 확인한다
+            warn.append("반품 접수 방법 미확인 — 등록 단계에서 확인")
         for key, label in (("info_confirmed", "상품정보고시·인증 확인"), ("restriction_confirmed", "판매 제한 확인")):
             if (m.get(key) or "").strip().upper() != "Y":
                 fail.append(f"{label} 미완료")
@@ -174,7 +175,7 @@ _GUIDE = """<b>판매 가능 조건 확인</b> — API로 채운 값을 보고, 
 <ol>
 <li><b>판매할 옵션</b>: 옵션 표의 번호를 공백으로 (옵션이 없으면 비워 둔다).</li>
 <li><b>주문 마감 시간</b>: 도매 상세페이지 이미지나 도매매 상품 문의로 확인 (예: 평일 14시).</li>
-<li><b>반품 접수 방법</b>: 도매매 반품 신청 절차·판매자 안내 (예: 도매매 주문관리에서 반품 신청).</li>
+<li><b>반품 접수 방법</b>(선택): 상세에 공급사 안내가 있으면 적는다. 비어 있어도 반려하지 않고 등록 단계 확인 과제로 남긴다.</li>
 <li><b>상품정보고시·인증 확인</b>: '상세정보 별도표기' 항목의 실제 값과 인증 필요 여부를 상세페이지에서 확인했으면 Y.</li>
 <li><b>판매 제한 확인</b>: 상세페이지·판매자 공지에 스마트스토어 판매 제한이 없으면 Y.</li>
 </ol>"""
@@ -240,7 +241,7 @@ def sheet(c: dict, m: dict, warn: list[str]) -> str:
         f"- 옵션·공급가: {opt_text} / 기본 공급가 {_won(c['supply_price'])}",
         f"- 재고·출고: 재고 {c['inventory']}, {c['prep']}, 평균발송 {c['send_avg']}일, 주문 마감 {m.get('cutoff')}, 도매 판매기간 ~{(c['sale_end'] or '모름')[:10]}",
         f"- 배송비: {_won(c['ship_cost'])} ({c['ship_pay']}/{c['ship_fee_type']}), 제주 {_won(c['fee_jeju'])}, 도서산간 {_won(c['fee_islands'])}, 묶음배송 {c['merge']} (출고지 {c['shipping_area']})",
-        f"- 교환·반품: {c['return_address']}, 반품비 {_won(c['return_fee'])}{' (무료배송 시 2배)' if c['return_fee_double'] else ''}, 접수 {m.get('return_method')}",
+        f"- 교환·반품: {c['return_address']}, 반품비 {_won(c['return_fee'])}{' (무료배송 시 2배)' if c['return_fee_double'] else ''}, 접수 {(m.get('return_method') or '').strip() or '미확인(등록 단계에서 확인)'}",
         f"- 이미지: {'사용 가능' if c['image_usable'] else '불허'} — {c['image_msg'] or ''}",
         f"- 인증·표시: KC {c['cert'] or '정보 없음'} {c['cert_type'] or ''} {c['cert_no'] or ''}, 원산지 {c['country']}, 제조사 {c['manufacturer']}, 고시 품목 {c['info_duty_type']}, 과세 {c['tax']}",
         f"- 판매 제한: 확인 완료{' — 최저판매준수가 ' + _won(c['resale_min']) if c['resale_min'] else ''}",

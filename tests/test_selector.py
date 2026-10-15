@@ -480,6 +480,14 @@ class Verification(unittest.TestCase):
         self.assertEqual((result, fails), ("verified", []))
         self.assertIn("무료배송 판매 시 반품비 2배(6,000원)", warns)
 
+    def test_return_method_is_left_to_listing(self):
+        """반품 접수 방법이 상세에 없어도 반려하지 않고, 판매 조건서에 등록 단계 확인으로 남긴다."""
+        m = {**self.ok, "return_method": ""}
+        result, fails, warns = verify.evaluate(self.cond(), m, self.rules)
+        self.assertEqual((result, fails), ("verified", []))
+        self.assertIn("반품 접수 방법 미확인 — 등록 단계에서 확인", warns)
+        self.assertIn("접수 미확인(등록 단계에서 확인)", verify.sheet(self.cond(), m, warns))
+
     def test_returns_when_info_missing_or_conditions_fail(self):
         cases = [
             (self.cond(), None, "수동 확인 미입력"),
