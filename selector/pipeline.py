@@ -331,7 +331,7 @@ def export_manual(conn: sqlite3.Connection, shortlist: int | None = None, nos: l
     cfg = settings()["manual_check"]
     shortlist = shortlist or cfg["shortlist"]
     items = []
-    for c in conn.execute("SELECT * FROM candidates WHERE stage IN ('measured', 'checked')"):
+    for c in conn.execute("SELECT * FROM candidates WHERE stage IN ('measured', 'checked', 'verified')"):
         keyword = json.loads(c["keywords"])[0]
         volume, _ = _search_volume(db.latest_keyword_stats(conn, keyword))
         s = db.latest_snapshot(conn, c["no"])

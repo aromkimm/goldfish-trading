@@ -604,6 +604,8 @@ class EndToEnd(unittest.TestCase):
             self.assertEqual((counts["verified"], counts["returned"]), (1, 0))
             self.assertIn("흰색", Path(counts["sheet"]).read_text(encoding="utf-8"))
             self.assertEqual(pipeline.build_rows(conn)[0]["stage"], "verified")
+            _, n = pipeline.export_manual(conn, nos=[101])  # 판매 조건을 통과한 상품도 네이버 확인 대상이 된다
+            self.assertEqual(n, 1)
 
 
 if __name__ == "__main__":
