@@ -16,14 +16,24 @@ VERIFY_DIR = DATA_DIR / "verify"
 REPORT_DIR = DATA_DIR / "reports"
 
 
+def use_data_dir(path) -> None:
+    """작업 파일(llm·manual·verify·reports)을 path 아래에 둔다. 별도 평가 배치를 기존 실행과 섞지 않기 위해 쓴다."""
+    global LLM_DIR, MANUAL_DIR, VERIFY_DIR, REPORT_DIR
+    LLM_DIR, MANUAL_DIR, VERIFY_DIR, REPORT_DIR = (path / "llm", path / "manual", path / "verify", path / "reports")
+
+
 # 1. 후보 생성 ---------------------------------------------------------------
 
-def search_supply(conn: sqlite3.Connection, *, kw=None, ca=None, pages=1, size=200, sort=None) -> int:
+def search_supply(conn: sqlite3.Connection, *, kw=None, ca=None, pages=1, size=200, sort=None, skip=frozenset()) -> int:
+    """skip: 이미 다른 배치에서 쓴 상품번호. 새 표본에 넣지 않는다."""
     added = 0
     query = json.dumps({"kw": kw, "ca": ca, "sort": sort, "size": size}, ensure_ascii=False)
     for page in range(1, pages + 1):
         header, items = domeggook.item_list(kw=kw, ca=ca, page=page, size=size, sort=sort)
         for item in items:
+            if int(item["no"]) in skip:
+                print(f"건너뜀 {item['no']}: 다른 DB에 있는 후보")
+                continue
             cur = conn.execute(
                 "INSERT OR IGNORE INTO candidates(no, title, url, source_query, added_at) VALUES (?,?,?,?,?)",
                 (int(item["no"]), item.get("title"), item.get("url"), query, db.now()),

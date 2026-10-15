@@ -3,12 +3,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import sqlite3
+from pathlib import Path
 
 from . import db, pipeline
 
 
+def known_nos(path: Path) -> frozenset[int]:
+    if not path.exists():
+        raise FileNotFoundError(f"--skip-db 경로가 없다: {path}")
+    with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as other:
+        return frozenset(r[0] for r in other.execute("SELECT no FROM candidates"))
+
+
 def main(argv=None) -> None:
     p = argparse.ArgumentParser(prog="selector", description="금붕상사 상품 추천 에이전트")
+    p.add_argument("--data-dir", type=Path,
+                   help="DB와 작업 파일(llm·manual·verify·reports)을 둘 폴더 (기본: data/). 이미지 캐시는 data/cache를 공유한다")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("search", help="1. 도매매 상품 목록에서 후보 추가")
@@ -17,6 +28,7 @@ def main(argv=None) -> None:
     s.add_argument("--pages", type=int, default=1)
     s.add_argument("--size", type=int, default=200, help="페이지당 상품 수 (1~200)")
     s.add_argument("--sort", help="se 정확도, rd 랭킹, ha 인기, aa 낮은가격, da 최근등록")
+    s.add_argument("--skip-db", type=Path, help="이 DB에 이미 있는 상품번호는 추가하지 않는다 (새 표본 분리용)")
 
     d = sub.add_parser("detail", help="2. 상세 수집·규칙 제외")
     d.add_argument("--refresh", action="store_true", help="진행 중 후보 전체의 변동성 스냅샷도 갱신")
@@ -70,10 +82,16 @@ def main(argv=None) -> None:
     sub.add_parser("status", help="단계별 후보 수")
 
     args = p.parse_args(argv)
-    conn = db.connect()
+    if args.data_dir:
+        args.data_dir.mkdir(parents=True, exist_ok=True)
+        pipeline.use_data_dir(args.data_dir)
+        conn = db.connect(args.data_dir / "selector.db")
+    else:
+        conn = db.connect()
 
     if args.cmd == "search":
-        print(f"추가 {pipeline.search_supply(conn, kw=args.kw, ca=args.ca, pages=args.pages, size=args.size, sort=args.sort)}건")
+        skip = known_nos(args.skip_db) if args.skip_db else frozenset()
+        print(f"추가 {pipeline.search_supply(conn, kw=args.kw, ca=args.ca, pages=args.pages, size=args.size, sort=args.sort, skip=skip)}건")
     elif args.cmd == "detail":
         stages = ("new", "detailed", "triaged", "measured", "checked") if args.refresh else ("new",)
         print(pipeline.fetch_details(conn, stages=stages, limit=args.limit))

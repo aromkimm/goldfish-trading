@@ -11,6 +11,7 @@ description: 금붕상사 상품 추천 에이전트를 실행해 도매매 후�
 
 - `.env`에 키가 있어야 한다(`.env.example` 참고). 비어 있으면 실행하지 말고 어떤 키가 필요한지 알린다. 키 값은 출력·기록하지 않는다.
 - 명령은 저장소 루트에서 `.venv/bin/python -m selector <명령>`으로 실행한다. 처음이면 `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
+- 기존 후보와 섞지 않을 평가 배치는 모든 명령에 `--data-dir data/<폴더>`를 붙이고, `search`에 `--skip-db data/selector.db`를 준다. DB와 llm·manual·verify·reports 파일이 그 폴더에 따로 생기고 기존 DB에 있던 상품번호는 추가되지 않는다. 점수는 배치 안의 상대 순위라 같은 DB에 섞으면 추천이 서로 영향을 준다.
 - 11번가 키는 등록한 IP에서만 동작한다. 실행 위치가 바뀌어 거부되면 11번가 API 관리에서 IP를 추가하라고 안내한다.
 - 추천 파이프라인의 네이버쇼핑 표본 검증은 사용자 제공 화면과 `manual-export`·`manual-import`를 사용한다. 크롤링하거나 접근 차단을 다른 도구로 우회하지 않는다.
 

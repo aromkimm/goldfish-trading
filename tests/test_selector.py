@@ -608,3 +608,46 @@ class EndToEnd(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DataDirSeparation(unittest.TestCase):
+    """--data-dir는 DB·작업 파일을 지정 폴더에만 만들고, --skip-db는 다른 DB의 후보를 넣지 않는다."""
+
+    def test_data_dir_and_skip_db(self):
+        from selector import cli
+        tmp = Path(tempfile.mkdtemp())
+        old = db.connect(tmp / "old.db")
+        old.execute("INSERT INTO candidates(no, title, url, source_query, added_at) VALUES (101,'걸이','u','{}','t')")
+        old.commit()
+        old.close()
+        listing = [{"no": "101", "title": "걸이", "url": "u1"}, {"no": "102", "title": "선반", "url": "u2"}]
+        saved = (pipeline.LLM_DIR, pipeline.MANUAL_DIR, pipeline.VERIFY_DIR, pipeline.REPORT_DIR)
+        try:
+            with mock.patch.object(domeggook, "item_list", return_value=({"numberOfPages": 1}, listing)), \
+                 mock.patch("sys.stdout", new=io.StringIO()):
+                cli.main(["--data-dir", str(tmp / "eval"), "search", "--kw", "걸이", "--skip-db", str(tmp / "old.db")])
+                cli.main(["--data-dir", str(tmp / "eval"), "triage-export"])
+            self.assertEqual(pipeline.VERIFY_DIR, tmp / "eval" / "verify")
+        finally:
+            pipeline.LLM_DIR, pipeline.MANUAL_DIR, pipeline.VERIFY_DIR, pipeline.REPORT_DIR = saved
+        new = db.connect(tmp / "eval" / "selector.db")
+        self.assertEqual([r["no"] for r in new.execute("SELECT no FROM candidates")], [102])
+        self.assertTrue((tmp / "eval" / "llm" / "triage_pending.jsonl").exists())
+        old = db.connect(tmp / "old.db")
+        self.assertEqual(old.execute("SELECT COUNT(*) FROM candidates").fetchone()[0], 1)
+
+    def test_skip_db_missing_path(self):
+        from selector import cli
+        with self.assertRaises(FileNotFoundError):
+            cli.known_nos(Path(tempfile.mkdtemp()) / "none.db")
+
+
+class InfoDutyDeferred(unittest.TestCase):
+    """상품정보고시를 상세페이지로 미룬 값은 표기 변형과 관계없이 수동 확인 대상이다 (2026-10-15 새 표본에서 '상세정보별도표시' 누락)."""
+
+    def test_variants(self):
+        for desc in ("", None, "상세정보 별도표기", "[상세정보 별도표기]", "상세정보 별도표시", "상세정보별도표시",
+                     "상품 상세정보에 별도 표기"):
+            self.assertTrue(verify.info_deferred(desc), desc)
+        for desc in ("중국", "해당사항 없음", "별도 구매", "상세페이지 참조 아크릴 A4"):
+            self.assertFalse(verify.info_deferred(desc), desc)

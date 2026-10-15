@@ -7,12 +7,20 @@ from __future__ import annotations
 
 import html
 import json
+import re
 from datetime import date, datetime
 
 from . import manual
 from .sources import domeggook
 
 FIELDS = ["no", "options", "cutoff", "return_method", "info_confirmed", "restriction_confirmed", "note"]
+
+
+def info_deferred(desc) -> bool:
+    """고시 값이 비었거나 상세페이지로 미뤄졌는지. 공급처마다 '상세정보 별도표기'·'[상세정보 별도표기]'·'상세정보별도표시'·
+    '상품 상세정보에 별도 표기'처럼 띄어쓰기·괄호·표기/표시가 다르다."""
+    s = re.sub(r"[\s\[\]()]", "", desc or "")
+    return not s or ("상세" in s and "별도" in s and ("표기" in s or "표시" in s))
 
 
 def _get(d, path: str):
@@ -81,7 +89,7 @@ def collect(view: dict, today: date | None = None) -> dict:
         "cert_exempt": cert.get("exem"),
         "country": _get(view, "detail.country"), "manufacturer": _get(view, "detail.manufacturer"),
         "info_duty_type": _get(view, "detail.infoDuty.type"),
-        "info_duty_pending": [i.get("name") for i in info if (i.get("desc") or "").strip() in ("", "상세정보 별도표기")],
+        "info_duty_pending": [i.get("name") for i in info if info_deferred(i.get("desc"))],
         "deny_market": domeggook._flag(_get(view, "etc.denyMarket")),
         "resale_min": s["resale_min"], "adult": s["adult"], "tax": _get(view, "basis.tax"),
     }
