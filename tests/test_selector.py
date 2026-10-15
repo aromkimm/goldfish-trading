@@ -648,8 +648,33 @@ class DataDirSeparation(unittest.TestCase):
 
     def test_skip_db_missing_path(self):
         from selector import cli
+        tmp = Path(tempfile.mkdtemp())
+        db.connect(tmp / "a.db").close()
         with self.assertRaises(FileNotFoundError):
             cli.known_nos(Path(tempfile.mkdtemp()) / "none.db")
+        with self.assertRaises(FileNotFoundError):  # 여러 경로 중 하나만 없어도 멈춘다
+            cli.known_nos(tmp / "a.db", tmp / "none.db")
+
+    def test_skip_db_multiple(self):
+        """여러 배치 DB의 상품번호를 모두 건너뛴다 (2026-10-16 다중 배치 평가)."""
+        from selector import cli
+        tmp = Path(tempfile.mkdtemp())
+        for name, no in (("a.db", 101), ("b.db", 102)):
+            other = db.connect(tmp / name)
+            other.execute("INSERT INTO candidates(no, title, url, source_query, added_at) VALUES (?,'x','u','{}','t')", (no,))
+            other.commit()
+            other.close()
+        listing = [{"no": str(n), "title": "x", "url": "u"} for n in (101, 102, 103)]
+        saved = (pipeline.LLM_DIR, pipeline.MANUAL_DIR, pipeline.VERIFY_DIR, pipeline.REPORT_DIR)
+        try:
+            with mock.patch.object(domeggook, "item_list", return_value=({"numberOfPages": 1}, listing)), \
+                 mock.patch("sys.stdout", new=io.StringIO()):
+                cli.main(["--data-dir", str(tmp / "eval"), "search", "--kw", "x",
+                          "--skip-db", str(tmp / "a.db"), str(tmp / "b.db")])
+        finally:
+            pipeline.LLM_DIR, pipeline.MANUAL_DIR, pipeline.VERIFY_DIR, pipeline.REPORT_DIR = saved
+        new = db.connect(tmp / "eval" / "selector.db")
+        self.assertEqual([r["no"] for r in new.execute("SELECT no FROM candidates")], [103])
 
 
 class InfoDutyDeferred(unittest.TestCase):
@@ -661,3 +686,19 @@ class InfoDutyDeferred(unittest.TestCase):
             self.assertTrue(verify.info_deferred(desc), desc)
         for desc in ("중국", "해당사항 없음", "별도 구매", "상세페이지 참조 아크릴 A4"):
             self.assertFalse(verify.info_deferred(desc), desc)
+
+
+class SafetyCertList(unittest.TestCase):
+    """detail.safetyCert가 목록으로 와도 판매 조건 수집이 멈추지 않고 KC 표시가 모름이 되지 않는다 (2026-10-16 평가 표본 18건)."""
+
+    def test_list_form(self):
+        one = {"cert": "Y", "certType": "전기용품/생활용품", "no": "-", "exem": "N"}
+        view = {"basis": {"no": 1, "title": "t"}, "detail": {"safetyCert": [one]}}
+        self.assertEqual(domeggook.safety_cert(view), one)
+        self.assertEqual(domeggook.summarize(view)["kc_cert"], "Y")
+        self.assertEqual(verify.collect(view)["cert_type"], "전기용품/생활용품")
+        two = {"detail": {"safetyCert": [one, {"cert": "Y", "certType": "어린이제품", "no": "CB1", "exem": "N"}]}}
+        self.assertEqual(domeggook.safety_cert(two)["certType"], "전기용품/생활용품 / 어린이제품")
+        self.assertEqual(domeggook.safety_cert(two)["no"], "CB1")
+        self.assertEqual(domeggook.safety_cert({"detail": {"safetyCert": one}}), one)
+        self.assertEqual(domeggook.safety_cert({}), {})

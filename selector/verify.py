@@ -59,7 +59,7 @@ def collect(view: dict, today: date | None = None) -> dict:
     addr = _get(view, "return.addr") or {}
     vacation = _get(view, "seller.vacation") or {}
     date_end = _get(view, "basis.dateEnd")
-    cert = _get(view, "detail.safetyCert") or {}
+    cert = domeggook.safety_cert(view)
     info = domeggook.as_list(_get(view, "detail.infoDuty.item"))
     return {
         "no": s["no"], "title": s["title"], "thumb": s["thumb"],

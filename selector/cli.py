@@ -9,11 +9,16 @@ from pathlib import Path
 from . import db, pipeline
 
 
-def known_nos(path: Path) -> frozenset[int]:
-    if not path.exists():
-        raise FileNotFoundError(f"--skip-db 경로가 없다: {path}")
-    with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as other:
-        return frozenset(r[0] for r in other.execute("SELECT no FROM candidates"))
+def known_nos(*paths: Path) -> frozenset[int]:
+    """여러 DB의 상품번호 합집합. 하나라도 없으면 아무것도 넣기 전에 멈춘다."""
+    missing = [str(p) for p in paths if not p.exists()]
+    if missing:
+        raise FileNotFoundError(f"--skip-db 경로가 없다: {', '.join(missing)}")
+    nos = set()
+    for path in paths:
+        with sqlite3.connect(f"file:{path}?mode=ro", uri=True) as other:
+            nos.update(r[0] for r in other.execute("SELECT no FROM candidates"))
+    return frozenset(nos)
 
 
 def main(argv=None) -> None:
@@ -28,7 +33,8 @@ def main(argv=None) -> None:
     s.add_argument("--pages", type=int, default=1)
     s.add_argument("--size", type=int, default=200, help="페이지당 상품 수 (1~200)")
     s.add_argument("--sort", help="se 정확도, rd 랭킹, ha 인기, aa 낮은가격, da 최근등록")
-    s.add_argument("--skip-db", type=Path, help="이 DB에 이미 있는 상품번호는 추가하지 않는다 (새 표본 분리용)")
+    s.add_argument("--skip-db", type=Path, nargs="+", action="extend", default=[],
+                   help="이 DB들에 이미 있는 상품번호는 추가하지 않는다 (새 표본 분리용, 여러 경로 가능)")
 
     d = sub.add_parser("detail", help="2. 상세 수집·규칙 제외")
     d.add_argument("--refresh", action="store_true", help="진행 중 후보 전체의 변동성 스냅샷도 갱신")
@@ -90,7 +96,7 @@ def main(argv=None) -> None:
         conn = db.connect()
 
     if args.cmd == "search":
-        skip = known_nos(args.skip_db) if args.skip_db else frozenset()
+        skip = known_nos(*args.skip_db)
         print(f"추가 {pipeline.search_supply(conn, kw=args.kw, ca=args.ca, pages=args.pages, size=args.size, sort=args.sort, skip=skip)}건")
     elif args.cmd == "detail":
         stages = ("new", "detailed", "triaged", "measured", "checked") if args.refresh else ("new",)

@@ -118,6 +118,19 @@ def _get(d: dict, path: str):
     return d
 
 
+def safety_cert(view: dict) -> dict:
+    """detail.safetyCert는 dict 또는 인증별 dict 목록으로 온다(2026-10-16 실응답, 목록 1건 관측).
+    목록이면 인증 유무는 하나라도 Y면 Y, 나머지 값은 ' / '로 합친다."""
+    certs = [c for c in as_list(_get(view, "detail.safetyCert")) if isinstance(c, dict)]
+    if len(certs) <= 1:
+        return certs[0] if certs else {}
+    merged = {k: " / ".join(str(c[k]) for c in certs if c.get(k) not in (None, "", "-")) or None
+              for k in ("certType", "no", "type", "name")}
+    merged["cert"] = "Y" if any(c.get("cert") == "Y" for c in certs) else certs[0].get("cert")
+    merged["exem"] = "Y" if any(c.get("exem") == "Y" for c in certs) else certs[0].get("exem")
+    return merged
+
+
 def summarize(view: dict) -> dict:
     """상세 응답에서 선정에 필요한 값만 뽑는다. 확인되지 않는 값은 None으로 남긴다."""
     deli = _get(view, "deli.supply") or _get(view, "deli.dome") or {}  # 도매매 배송비가 없으면 도매 배송비 적용
@@ -141,7 +154,7 @@ def summarize(view: dict) -> dict:
         "merge_enable": _get(view, "deli.merge.enable"),
         "from_oversea": _flag(_get(view, "deli.fromOversea")),
         "image_usable": _flag(_get(view, "desc.license.usable")),
-        "kc_cert": _get(view, "detail.safetyCert.cert"),
+        "kc_cert": safety_cert(view).get("cert"),
         "return_fee": _int(_get(view, "return.deliAmt")),
         # 자동 대체 신호 후보. 수동 확인 결과와 비교해 쓸모를 검증한다.
         "price_compare_min": _int(_get(view, "priceCompare.min")),  # 타 사이트 동일 상품 최저가
