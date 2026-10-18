@@ -225,7 +225,7 @@ class Sensitivity(unittest.TestCase):
         free = lambda price: {"name": title, "seller": str(price), "price": price, "delivery": "무료", "photo": True, "type": True}
         conn = candidate_db({1: (title, [free(2000), free(10000), free(10000), free(10000)])}, supply_price=3000, ship_cost=2000)
         row = pipeline.build_rows(conn)[0]
-        self.assertTrue(row["recommended"])
+        self.assertTrue(row["selected"])
         self.assertEqual(row["sensitive_to"], ["저가 제거 안 함"])
         self.assertEqual(pipeline.build_rows(conn, sensitivity=False)[0]["sensitive_to"], [])
 
@@ -245,15 +245,15 @@ class FeeBasis(unittest.TestCase):
         conn = candidate_db({1: (title, [free(10000), free(10000), free(10000)])}, supply_price=5000, ship_cost=2600)
         cfg = json.loads(json.dumps(settings()))
         cfg["naver_calibration"].update(lowest_price=1.0, median_price=1.0)  # 마진 24%: 수수료 10%면 14%
-        recommended = lambda: pipeline.build_rows(conn)[0]["recommended"]
+        selected = lambda: pipeline.build_rows(conn)[0]["selected"]
         with mock.patch.object(pipeline, "settings", return_value=cfg):
-            self.assertTrue(recommended())
+            self.assertTrue(selected())
             cfg["pricing"]["platform_fee_rate"] = 0.10
-            self.assertTrue(recommended())  # gross 기준은 수수료와 무관(현행)
-            cfg["scoring"]["margin_basis"] = "net"
-            self.assertFalse(recommended())
+            self.assertTrue(selected())  # gross 기준은 수수료와 무관(현행)
+            cfg["selection"]["margin_basis"] = "net"
+            self.assertFalse(selected())
             cfg["pricing"]["platform_fee_rate"] = None
-            self.assertFalse(recommended())
+            self.assertFalse(selected())
 
 
 class Judgments(unittest.TestCase):
@@ -262,13 +262,13 @@ class Judgments(unittest.TestCase):
         title = "무타공 욕실 다용도 수납 드라이기 거치대"
         free = lambda price: {"name": title, "seller": str(price), "price": price, "delivery": "무료", "photo": True, "type": True}
         conn = candidate_db({56868432: (title, [free(20000), free(21000), free(22000)])}, supply_price=3000, ship_cost=2000)
-        self.assertTrue(pipeline.build_rows(conn)[0]["recommended"])
+        self.assertTrue(pipeline.build_rows(conn)[0]["selected"])
         db.add_judgment(conn, 56868432, "제외", "같은 유형 다수·상위 리뷰 수천", "네이버 캡처 표본", "2026-10-14")
         row = pipeline.build_rows(conn)[0]
-        self.assertFalse(row["recommended"])
+        self.assertFalse(row["selected"])
         self.assertEqual(row["judgment"]["verdict"], "제외")
         db.add_judgment(conn, 56868432, "추가 확인", "벽부착형만 재비교", "재검토")  # 새 판정만 제외를 푼다
-        self.assertTrue(pipeline.build_rows(conn)[0]["recommended"])
+        self.assertTrue(pipeline.build_rows(conn)[0]["selected"])
 
     def test_review_required_and_invalidated_by_new_evidence(self):
         title = "스테인리스 다용도 걸이"
@@ -284,8 +284,8 @@ class Judgments(unittest.TestCase):
                                       for no, v in ((1, "추가 확인"), (2, "제외"))), encoding="utf-8")
             pipeline.import_review(conn, done)
             rows = {r["no"]: r for r in pipeline.build_rows(conn)}
-            self.assertTrue(rows[1]["review_current"] and rows[1]["recommended"])
-            self.assertFalse(rows[2]["recommended"])  # 검토의 제외 판정은 추천에서 뺀다
+            self.assertTrue(rows[1]["review_current"] and rows[1]["selected"])
+            self.assertFalse(rows[2]["selected"])  # 검토의 제외 판정은 선별에서 뺀다
             with self.assertRaises(ValueError):
                 pipeline.export_verify(conn, nos=[2])
             self.assertEqual(pipeline.export_verify(conn)[1], 1)
@@ -355,7 +355,7 @@ class ComparablePrices(unittest.TestCase):
         with mock.patch.object(pipeline, "REPORT_DIR", tmp):
             md, _, _ = pipeline.write_report(conn)
         row = pipeline.build_rows(conn)[0]
-        self.assertFalse(row["recommended"])
+        self.assertFalse(row["selected"])
         self.assertEqual(row["price_shortage"]["same_photo_prices"], [9460, 10320])
         text = Path(md).read_text(encoding="utf-8")
         self.assertIn("## 비교 가격 부족 — 확인 대상", text)
@@ -414,22 +414,6 @@ class Scoring(unittest.TestCase):
         self.assertEqual((m["gross"], m["gross_rate"], m["net"]), (4500, 0.45, None))
         self.assertEqual(scoring.margin(10000, 3000, 2500, 0.05)["net"], 4000)
         self.assertIsNone(scoring.margin(10000, 3000, None, 0.05)["gross"])
-
-    def test_score_direction_and_missing(self):
-        metrics = {
-            1: {"saturation": 0, "gross_margin_rate": 0.4, "competition_density": 1, "search_volume": 1000},
-            2: {"saturation": 9, "gross_margin_rate": 0.1, "competition_density": 50, "search_volume": 100},
-            3: {"saturation": 3, "gross_margin_rate": None, "competition_density": 5, "search_volume": 500},
-        }
-        weights = {"saturation": 0.35, "gross_margin_rate": 0.25, "competition_density": 0.2, "search_volume": 0.2}
-        r = scoring.score(metrics, weights)
-        self.assertEqual(r[1]["score"], 100.0)
-        self.assertEqual(r[2]["score"], 0.0)
-        self.assertEqual(r[3]["missing"], ["gross_margin_rate"])
-        r = scoring.score(metrics, weights, required=["gross_margin_rate"])
-        self.assertIsNone(r[3]["score"])  # 필수 지표가 없으면 점수 없음
-        self.assertEqual(r[1]["score"], 100.0)
-
 
 class Trend(unittest.TestCase):
     def test_window_is_last_12_full_months(self):
@@ -702,3 +686,25 @@ class SafetyCertList(unittest.TestCase):
         self.assertEqual(domeggook.safety_cert(two)["no"], "CB1")
         self.assertEqual(domeggook.safety_cert({"detail": {"safetyCert": one}}), one)
         self.assertEqual(domeggook.safety_cert({}), {})
+
+
+class ListBasisSamePhotoOnly(unittest.TestCase):
+    """같은 유형 가격 근거는 마진이 좋아도 선별을 통과하지 못한다 (2026-10-16 평가: 추천 제외 17건 전부 같은 유형 근거)."""
+
+    def test_same_type_basis_not_listed(self):
+        title = "슬림 틈새 신발장 조립식"
+        def item(price, photo, seller):
+            return {"name": title, "seller": seller, "price": price, "delivery": "무료", "photo": photo, "type": True}
+        same_type = [item(30000, False, "a"), item(31000, False, "b"), item(32000, False, "c")]
+        same_photo = [item(30000, True, "d"), item(31000, True, "e"), item(32000, True, "f")]
+        conn = candidate_db({1: (title, same_type), 2: (title + " 화이트", same_photo)}, supply_price=5000, ship_cost=3000)
+        rows = {r["no"]: r for r in pipeline.build_rows(conn, sensitivity=False)}
+        self.assertEqual(rows[1]["price_basis"], "같은 유형")
+        self.assertFalse(rows[1]["eligible"])
+        self.assertEqual(rows[2]["price_basis"], "동일 상품")
+        self.assertTrue(rows[2]["eligible"] and rows[2]["selected"])
+        self.assertNotIn("score", rows[2])  # 점수·순위는 매기지 않는다
+        tmp = Path(tempfile.mkdtemp())
+        with mock.patch.object(pipeline, "MANUAL_DIR", tmp):
+            _, n = pipeline.export_manual(conn)  # 네이버 확인 화면 기본 대상은 선별 통과 후보
+        self.assertEqual(n, 1)

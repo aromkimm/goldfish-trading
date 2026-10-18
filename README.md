@@ -9,11 +9,11 @@
 | 왜 하며 무엇을 목표로 하는가 | [PROJECT.md](PROJECT.md) | 목적·목표·사업 방향·제약·평가 기준 |
 | 지금 어디까지 왔고 무엇을 해야 하는가 | [STATUS.md](STATUS.md) | 현재 상태·실행 담당·현재 검토 자료·미결 과제 |
 | 어떤 순서와 조건으로 실행하는가 | [실행 계획](docs/execution-plan.md) | 단계별 결과·개발 범위·검증 흐름·행정 준비·착수 조건 |
-| 어떤 상품을 고르는가 | [상품 선정 기준](docs/product-selection.md) | 확정 제외 기준·상품 평가·추천 에이전트 평가 방법·추천 결과 요건 |
-| 추천 에이전트를 어떻게 쓰는가 | [추천 에이전트](docs/product-selection-agent.md) | 데이터 출처·수집·계산·판매 조건 확인과 실행 진입점 |
+| 어떤 상품을 고르는가 | [상품 선정 기준](docs/product-selection.md) | 확정 제외 기준·상품 평가·후보 선별 평가 방법·선별 결과 요건 |
+| 후보 선별 에이전트를 어떻게 쓰는가 | [후보 선별 에이전트](docs/product-selection-agent.md) | 데이터 출처·수집·계산·선별 조건·판매 조건 확인과 실행 진입점 |
 | 어떤 검색·구매 정보를 제공하는가 | [상품 등록 원칙](docs/product-listing-principles.md) | 검색 전략·항목별 역할·콘텐츠 품질·상세페이지 포맷 |
 | 등록 에이전트를 어떻게 쓰는가 | [사용법](agents/product-listing/README.md) | 책임 범위·상품 브리프·출력·명령·코드 진입점 |
-| 추천 명령을 어떤 순서로 실행하는가 | [실행 스킬](.claude/skills/product-selector/SKILL.md) | 추천 CLI·검토 입력·실패 처리 절차 |
+| 선별 명령을 어떤 순서로 실행하는가 | [실행 스킬](.claude/skills/product-selector/SKILL.md) | 선별 CLI·검토 입력·실패 처리 절차 |
 | 상품별 등록 작업을 어떻게 수행하는가 | [작업 절차](agents/product-listing/workflow.md) | 조사·작성·검수·전달·수정 순서 |
 | 데이터를 어떻게 기록하는가 | [데이터 계약](agents/product-listing/data-contract.md) | listing-2 필드·참조·상태와 게시 판단·검수 기록 형식 |
 | 에이전트가 어떤 원칙을 지키는가 | [AGENTS.md](AGENTS.md) | 공동 결정·행동·수치 표기·문서 관리 원칙 |
@@ -22,12 +22,12 @@
 
 ## 파일 배치와 원본
 
-공통 문서는 루트와 `docs/`에 둔다. 등록 에이전트는 `agents/product-listing/`, 추천 에이전트는 `selector/`·`config/`와 [설계·사용법](docs/product-selection-agent.md)에서 관리한다.
+공통 문서는 루트와 `docs/`에 둔다. 등록 에이전트는 `agents/product-listing/`, 후보 선별 에이전트는 `selector/`·`config/`와 [설계·사용법](docs/product-selection-agent.md)에서 관리한다.
 
 문서 변경은 [현재 스냅샷·전체 검토 원칙](AGENTS.md#필수-준수-원칙--현재-스냅샷과-전체-문서-검토)을 따른다.
 
 상품별 자료의 원본·파생본 관계는 [데이터 계약](agents/product-listing/data-contract.md), 갱신은 [수정 절차](agents/product-listing/workflow.md#수정)를 따른다. `runs/`는 Git 제외 작업 공간이므로 공유·재검증에 필요한 근거는 최소 범위로 `records/`에 보존한다. 예시·시험 자료의 위치와 용도는 [에이전트 구조](agents/product-listing/README.md#구조와-검증-범위)를 따른다.
 
-추천 수집 데이터·비교표는 Git 제외 `data/`에 생성한다. API 키는 Git 제외 `.env`에만 두며 필요한 항목은 `.env.example`을 따른다.
+선별 수집 데이터·선별표는 Git 제외 `data/`에 생성한다. API 키는 Git 제외 `.env`에만 두며 필요한 항목은 `.env.example`을 따른다.
 
 Claude Code는 프로젝트 폴더에서 실행한다. [CLAUDE.md](CLAUDE.md)가 공통 지침을 불러온다.

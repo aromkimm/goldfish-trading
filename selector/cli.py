@@ -22,7 +22,7 @@ def known_nos(*paths: Path) -> frozenset[int]:
 
 
 def main(argv=None) -> None:
-    p = argparse.ArgumentParser(prog="selector", description="금붕상사 상품 추천 에이전트")
+    p = argparse.ArgumentParser(prog="selector", description="금붕상사 후보 선별 에이전트")
     p.add_argument("--data-dir", type=Path,
                    help="DB와 작업 파일(llm·manual·verify·reports)을 둘 폴더 (기본: data/). 이미지 캐시는 data/cache를 공유한다")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -49,7 +49,7 @@ def main(argv=None) -> None:
     rk.add_argument("keywords", help="쉼표 구분, 첫 번째가 대표 키워드")
     rk.add_argument("--reason", required=True)
 
-    jd = sub.add_parser("judge", help="상품별 판정 저장 (네이버 표본·검토 결과). 최신 판정이 추천 여부에 반영된다")
+    jd = sub.add_parser("judge", help="상품별 판정 저장 (네이버 표본·검토 결과). 최신 판정이 선별 통과 여부에 반영된다")
     jd.add_argument("no", type=int)
     jd.add_argument("verdict", choices=db.VERDICTS)
     jd.add_argument("--reason", required=True)
@@ -66,21 +66,20 @@ def main(argv=None) -> None:
     ct = sub.add_parser("catalog", help="5-2. 네이버 카탈로그 조회 (커머스API, 참고 지표)")
     ct.add_argument("--redo", action="store_true", help="오늘 조회한 후보도 다시 조회")
 
-    me = sub.add_parser("manual-export", help="검증 표본: 네이버쇼핑 수동 확인 화면 만들기")
-    me.add_argument("--shortlist", type=int, help="확인할 상위 후보 수 (기본: 설정값)")
+    me = sub.add_parser("manual-export", help="네이버쇼핑 수동 확인 화면 만들기 (기본: 선별 통과 후보 전부)")
     me.add_argument("--nos", help="상품번호를 직접 지정 (쉼표 구분)")
     mi = sub.add_parser("manual-import", help="검증 표본: 수동 확인 CSV 반영")
     mi.add_argument("path")
 
-    sub.add_parser("report", help="6. 마진·점수 계산, 비교표 작성")
+    sub.add_parser("report", help="6. 마진 계산·선별, 선별표 작성")
 
-    re_ = sub.add_parser("review-export", help="7. 상위 후보 검토 대상 내보내기")
-    re_.add_argument("--top", type=int, default=10)
+    re_ = sub.add_parser("review-export", help="7. 선별 통과 후보 검토 대상 내보내기")
+    re_.add_argument("--top", type=int, help="내보낼 최대 개수 (기본: 검토 전 선별 통과 후보 전부)")
     ri = sub.add_parser("review-import", help="7. 검토 결과 반영")
     ri.add_argument("path")
 
     ve = sub.add_parser("verify-export", help="8. 판매 가능 조건 확인 화면 만들기")
-    ve.add_argument("--top", type=int, help="비교표 상위 몇 개를 확인할지 (기본: 설정값)")
+    ve.add_argument("--top", type=int, help="선별 통과 후보 중 몇 개를 확인할지 (기본: 설정값)")
     ve.add_argument("--nos", help="상품번호를 직접 지정 (쉼표 구분)")
     vi = sub.add_parser("verify-import", help="8. 확인 CSV 반영 → 판매 조건서 작성")
     vi.add_argument("path")
@@ -122,7 +121,7 @@ def main(argv=None) -> None:
         print(pipeline.collect_catalogs(conn, redo=args.redo))
     elif args.cmd == "manual-export":
         nos = [int(x) for x in args.nos.split(",")] if args.nos else None
-        path, n = pipeline.export_manual(conn, args.shortlist, nos)
+        path, n = pipeline.export_manual(conn, nos)
         print(f"{n}건 → {path}")
     elif args.cmd == "manual-import":
         print(f"{pipeline.import_manual(conn, args.path)}건 반영")

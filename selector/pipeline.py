@@ -326,25 +326,18 @@ def collect_catalogs(conn: sqlite3.Connection, *, redo: bool = False) -> dict:
 
 # 네이버쇼핑 수동 확인 — 11번가 결과가 네이버를 반영하는지 검증하는 표본용 ------------------------
 
-def export_manual(conn: sqlite3.Connection, shortlist: int | None = None, nos: list[int] | None = None) -> tuple[str, int]:
-    """검색량 순으로 상위 후보를 골라 확인 화면을 만든다. 대표 키워드당 개수를 제한한다〔선별 기준은 제안값〕."""
-    cfg = settings()["manual_check"]
-    shortlist = shortlist or cfg["shortlist"]
+def export_manual(conn: sqlite3.Connection, nos: list[int] | None = None) -> tuple[str, int]:
+    """네이버쇼핑 수동 확인 화면. 기본 대상은 선별 통과 후보 전부이고, nos로 직접 지정할 수 있다."""
+    nos = nos or [r["no"] for r in build_rows(conn, sensitivity=False) if r["selected"]]
     items = []
-    for c in conn.execute("SELECT * FROM candidates WHERE stage IN ('measured', 'checked', 'verified')"):
-        keyword = json.loads(c["keywords"])[0]
-        volume, _ = _search_volume(db.latest_keyword_stats(conn, keyword))
-        s = db.latest_snapshot(conn, c["no"])
-        items.append({"no": c["no"], "title": s["title"], "thumb": s.get("thumb"), "url": c["url"],
-                      "keyword": keyword, "supply_price": s.get("supply_price"), "_volume": volume,
+    for no in nos:
+        c = conn.execute("SELECT * FROM candidates WHERE no=?", (no,)).fetchone()
+        if c is None or not c["keywords"]:
+            raise ValueError(f"{no}: 키워드가 있는 후보가 아님")
+        s = db.latest_snapshot(conn, no)
+        items.append({"no": no, "title": s["title"], "thumb": s.get("thumb"), "url": c["url"],
+                      "keyword": json.loads(c["keywords"])[0], "supply_price": s.get("supply_price"),
                       "title_query": elevenst.query_from_title(s["title"])})
-    items.sort(key=lambda i: (i["_volume"] is None, -(i["_volume"] or 0), i["no"]))
-    picked, per_keyword = [], {}
-    for i in items:
-        if per_keyword.get(i["keyword"], 0) < cfg["per_keyword"]:
-            picked.append(i)
-            per_keyword[i["keyword"]] = per_keyword.get(i["keyword"], 0) + 1
-    items = [i for i in items if i["no"] in nos] if nos else picked[:shortlist]
     MANUAL_DIR.mkdir(parents=True, exist_ok=True)
     stamp = date.today().isoformat()
     path = MANUAL_DIR / f"check-{stamp}.html"
@@ -362,7 +355,7 @@ def import_manual(conn: sqlite3.Connection, path) -> int:
     return len(rows)
 
 
-# 6. 마진·점수·비교표 -------------------------------------------------------------
+# 6. 마진·선별·선별표 -------------------------------------------------------------
 
 def volatility(conn: sqlite3.Connection, no: int) -> dict:
     snaps = [json.loads(r["summary"]) | {"_at": r["fetched_at"]} for r in conn.execute(
@@ -452,7 +445,7 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
             "price_basis": basis, "price_floored": sc["floored"],
             "price_excluded": sets[basis][1],  # None이면 경쟁 상품 단위 기록이 없는 이전 수집분
             "price_dispersion": scoring.dispersion(prices),
-            # 같은 사진·같은 유형 가격이 부족하면 추천 대신 확인 대상으로 남긴다. 경쟁이 적은 후보가 소리 없이 빠지지 않게 한다.
+            # 같은 사진·같은 유형 가격이 부족하면 선별 대신 확인 대상으로 남긴다. 경쟁이 적은 후보가 소리 없이 빠지지 않게 한다.
             "price_shortage": None if basis != "키워드 상위 결과" else {
                 "same_photo_prices": sorted(sets["동일 상품"][0] + sets["동일 상품"][2]),
                 "same_type_free": len(sets["같은 유형"][0]), "same_photo_sellers": comp["same_sellers"],
@@ -469,7 +462,7 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
                 m_low["gross"]),
             "margin_lowest_max_option": scoring.margin(sc["lowest"], opt["option_supply_max"], s["ship_cost"], fee)
             if opt["option_supply_max"] and opt["option_supply_max"] != s["supply_price"] else None,
-            "gross_margin_rate": m_low["gross_rate"],  # 점수는 보수적으로 최저가 시나리오 기준
+            "gross_margin_rate": m_low["gross_rate"],  # 보수적으로 최저가 시나리오 기준
             "image_usable": s.get("image_usable"), "kc_cert": s.get("kc_cert"), "merge_enable": s.get("merge_enable"),
             **_trend_metrics(conn, keyword),
             **_catalog_metrics(conn, c["no"]),
@@ -480,35 +473,27 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
             "judgment": dict(j) if (j := db.latest_judgment(conn, c["no"])) else None,
             "evidence_at": _evidence_key(keyword, comp),
         })
-    scores = scoring.score({r["no"]: r for r in rows}, cfg["scoring"]["weights"], cfg["scoring"]["required"])
+    rate = {"gross": "gross_rate", "net": "net_rate"}[cfg["selection"]["margin_basis"]]  # net은 수수료율 미설정이면 모름 → 통과 안 함
     for r in rows:
-        r.update(scores[r["no"]])
-    rows.sort(key=lambda r: (r["score"] is None, -(r["score"] or 0)))
-    picked, per_keyword = 0, {}
-    rate = {"gross": "gross_rate", "net": "net_rate"}[cfg["scoring"]["margin_basis"]]  # net은 수수료율 미설정이면 모름 → 추천 안 함
-    for r in rows:  # 추천 목록: 점수 순, 대표 키워드당 개수 제한
+        r["missing"] = [k for k in ("search_volume", "same_photo", "gross_margin_rate", "trend_growth", "competition_density")
+                        if r.get(k) is None]
         median_margin, lowest_margin = r["margin_median"][rate], r["margin_lowest"][rate]
-        # eligible: 상품별 추천 조건. 추천 목록 상한·키워드당 상한은 배치 구성에 따른 것이라 따로 적용한다.
-        r["eligible"] = (r["score"] is not None
-              and median_margin is not None and median_margin >= cfg["scoring"]["recommend_min_margin"]
-              and lowest_margin is not None and lowest_margin >= cfg["scoring"]["recommend_min_lowest_margin"]
-              and r["price_basis"] != "키워드 상위 결과"  # 같은 상품·같은 유형 가격이 없으면 마진을 믿을 수 없다
+        # 선별 조건. 순위·점수는 쓰지 않는다(2026-10-16 평가에서 점수가 품질을 가르지 못함). 통과 후보는 모두 목록에 둔다.
+        r["eligible"] = (median_margin is not None and median_margin >= cfg["selection"]["min_median_margin"]
+              and lowest_margin is not None and lowest_margin >= cfg["selection"]["min_lowest_margin"]
+              and r["price_basis"] in cfg["selection"]["price_basis"]  # 같은 사진 가격이 아니면 다른 디자인·규격이 섞여 마진을 믿을 수 없다
               and not (r["judgment"] and r["judgment"]["verdict"] == "제외"))  # 사람·검토의 제외 판정은 재계산으로 뒤집지 않는다
-        ok = (r["eligible"] and picked < cfg["scoring"]["recommend_top"]
-              and per_keyword.get(r["keyword"], 0) < cfg["scoring"]["recommend_per_keyword"])
-        r["recommended"] = ok
+        r["selected"] = r["eligible"]
         r["sensitive_to"] = []
         r["review_current"] = bool(r["review"] and r["review"].get("evidence_at") == r["evidence_at"])
-        if ok:
-            picked += 1
-            per_keyword[r["keyword"]] = per_keyword.get(r["keyword"], 0) + 1
-    if sensitivity:  # 가격 가정을 바꾸면 추천에서 빠지는지. 더 나은 설정을 고르는 시험이 아니라 근거의 견고함 표시다.
-        for name, override in cfg["scoring"]["sensitivity"].items():
+    rows.sort(key=lambda r: (not r["selected"], r["keyword"], r["no"]))  # 순서에 품질 의미가 없다
+    if sensitivity:  # 가격 가정을 바꾸면 선별에서 빠지는지. 더 나은 설정을 고르는 시험이 아니라 근거의 견고함 표시다.
+        for name, override in cfg["selection"]["sensitivity"].items():
             if name.startswith("_"):
                 continue
             kept = {v["no"] for v in build_rows(conn, _merged(cfg, override), sensitivity=False) if v["eligible"]}
             for r in rows:
-                if r["recommended"] and r["no"] not in kept:
+                if r["selected"] and r["no"] not in kept:
                     r["sensitive_to"].append(name)
     return rows
 
@@ -528,26 +513,27 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
     cfg_pricing = settings()["pricing"]
     fee_set = cfg_pricing["platform_fee_rate"] is not None
     lines = [
-        f"# 상품 후보 비교표 — {date.today().isoformat()}",
+        f"# 후보 선별표 — {date.today().isoformat()}",
         "",
-        "- 점수·마진은 추정치다. 점수는 이번 배치 안의 상대 순위이며 판매량 예측이 아니다(가중치 미확정 제안값). 마진·같은 상품 판매자 수가 없으면 점수를 매기지 않는다.",
-        "- 추천: 점수 순 상위 후보 중 네이버 보정 후 경쟁 중앙가 기준 마진율 15% 이상, 경쟁 최저가에 팔아도 적자가 아니고, 경쟁가가 같은 사진·같은 유형 기준인 후보. 같은 대표 키워드는 2개까지. 사람·검토 단계에서 제외로 판정한 후보는 다시 추천하지 않는다(새 판정으로만 바뀜). 판매 가능 조건 확인 대상이다.",
-        "- 마진 가정: 무료배송으로 판매해 도매 배송비를 판매가에서 부담한다. 마진율 분모는 판매가다. 공급가는 기본 옵션 기준이며, 추가금 있는 옵션은 최고 옵션 기준 마진을 모름·주의 열에 함께 적는다. 경쟁 중앙가는 11번가 배송 표시가 `무료`인 상품끼리 비교하고, 최저가는 조건부무료·착불/선결제 상품의 표시가(배송비 미포함, 결제 총액의 하한)나, 같은 사진 가격이 부족해 다른 집합을 쓸 때의 같은 사진 가격이 더 낮으면 그 값을 쓴다. 상품명에 표기된 수량·치수가 다른 상품과 같은 유형 중 상품명 단어 대부분이 도매 상품명에 없는 상품(다른 종류)을 뺀다. 경쟁가 분산(상위÷하위 4분위)이 크면 혼입 의심으로 표시한다〔제거·표시 기준은 추정 제안값〕. 반품 비용은 반품률을 몰라 마진에 넣지 않고, 반품 1건의 공급처 반품배송비(무료배송 판매 시 2배 조건 반영)가 최저가 기준 몇 건의 마진에 해당하는지 표시한다. 추천 후보는 설정의 가격 가정 대안(저가 제거·같은 사진 최소 건수·네이버 보정)으로 다시 계산해 추천에서 빠지면 그 가정을 표시한다.",
+        "- 마진은 추정치다. 점수·순위는 매기지 않는다. 표 순서는 선별 통과 여부·대표 키워드 순이며 판매 우선순위가 아니다.",
+        "- 선별 통과(✓): 경쟁가가 같은 사진 상품 가격이고, 네이버 보정 후 경쟁 중앙가 기준 마진율 15% 이상, 경쟁 최저가에 팔아도 적자가 아닌 후보 전부. 사람·검토 단계에서 제외로 판정한 후보는 다시 통과시키지 않는다(새 판정으로만 바뀜). 통과는 손해 위험을 걸렀다는 뜻이며 팔린다는 예측이 아니다. 판매 가능 조건 확인 대상이다.",
+        "- 경쟁가 기준: 같은 사진(동일 상품) 가격만 판단 근거다. 같은 유형·키워드 상위 결과 기준 행의 경쟁가·마진은 다른 디자인·규격이 섞인 참고값이며 표에 `참고`로 표시한다.",
+        "- 마진 가정: 무료배송으로 판매해 도매 배송비를 판매가에서 부담한다. 마진율 분모는 판매가다. 공급가는 기본 옵션 기준이며, 추가금 있는 옵션은 최고 옵션 기준 마진을 모름·주의 열에 함께 적는다. 경쟁 중앙가는 11번가 배송 표시가 `무료`인 상품끼리 비교하고, 최저가는 조건부무료·착불/선결제 상품의 표시가(배송비 미포함, 결제 총액의 하한)나, 같은 사진 가격이 부족해 다른 집합을 쓸 때의 같은 사진 가격이 더 낮으면 그 값을 쓴다. 상품명에 표기된 수량·치수가 다른 상품과 같은 유형 중 상품명 단어 대부분이 도매 상품명에 없는 상품(다른 종류)을 뺀다. 경쟁가 분산(상위÷하위 4분위)이 크면 혼입 의심으로 표시한다〔제거·표시 기준은 추정 제안값〕. 반품 비용은 반품률을 몰라 마진에 넣지 않고, 반품 1건의 공급처 반품배송비(무료배송 판매 시 2배 조건 반영)가 최저가 기준 몇 건의 마진에 해당하는지 표시한다. 선별 통과 후보는 설정의 가격 가정 대안(저가 제거·같은 사진 최소 건수·네이버 보정)으로 다시 계산해 통과에서 빠지면 그 가정을 표시한다.",
         "- 네이버 보정〔추정치〕: 네이버 캡처 표본에서 네이버 가격이 11번가보다 낮아, 경쟁 최저가 ×0.76, 중앙가 ×0.91로 계산한다. 네이버 예상 같은 사진 판매자 수는 11번가 ×1.8(표시용).",
         "- 수수료 반영 마진: " + ("설정된 수수료율 적용." if fee_set else "수수료율 미확인이라 모름. 표의 마진은 수수료 차감 전이다.")
-        + (" 추천 판정은 수수료 차감 후 마진을 쓴다." if settings()["scoring"]["margin_basis"] == "net"
-           else " 추천 판정은 수수료 차감 전 마진을 쓴다(수수료 후 판정은 미결정)."),
+        + (" 선별은 수수료 차감 후 마진을 쓴다." if settings()["selection"]["margin_basis"] == "net"
+           else " 선별은 수수료 차감 전 마진을 쓴다(수수료 후 판정은 미결정)."),
         "- 포화도·상품 수·경쟁가: 11번가 상품검색 기준(수집일 표기). 같은 유형 판매자 수는 도매 상품명 검색 상위 100개 중 상품명이 비슷한 판매자 수(사진이 달라도 포함), 같은 사진은 도매 이미지를 그대로 쓴 판매자 수다. 네이버 표본 4건에서 같은 사진만 세면 경쟁을 크게 놓쳤다. 상위 100개 밖은 세지 않는다.",
-        "- 네이버 카탈로그(유형/일치): 커머스API로 도매 상품명 검색어를 조회해, 검색어 단어의 60% 이상을 담은 카탈로그 수와 도매 상품명 전체 단어의 75% 이상을 담은 카탈로그 수. 많을수록 네이버에 같은 유형 가격비교 모델이 많다는 뜻이다. 상품명 일치 카탈로그는 후보의 약 70%에서 나와 후보를 가려내지 못한다(위탁 상품 다수가 이미 네이버 카탈로그에 있다는 신호). 점수·추천 조건에 넣지 않는 참고 지표다.",
+        "- 네이버 카탈로그(유형/일치): 커머스API로 도매 상품명 검색어를 조회해, 검색어 단어의 60% 이상을 담은 카탈로그 수와 도매 상품명 전체 단어의 75% 이상을 담은 카탈로그 수. 많을수록 네이버에 같은 유형 가격비교 모델이 많다는 뜻이다. 상품명 일치 카탈로그는 후보의 약 70%에서 나와 후보를 가려내지 못한다(위탁 상품 다수가 이미 네이버 카탈로그에 있다는 신호). 선별 조건에 넣지 않는 참고 지표다.",
         "- 진입 장벽(상위 판매자의 리뷰 규모)은 모름: 네이버 표본에서는 결정적이었지만 11번가 리뷰는 거의 0이라 대신할 수 없다.",
-        "- 대표 키워드가 상품과 맞는지는 상위 후보 검토 때 Claude가 11번가 키워드 검색 상위 상품명을 보고 판단한다(자동 적합도 값은 변별력이 낮아 CSV에만 남긴다).",
+        "- 대표 키워드가 상품과 맞는지는 7단계 검토 때 Claude가 11번가 키워드 검색 상위 상품명을 보고 판단한다(자동 적합도 값은 변별력이 낮아 CSV에만 남긴다).",
         "- 같은 상품 리뷰 수: 11번가에서 같은 사진을 쓴 상품들의 리뷰 합계. 판매 흔적이며 판매량이 아니다.",
         "- 검색 추세: 네이버 검색어 트렌드 기준 최근 3개월 ÷ 그 전 3개월(증감), 직전 달 ÷ 12개월 평균(계절). 상대값 비율이며 검색량이 아니다. 블로그 글 수·작성 속도는 참고용이고 점수에 넣지 않는다.",
         "",
-        "| 순위 | 추천 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 네이버 카탈로그(유형/일치) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 점수 | 모름·주의 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 선별 통과 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 네이버 카탈로그(유형/일치) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 모름·주의 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
-    for i, r in enumerate(rows, 1):
+    for r in rows:
         notes = [f"지표 없음: {', '.join(r['missing'])}"] if r["missing"] else []
         if r["image_usable"] is False:
             notes.append("이미지 사용 불허")
@@ -572,9 +558,9 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         elif rb["sales_to_cover"] is not None:
             notes.append(f"반품 1건 {rb['cost']:,}원 = 최저가 기준 판매 {rb['sales_to_cover']}건 마진")
         if r["sensitive_to"]:
-            notes.append("가정 바꾸면 추천 탈락: " + ", ".join(r["sensitive_to"]))
-        if r["recommended"] and not r["review_current"]:
-            notes.append("상위 후보 검토 전(판매 조건 확인 불가)")
+            notes.append("가정 바꾸면 목록 탈락: " + ", ".join(r["sensitive_to"]))
+        if r["selected"] and not r["review_current"]:
+            notes.append("7단계 검토 전(판매 조건 확인 불가)")
         if r["judgment"]:
             j = r["judgment"]
             notes.append(f"판정 {j['verdict']}({j['judged_at'][:10]}, {j['source']}): {j['reason']}")
@@ -582,21 +568,21 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         notes.append(f"변동 {v['changes']}회/{v['days']}일")
         ml, mm = r["margin_lowest"], r["margin_median"]
         lines.append(" | ".join([
-            f"| {i}", "✓" if r["recommended"] else "", f"[{r['title']}]({r['url']})",
+            "| ✓" if r["selected"] else "| ", f"[{r['title']}]({r['url']})",
             r["keyword"], r["search_volume_text"],
             f"{_fmt(r['trend_growth'])} / {_fmt(r['season_index'])}", _fmt(r["shop_total"]),
             _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_photo'])}, 네이버 예상 {_fmt(r['naver_same_photo_est'])})",
             f"{_fmt(r['catalog_similar'])} / {_fmt(r['catalog_exact'])}",
-            r["price_basis"],
+            r["price_basis"] + ("" if r["price_basis"] == "동일 상품" else " (참고)"),
             f"{_fmt(r['price_lowest'])} / {_fmt(ml['gross_rate'], True)}",
             f"{_fmt(r['price_median'])} / {_fmt(mm['gross_rate'], True)}",
-            f"{_fmt(r['supply_price'])}+{_fmt(r['ship_cost'])}", _fmt(r["score"]), "; ".join(notes) + " |",
+            f"{_fmt(r['supply_price'])}+{_fmt(r['ship_cost'])}", "; ".join(notes) + " |",
         ]))
     short = [r for r in rows if r["price_shortage"] and not (r["judgment"] and r["judgment"]["verdict"] == "제외")]
     if short:
         lines += ["", "## 비교 가격 부족 — 확인 대상", "",
                   f"같은 사진·같은 유형의 무료배송 가격이 {settings()['pricing']['min_matched_for_same_product_price']}개 미만이라 "
-                  "마진을 계산할 수 없어 추천하지 않은 후보다. 경쟁이 적어서일 수도, 수집 범위 밖일 수도 있다. "
+                  "마진을 계산할 수 없어 선별을 통과시키지 않은 후보다. 경쟁이 적어서일 수도, 수집 범위 밖일 수도 있다. "
                   "같은 사진 가격(배송 조건 무관)과 판매자 수를 참고해 네이버 표본·공급 조건으로 확인한다. 판매 가능성 판정이 아니다.", "",
                   "| 상품 | 키워드 | 월 검색수 | 같은 사진 판매자 / 가격 | 같은 유형 판매자 / 무료배송 가격 수 | 도매가+배송 |",
                   "| --- | --- | --- | --- | --- | --- |"]
@@ -607,7 +593,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
                          f"{_fmt(ps['type_sellers'])} / {ps['same_type_free']} | {_fmt(r['supply_price'])}+{_fmt(r['ship_cost'])} |")
     reviewed = [r for r in rows if r["review"]]
     if reviewed:
-        lines += ["", "## 상위 후보 검토", ""]
+        lines += ["", "## 7단계 검토", ""]
         for r in reviewed:
             rv = r["review"]
             state = "" if r["review_current"] else " — 이전 근거의 검토(키워드·경쟁 수집 변경 후 재검토 필요)"
@@ -618,11 +604,11 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     csv_path = f"{stem}.csv"
-    flat_keys = ["no", "recommended", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
+    flat_keys = ["no", "selected", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
                  "saturation", "same_photo", "naver_same_photo_est", "catalog_similar", "catalog_exact", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_dispersion", "price_low_bound", "price_lowest", "price_median",
                  "resale_min", "supply_price", "option_count", "option_supply_max", "ship_cost", "return_fee", "image_usable", "kc_cert",
                  "merge_enable", "sensitive_to", "trend_growth", "season_index", "shop_growth", "shop_months", "blog_total", "blog_rate",
-                 "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "score", "url"]
+                 "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "url"]
     with open(csv_path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
         w.writerow(flat_keys + ["gross_rate_lowest", "gross_rate_median", "net_rate_lowest", "net_rate_median"])
@@ -632,7 +618,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
     return md_path, csv_path, len(rows)
 
 
-# 7. 상위 후보 검토 — Claude가 근거·리스크·모름 작성 --------------------------------------
+# 7. 선별 통과 후보 검토 — Claude가 근거·리스크·모름 작성 --------------------------------------
 
 REVIEW_FIELDS = ("verdict", "rationale", "risks", "unknowns")
 
@@ -657,11 +643,11 @@ def _info_duty(conn, no: int) -> dict:
     return {i.get("name"): i.get("desc") for i in items if i.get("type") == "item" and (i.get("desc") or "").strip()}
 
 
-def export_review(conn: sqlite3.Connection, top: int) -> tuple[str, int]:
-    """현재 근거로 검토되지 않은 추천 후보를 내보낸다. 비교에 쓴 경쟁 상품명·가격과 상품정보고시를 함께 넣는다."""
+def export_review(conn: sqlite3.Connection, top: int | None = None) -> tuple[str, int]:
+    """현재 근거로 검토되지 않은 선별 통과 후보를 내보낸다. 비교에 쓴 경쟁 상품명·가격과 상품정보고시를 함께 넣는다."""
     LLM_DIR.mkdir(parents=True, exist_ok=True)
     path = LLM_DIR / "review_pending.jsonl"
-    rows = [r for r in build_rows(conn) if r["recommended"] and not r["review_current"]][:top]
+    rows = [r for r in build_rows(conn) if r["selected"] and not r["review_current"]][:top]
     with path.open("w", encoding="utf-8") as f:
         for r in rows:
             comp = db.latest_competition(conn, r["no"])
@@ -675,7 +661,7 @@ def export_review(conn: sqlite3.Connection, top: int) -> tuple[str, int]:
 
 
 def import_review(conn: sqlite3.Connection, path) -> int:
-    """검토 결과를 저장한다. 판정은 판정 기록에도 남겨 제외 판정이 추천에 반영되게 한다.
+    """검토 결과를 저장한다. 판정은 판정 기록에도 남겨 제외 판정이 선별에 반영되게 한다.
     검토 당시의 근거 식별값을 저장해 키워드·경쟁 수집이 바뀌면 검토를 다시 요구한다."""
     current = {r["no"]: r for r in build_rows(conn)}
     n = 0
@@ -692,26 +678,26 @@ def import_review(conn: sqlite3.Connection, path) -> int:
         review = {k: r.get(k) for k in REVIEW_FIELDS} | {"evidence_at": current[r["no"]]["evidence_at"],
                                                          "reviewed_at": db.now()}
         conn.execute("UPDATE candidates SET review=? WHERE no=?", (json.dumps(review, ensure_ascii=False), r["no"]))
-        db.add_judgment(conn, r["no"], r["verdict"], r.get("rationale") or "", "상위 후보 검토(7단계)")
+        db.add_judgment(conn, r["no"], r["verdict"], r.get("rationale") or "", "7단계 검토")
         n += 1
     conn.commit()
     return n
 
 
-# 8. 판매 가능 조건 확인 — 추천 후보를 등록 가능한지 확인하고, 안 되면 선정 단계로 돌려보낸다 -------------
+# 8. 판매 가능 조건 확인 — 선별 통과 후보를 등록 가능한지 확인하고, 안 되면 선정 단계로 돌려보낸다 -------------
 
 def export_verify(conn: sqlite3.Connection, top: int | None = None, nos: list[int] | None = None) -> tuple[str, int]:
     rules = settings()["verification"]
     rows = {r["no"]: r for r in build_rows(conn)}
     if not nos:
-        nos = [no for no, r in rows.items() if r["stage"] == "checked" and r["recommended"] and r["review_current"]
+        nos = [no for no, r in rows.items() if r["stage"] == "checked" and r["selected"] and r["review_current"]
                ][:top or rules["top"]]
     # 의미 검토(7단계)를 현재 근거로 마치고 제외되지 않은 후보만 판매 조건 확인으로 넘긴다.
     blocked = [f"{no}({'비교표에 없음' if no not in rows else '검토 없음·이전 근거' if not rows[no]['review_current'] else '제외 판정'})"
                for no in nos if no not in rows or not rows[no]["review_current"]
                or (rows[no]["judgment"] or {}).get("verdict") == "제외"]
     if blocked:
-        raise ValueError("판매 조건 확인 전에 상위 후보 검토가 필요: " + ", ".join(blocked))
+        raise ValueError("판매 조건 확인 전에 7단계 검토가 필요: " + ", ".join(blocked))
     items, urls = [], {}
     for no in nos:
         view = domeggook.item_view(no)  # 확인 시점의 최신 정보로 판단한다
@@ -756,7 +742,7 @@ def import_verify(conn: sqlite3.Connection, path) -> dict:
     out = REPORT_DIR / f"{date.today().isoformat()}-sell-conditions.md"
     out.write_text("\n".join([
         f"# 판매 조건서 — {date.today().isoformat()}", "",
-        "상품 추천 에이전트가 추천하고 판매 가능 조건 확인을 통과한 상품. 등록에 필요한 값을 정리했다.", "",
+        "후보 선별 에이전트의 선별과 판매 가능 조건 확인을 통과한 상품. 등록에 필요한 값을 정리했다.", "",
         *sheets,
         "## 선정 단계로 돌려보낸 상품", "", *(returned or ["- 없음"]), "",
     ]), encoding="utf-8")

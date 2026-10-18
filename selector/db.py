@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS candidates (
     stage TEXT NOT NULL DEFAULT 'new',-- new → detailed → triaged → measured → checked(경쟁 정보 확보) → verified / excluded·returned
     exclude_reason TEXT,
     keywords TEXT,                    -- JSON 배열. triage에서 Claude가 작성
-    review TEXT,                      -- JSON. 상위 후보 검토에서 Claude가 작성
+    review TEXT,                      -- JSON. 7단계 검토에서 Claude가 작성
     added_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS supply_snapshots (  -- 변동성 계산용 스냅샷
@@ -80,12 +80,12 @@ CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 
     similar_prices TEXT NOT NULL,     -- JSON 배열. 같은 상품이 적을 때의 경쟁가
     note TEXT
 );
-CREATE TABLE IF NOT EXISTS judgments (         -- 사람·검토 단계의 상품별 판정. 최신 판정이 추천 여부에 반영된다
+CREATE TABLE IF NOT EXISTS judgments (         -- 사람·검토 단계의 상품별 판정. 최신 판정이 선별 통과 여부에 반영된다
     no INTEGER NOT NULL,
     judged_at TEXT NOT NULL,
     verdict TEXT NOT NULL,            -- 판매 실험 검토 가능 / 추가 확인 / 제외 (docs/product-selection.md 판정)
     reason TEXT NOT NULL,
-    source TEXT NOT NULL              -- 판정 근거 자료·판정자 (예: 네이버 캡처 표본, 상위 후보 검토)
+    source TEXT NOT NULL              -- 판정 근거 자료·판정자 (예: 네이버 캡처 표본, 7단계 검토)
 );
 CREATE TABLE IF NOT EXISTS verifications (     -- 판매 가능 조건 확인
     no INTEGER NOT NULL,

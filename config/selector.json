@@ -1,41 +1,89 @@
 {
   "_note": "값의 구분은 각 항목의 _status를 따른다. 확정: 금붕부부 결정. 제안: 추정치 — 미확정 제안값. 미확인: 공식 확인 전이라 비워 둔다.",
-
   "exclusion": {
     "_status": "확정 — docs/product-selection.md 초기 제외 기준·가치관 필터",
     "_match_note": "category는 도매 카테고리 경로명, title은 상품명에서 부분 일치로 찾는다.",
     "rules": {
       "인증·표시 부담 상품군": {
-        "category": ["화장품", "뷰티", "식품", "건강식품", "음료", "가전", "디지털", "전기", "출산", "유아", "육아"],
-        "title": ["화장품", "스킨케어", "충전기", "배터리", "어댑터", "전기", "유아용", "아기", "신생아"]
+        "category": [
+          "화장품",
+          "뷰티",
+          "식품",
+          "건강식품",
+          "음료",
+          "가전",
+          "디지털",
+          "전기",
+          "출산",
+          "유아",
+          "육아"
+        ],
+        "title": [
+          "화장품",
+          "스킨케어",
+          "충전기",
+          "배터리",
+          "어댑터",
+          "전기",
+          "유아용",
+          "아기",
+          "신생아"
+        ]
       },
       "사이즈·색상 반품 부담": {
-        "category": ["의류", "신발", "언더웨어", "속옷"],
+        "category": [
+          "의류",
+          "신발",
+          "언더웨어",
+          "속옷"
+        ],
         "title": []
       },
       "캐릭터·라이선스 굿즈": {
-        "category": ["캐릭터"],
-        "title": ["캐릭터", "디즈니", "산리오", "포켓몬", "마블", "카카오프렌즈", "라인프렌즈", "짱구", "정품라이선스"]
+        "category": [
+          "캐릭터"
+        ],
+        "title": [
+          "캐릭터",
+          "디즈니",
+          "산리오",
+          "포켓몬",
+          "마블",
+          "카카오프렌즈",
+          "라인프렌즈",
+          "짱구",
+          "정품라이선스"
+        ]
       },
       "일회용·일회성 소비": {
-        "category": ["파티용품"],
-        "title": ["일회용", "1회용"]
+        "category": [
+          "파티용품"
+        ],
+        "title": [
+          "일회용",
+          "1회용"
+        ]
       },
       "다이어트·건강 과장": {
-        "category": ["다이어트"],
-        "title": ["다이어트", "체중감량", "지방분해", "디톡스"]
+        "category": [
+          "다이어트"
+        ],
+        "title": [
+          "다이어트",
+          "체중감량",
+          "지방분해",
+          "디톡스"
+        ]
       }
     },
     "exclude_adult": true,
     "exclude_oversea": true,
     "_rule_note": "규칙은 명백한 경우만 거른다. 통과한 상품은 triage 단계에서 Claude가 다시 판정한다."
   },
-
   "trend": {
     "_status": "제안 — 쇼핑 인사이트 분야: 도매 카테고리에 '침구'가 있으면 가구/인테리어, 최상위가 스포츠/레저면 스포츠/레저, 나머지는 생활/건강을 먼저 조회하고 데이터가 min_months 미만이면 다른 분야도 조회한다",
     "min_months": 10
   },
-
   "competition": {
     "_status": "제안 — 11번가 상품명 검색 상위 title_top개에서 같은 사진은 dHash 거리, 같은 유형은 단어 포함 비율로 추정. 동일 상품임을 확정하지 않음. 검증 근거는 records/2026-10-10-product-selection-agent.md",
     "title_top": 100,
@@ -46,7 +94,6 @@
     "_type_reverse_status": "제안 — 같은 유형 가격 집합에서 경쟁 상품명 단어 중 도매 상품명에 있는 비율이 이 값 미만이면 다른 종류로 보고 가격 비교에서 뺀다. 2026-10-15 개발 사례(LP 거치대에 섞인 LP 수납장 등)로 정한 값이며 판정 정확도는 미검증",
     "_same_type_status": "제안 — 상품명 검색 결과 중 도매 상품명 검색어 단어의 80% 이상을 포함하면 같은 유형으로 본다. 2026-10-14 네이버 표본 4건 근거: 같은 사진만 세면 같은 유형 경쟁을 놓쳤다"
   },
-
   "catalog": {
     "_status": "제안 — 네이버 커머스API 카탈로그를 도매 상품명 검색어로 조회. 검색어 단어의 similar_overlap 이상을 담은 카탈로그를 같은 유형, 도매 상품명 전체 단어의 exact_title_overlap 이상을 담은 카탈로그를 이름 일치로 본다. 2026-10-14 표본에서 이름 일치 3건은 모두 네이버 부적합이었으나, 전체 후보 152개 중 106개에서 이름 일치가 나와 변별력이 낮다. 점수·추천 조건에 넣지 않는 참고 지표",
     "size": 50,
@@ -54,27 +101,18 @@
     "exact_title_overlap": 0.75,
     "pause_seconds": 0.3
   },
-
-  "manual_check": {
-    "_status": "제안 — 수동 확인 대상 상위 후보 수와 대표 키워드당 상한(같은 키워드 쏠림 방지)",
-    "shortlist": 30,
-    "per_keyword": 3
-  },
-
   "verification": {
     "_status": "반려 기준은 확정 — 필요한 정보 미확보 또는 배송·반품 조건 불일치(docs/product-selection-agent.md). 아래 수치는 주의 표시용 제안값",
     "top": 25,
     "prep_warn_days": 2,
     "sale_end_warn_days": 14
   },
-
   "naver_calibration": {
     "_status": "추정치 — 2026-10-14 네이버 캡처 표본 5개(같은 사진이 양쪽에 있던 상품)의 네이버÷11번가 비율 평균. 표본이 쌓이면 다시 계산한다",
     "lowest_price": 0.76,
     "median_price": 0.91,
     "same_photo_sellers": 1.8
   },
-
   "pricing": {
     "platform_fee_rate": null,
     "_fee_status": "미확인 — 스마트스토어 수수료(판매수수료·주문관리수수료 합계, 부가세 포함)를 판매자센터 공식 안내로 확인한 뒤 소수(예: 0.0x)로 입력한다. 2026-10-15 공식 도움말 직접 확인 실패, 2차 자료만 확인. 비어 있으면 수수료 반영 마진은 모름으로 표시한다.",
@@ -85,30 +123,41 @@
     "_dispersion_status": "제안 — 선택된 경쟁가 집합의 상위÷하위 4분위 비율이 이 값을 넘으면 비교표에 다른 상품 혼입 의심으로 표시한다. 추천 판정에는 쓰지 않는다",
     "_basis_status": "제안 — 이 개수 이상의 가격을 확보한 같은 사진 집합, 같은 유형 집합, 키워드 검색 결과 순으로 경쟁가를 선택한다."
   },
-
-  "scoring": {
-    "_status": "제안 — 배치 내 백분위 순위의 가중합. 필수 지표가 없으면 점수를 매기지 않는다. 추천 목록은 대표 키워드당 recommend_per_keyword개까지. 가중치·임계값은 미확정",
-    "required": ["saturation", "gross_margin_rate"],
-    "recommend_top": 20,
-    "recommend_per_keyword": 2,
-    "recommend_min_margin": 0.15,
-    "recommend_min_lowest_margin": 0.0,
+  "selection": {
+    "_status": "확정 — 금붕부부 결정. 점수·순위·추천 상한 없이 아래 조건을 모두 통과한 후보를 선별한다. 근거는 records/2026-10-10-product-selection-agent.md 다중 배치 블라인드 평가·후보 선별 전환",
+    "price_basis": [
+      "동일 상품"
+    ],
+    "_price_basis_status": "확정 — 경쟁가가 같은 사진 상품 가격인 후보만 통과. 같은 유형·키워드 상위 결과 가격은 다른 디자인·규격이 섞여 참고값으로만 쓴다",
+    "min_median_margin": 0.15,
+    "min_lowest_margin": 0.0,
+    "_margin_status": "제안 — 네이버 보정 후 경쟁 중앙가 기준 수수료 차감 전 마진율이 min_median_margin 미만이거나 경쟁 최저가 기준 마진율이 min_lowest_margin 미만이면 통과시키지 않는다. 사업상 판매 승인 기준과 구분한다",
     "margin_basis": "gross",
-    "_margin_basis_status": "미결정 — 추천 조건의 마진 기준. gross는 수수료 차감 전, net은 pricing.platform_fee_rate 차감 후이며 수수료율이 비어 있으면 추천하지 않는다. 금붕부부 결정 전까지 gross",
-    "_gate_status": "제안 — 네이버 보정 후 경쟁 중앙가 기준 수수료 차감 전 마진율이 recommend_min_margin 미만이거나, 경쟁 최저가 기준 마진율이 recommend_min_lowest_margin 미만이거나, 경쟁가가 키워드 상위 결과 기준이면 추천하지 않는다. 사업상 판매 승인 기준과 구분한다.",
+    "_margin_basis_status": "미결정 — 선별 조건의 마진 기준. gross는 수수료 차감 전, net은 pricing.platform_fee_rate 차감 후이며 수수료율이 비어 있으면 통과시키지 않는다. 금붕부부 결정 전까지 gross",
     "sensitivity": {
-      "_status": "제안 — 추천 후보의 가격 가정 민감도 표시용 대안. 2026-10-14 두 결과물 평가에서 추천을 크게 바꾼 가정이며 더 나은 설정이라는 뜻이 아니다. 추천 판정에는 쓰지 않는다",
-      "저가 제거 안 함": {"pricing": {"drop_outliers": false}},
-      "같은 사진 최소 1건": {"pricing": {"min_matched_for_same_product_price": 1}},
-      "네이버 보정 0.82/0.97": {"naver_calibration": {"lowest_price": 0.82, "median_price": 0.97}},
-      "네이버 보정 없음": {"naver_calibration": {"lowest_price": 1.0, "median_price": 1.0}}
-    },
-    "weights": {
-      "saturation": 0.3,
-      "gross_margin_rate": 0.25,
-      "competition_density": 0.15,
-      "search_volume": 0.2,
-      "trend_growth": 0.1
+      "_status": "제안 — 선별 통과 후보의 가격 가정 민감도 표시용 대안. 2026-10-14 두 결과물 평가에서 결과를 크게 바꾼 가정이며 더 나은 설정이라는 뜻이 아니다. 선별 판정에는 쓰지 않는다",
+      "저가 제거 안 함": {
+        "pricing": {
+          "drop_outliers": false
+        }
+      },
+      "같은 사진 최소 1건": {
+        "pricing": {
+          "min_matched_for_same_product_price": 1
+        }
+      },
+      "네이버 보정 0.82/0.97": {
+        "naver_calibration": {
+          "lowest_price": 0.82,
+          "median_price": 0.97
+        }
+      },
+      "네이버 보정 없음": {
+        "naver_calibration": {
+          "lowest_price": 1.0,
+          "median_price": 1.0
+        }
+      }
     }
   }
 }
