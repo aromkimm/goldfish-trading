@@ -280,7 +280,7 @@ class Judgments(unittest.TestCase):
              mock.patch.object(domeggook, "item_view", side_effect=lambda no: domeggook.unwrap(VIEW)):
             self.assertEqual(pipeline.export_verify(conn)[1], 0)  # 검토 전에는 대상 없음
             done = tmp / "done.jsonl"
-            done.write_text("\n".join(json.dumps({"no": no, "verdict": v, "rationale": "r"}, ensure_ascii=False)
+            done.write_text("\n".join(json.dumps({"no": no, "verdict": v, "rationale": "r", "decision_revision": 0, "evidence_at": next(r["evidence_at"] for r in pipeline.build_rows(conn) if r["no"] == no)}, ensure_ascii=False)
                                       for no, v in ((1, "추가 확인"), (2, "제외"))), encoding="utf-8")
             pipeline.import_review(conn, done)
             rows = {r["no"]: r for r in pipeline.build_rows(conn)}
@@ -288,7 +288,9 @@ class Judgments(unittest.TestCase):
             self.assertFalse(rows[2]["selected"])  # 검토의 제외 판정은 선별에서 뺀다
             with self.assertRaises(ValueError):
                 pipeline.export_verify(conn, nos=[2])
-            self.assertEqual(pipeline.export_verify(conn)[1], 1)
+            # 최신 공급 응답이 기존 합성 근거와 다르면 다시 검토해야 한다.
+            with self.assertRaises(ValueError):
+                pipeline.export_verify(conn)
             conn.execute("UPDATE competition SET fetched_at='2026-10-16T00:00:00+00:00' WHERE no=1")  # 경쟁 재수집
             self.assertFalse(next(r for r in pipeline.build_rows(conn) if r["no"] == 1)["review_current"])
             self.assertEqual(pipeline.export_verify(conn)[1], 0)
@@ -395,13 +397,13 @@ class ManualCheck(unittest.TestCase):
 class Scoring(unittest.TestCase):
     def test_price_floor(self):
         sc = scoring.price_scenarios([5000, 8000, 9000], resale_min=7000)
-        self.assertEqual(sc, {"lowest": 7000, "median": 8000, "floored": True})
+        self.assertEqual((sc["lowest"], sc["median"], sc["proposed_lowest"], sc["floored"]), (5000, 8000, 7000, True))
 
     def test_naver_calibration(self):
         sc = scoring.price_scenarios([10000, 12000, 14000], None, 0.76, 0.91)
         self.assertEqual((sc["lowest"], sc["median"]), (7600, 10920))
         sc = scoring.price_scenarios([10000, 12000, 14000], 9000, 0.76, 0.91)
-        self.assertEqual((sc["lowest"], sc["floored"]), (9000, True))  # 보정 후에도 최저판매준수가 하한
+        self.assertEqual((sc["lowest"], sc["proposed_lowest"], sc["floored"]), (7600, 9000, True))  # 보정 후에도 최저판매준수가 하한
 
     def test_basis_falls_back_to_keyword_results(self):
         prices, basis = scoring.competitor_prices([9000], [8000, 0, 12000], min_matched=3)
@@ -566,11 +568,11 @@ class EndToEnd(unittest.TestCase):
             self.assertEqual((row["trend_growth"], row["shop_growth"], row["blog_total"]), (3.0, 3.0, 1000))
             self.assertEqual(row["price_basis"], "동일 상품")
             self.assertEqual(row["price_low_bound"], 5000)  # 착불 5,000원은 최저가 시나리오의 하한
-            self.assertEqual(row["price_lowest"], 7000)  # 5,000×0.76=3,800 → 최저판매준수가 7,000 하한
+            self.assertEqual(row["price_lowest"], 3800)  # 5,000×0.76=3,800 → 최저판매준수가 7,000 하한
             self.assertEqual(row["price_median"], 8190)  # 9,000×0.91
             self.assertEqual(row["search_volume"], 3000)
             self.assertEqual(row["competition_density"], 1.0)
-            self.assertEqual(row["margin_lowest"]["gross"], 7000 - 3000 - 2500)
+            self.assertEqual(row["margin_lowest"]["gross"], 3800 - 3000 - 2500)
             self.assertEqual(row["price_compare_min"], 8900)
             md, _, count = pipeline.write_report(conn)
             self.assertEqual(count, 1)
@@ -584,14 +586,14 @@ class EndToEnd(unittest.TestCase):
                 self.assertEqual(len(pending["compared_items"]), 4)  # 같은 사진 상품(착불 포함)을 검토자가 대조
                 done = tmp / "review_done.jsonl"
                 done.write_text(json.dumps({"no": 101, "verdict": "추가 확인", "rationale": "같은 사진 3곳 무료배송",
-                                            "risks": "", "unknowns": "네이버 경쟁"}, ensure_ascii=False), encoding="utf-8")
+                                            "risks": "", "unknowns": "네이버 경쟁", "evidence_at": pending["evidence_at"], "decision_revision": pending["decision_revision"]}, ensure_ascii=False), encoding="utf-8")
                 self.assertEqual(pipeline.import_review(conn, done), 1)
                 page, n = pipeline.export_verify(conn, top=5)
                 self.assertEqual(n, 1)
                 self.assertIn("판매 가능 조건 확인", Path(page).read_text(encoding="utf-8"))
                 filled = tmp / "verify_done.csv"
-                filled.write_text("no,options,cutoff,return_method,info_confirmed,restriction_confirmed,note\n"
-                                  "101,1,평일 14시,도매매 반품 신청,Y,Y,\n", encoding="utf-8")
+                filled.write_text("no,batch_id,options,cutoff,return_method,info_confirmed,restriction_confirmed,note\n"
+                                  f"101,{Path(page).stem.removeprefix('verify-')},1,평일 14시,도매매 반품 신청,Y,Y,\n", encoding="utf-8")
                 counts = pipeline.import_verify(conn, filled)
             self.assertEqual((counts["verified"], counts["returned"]), (1, 0))
             self.assertIn("흰색", Path(counts["sheet"]).read_text(encoding="utf-8"))
@@ -708,3 +710,210 @@ class ListBasisSamePhotoOnly(unittest.TestCase):
         with mock.patch.object(pipeline, "MANUAL_DIR", tmp):
             _, n = pipeline.export_manual(conn)  # 네이버 확인 화면 기본 대상은 선별 통과 후보
         self.assertEqual(n, 1)
+
+
+class HandoffIntegrity(unittest.TestCase):
+    """판정 근거 변경·오래된 파일·직접 지정으로 인계 검사를 우회하지 못한다."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmpdir.cleanup)
+        self.tmp = Path(self.tmpdir.name)
+        self.view = json.loads(json.dumps(domeggook.unwrap(VIEW)))
+        title = self.view['basis']['title']
+        items = [dict(name=title, seller=str(i), price=20000, delivery='무료', photo=True, type=True) for i in range(3)]
+        self.conn = candidate_db({101: (title, items)})
+        self.addCleanup(self.conn.close)
+        self.conn.execute('UPDATE supply_snapshots SET summary=?, raw=?',
+                          (json.dumps(domeggook.summarize(self.view)), json.dumps(self.view)))
+        for attr in ('LLM_DIR', 'VERIFY_DIR', 'REPORT_DIR'):
+            patcher = mock.patch.object(pipeline, attr, self.tmp / attr)
+            patcher.start(); self.addCleanup(patcher.stop)
+        patcher = mock.patch.object(domeggook, 'item_view', side_effect=lambda no: json.loads(json.dumps(self.view)))
+        patcher.start(); self.addCleanup(patcher.stop)
+
+    def review_file(self):
+        row = pipeline.build_rows(self.conn)[0]
+        row.update(verdict='추가 확인', rationale='합성 가격·공급 자료 검토')
+        done = self.tmp / 'review.jsonl'
+        done.write_text(json.dumps(row))
+        return done
+
+    def review(self):
+        pipeline.import_review(self.conn, self.review_file())
+
+    def change_supply(self):
+        s = db.latest_snapshot(self.conn, 101)
+        s['supply_price'] = 50000
+        self.conn.execute('UPDATE supply_snapshots SET summary=?', (json.dumps(s),))
+
+    def filled(self):
+        pipeline.export_verify(self.conn, nos=[101])
+        pending = list((self.tmp / 'VERIFY_DIR').glob('pending-*.json'))[-1]
+        data = json.loads(pending.read_text())
+        batch_id = data.get('batch_id', '') if isinstance(data, dict) else ''
+        path = self.tmp / 'filled.csv'
+        path.write_text('no,batch_id,options,cutoff,return_method,info_confirmed,restriction_confirmed,note\n'
+                        f'101,{batch_id},1,14시,접수,Y,Y,\n')
+        return path
+
+    def test_supply_change_invalidates_review(self):
+        self.review(); self.change_supply()
+        row = pipeline.build_rows(self.conn)[0]
+        self.assertFalse(row['review_current'])
+
+    def test_options_and_settings_invalidate_review(self):
+        self.review()
+        raw = json.loads(json.dumps(self.view))
+        raw['selectOpt'] = json.dumps({'data': {'0': {'name': '대형', 'sup': '1', 'supPrice': '1000'}}})
+        self.conn.execute('UPDATE supply_snapshots SET raw=?', (json.dumps(raw),))
+        self.assertFalse(pipeline.build_rows(self.conn)[0]['review_current'])
+        self.conn.execute('UPDATE supply_snapshots SET raw=?', (json.dumps(self.view),))
+        self.assertTrue(pipeline.build_rows(self.conn)[0]['review_current'])
+        cfg = settings(); cfg['pricing']['platform_fee_rate'] = 0.05
+        self.assertFalse(pipeline.build_rows(self.conn, cfg)[0]['review_current'])
+
+    def test_stale_or_missing_review_token_rejected_without_writes(self):
+        for mode in ('stale', 'missing'):
+            with self.subTest(mode=mode):
+                done = self.review_file()
+                row = json.loads(done.read_text())
+                row['evidence_at'] = 'old' if mode == 'stale' else None
+                done.write_text(json.dumps(row))
+                with self.assertRaises(ValueError):
+                    pipeline.import_review(self.conn, done)
+                self.assertIsNone(self.conn.execute('SELECT review FROM candidates').fetchone()[0])
+                self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM judgments').fetchone()[0], 0)
+
+    def test_explicit_unselected_candidate_blocked(self):
+        self.change_supply()
+        self.review()
+        with self.assertRaises(ValueError):
+            pipeline.export_verify(self.conn, nos=[101])
+
+    def test_refresh_change_blocks_export_and_preserves_new_supply(self):
+        self.review()
+        self.view['price']['supply'] = '1+50000'
+        with self.assertRaises(ValueError):
+            pipeline.export_verify(self.conn, nos=[101])
+        self.assertEqual(db.latest_snapshot(self.conn, 101)['supply_price'], 50000)
+        self.assertFalse(list((self.tmp / 'VERIFY_DIR').glob('pending-*.json')))
+
+    def test_unchanged_refresh_keeps_review_and_import_succeeds(self):
+        self.review()
+        filled = self.filled()
+        self.assertTrue(pipeline.build_rows(self.conn)[0]['review_current'])
+        self.assertEqual(pipeline.import_verify(self.conn, filled)['verified'], 1)
+
+    def test_supply_change_while_form_open_blocks_import(self):
+        self.review(); filled = self.filled()
+        self.view['price']['supply'] = '1+50000'
+        with self.assertRaises(ValueError):
+            pipeline.import_verify(self.conn, filled)
+        self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM verifications').fetchone()[0], 0)
+        self.assertFalse(list((self.tmp / 'REPORT_DIR').glob('*sell-conditions.md')))
+
+    def test_exclusion_after_export_blocks_import(self):
+        self.review(); filled = self.filled()
+        db.add_judgment(self.conn, 101, '제외', '새 반대 근거', '검토')
+        with self.assertRaises(ValueError):
+            pipeline.import_verify(self.conn, filled)
+        self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM verifications').fetchone()[0], 0)
+
+    def test_legacy_csv_cannot_bind_to_new_pending(self):
+        self.review(); filled = self.filled()
+        lines = filled.read_text().splitlines()
+        lines[1] = '101,,1,14시,접수,Y,Y,'
+        filled.write_text('\n'.join(lines))
+        with self.assertRaises(ValueError):
+            pipeline.import_verify(self.conn, filled)
+
+    def test_old_review_cannot_overwrite_newer_exclusion(self):
+        done = self.review_file()
+        pipeline.import_review(self.conn, done)
+        db.add_judgment(self.conn, 101, '제외', '네이버 새 반대 근거', '사람 확인')
+        with self.assertRaises(ValueError):
+            pipeline.import_review(self.conn, done)
+        self.assertFalse(pipeline.build_rows(self.conn)[0]['selected'])
+        self.assertEqual(db.latest_judgment(self.conn, 101)['verdict'], '제외')
+
+    def test_new_judgment_requires_review_and_can_be_reviewed_again(self):
+        self.review()
+        db.add_judgment(self.conn, 101, '추가 확인', '새 자료 확인 필요', '사람 확인')
+        self.assertFalse(pipeline.build_rows(self.conn)[0]['review_current'])
+        path, count = pipeline.export_review(self.conn)
+        self.assertEqual(count, 1)
+        row = json.loads(Path(path).read_text().splitlines()[0])
+        row.update(verdict='추가 확인', rationale='새 자료 재검토')
+        done = self.tmp / 'new-review.jsonl'; done.write_text(json.dumps(row))
+        pipeline.import_review(self.conn, done)
+        self.assertTrue(pipeline.build_rows(self.conn)[0]['review_current'])
+
+    def test_same_second_manual_update_invalidates_review(self):
+        for prices in ('[20000]', '[5000]'):
+            self.conn.execute('INSERT INTO manual_checks VALUES (?,?,?,?,?,?,?)',
+                              (101, '2026-10-19T00:00:00+00:00', 10, 3, prices, '[]', '합성'))
+            if prices == '[20000]':
+                self.review()
+        self.assertFalse(pipeline.build_rows(self.conn)[0]['review_current'])
+
+    def test_review_file_validation_is_atomic(self):
+        done = self.review_file()
+        row = json.loads(done.read_text())
+        done.write_text(json.dumps(row) + '\n' + json.dumps(row | {'no': 999, 'evidence_at': 'old'}))
+        with self.assertRaises(ValueError):
+            pipeline.import_review(self.conn, done)
+        self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM judgments').fetchone()[0], 0)
+
+    def test_later_screen_does_not_replace_earlier_csv_source(self):
+        self.review(); filled = self.filled()
+        first_batch = filled.read_text().splitlines()[1].split(',')[1]
+        second, _ = pipeline.export_verify(self.conn, nos=[101])
+        self.assertNotIn(first_batch, second)
+        counts = pipeline.import_verify(self.conn, filled)
+        self.assertIn(first_batch, counts['sheet'])
+        self.assertEqual(counts['verified'], 1)
+
+    def test_mixed_batches_and_duplicate_rows_rejected(self):
+        self.review(); filled = self.filled()
+        original = filled.read_text()
+        for other in ('101,' + 'a' * 32 + ',1,14시,접수,Y,Y,',
+                      '102,' + 'a' * 32 + ',1,14시,접수,Y,Y,'):
+            with self.subTest(other=other):
+                filled.write_text(original + other + '\n')
+                with self.assertRaises(ValueError):
+                    pipeline.import_verify(self.conn, filled)
+                self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM verifications').fetchone()[0], 0)
+
+
+class PriceEvidence(unittest.TestCase):
+    def test_floor_does_not_overwrite_observed_or_calibrated_prices(self):
+        sc = scoring.price_scenarios([6000, 6500, 7000], 10000, 0.8, 0.9)
+        self.assertEqual(sc['lowest'], 4800)
+        self.assertEqual(sc['median'], 5850)
+        self.assertEqual(sc['observed_lowest'], 6000)
+        self.assertEqual(sc['observed_median'], 6500)
+        self.assertEqual(sc['proposed_lowest'], 10000)
+        self.assertEqual(sc['proposed_median'], 10000)
+
+    def test_floor_separated_in_report_without_changing_pending_policy(self):
+        title = '걸이'
+        items = [dict(name=title, seller=str(i), price=6000, delivery='무료', photo=True, type=True) for i in range(3)]
+        conn = candidate_db({1: (title, items)}, supply_price=6000, ship_cost=2000)
+        s = db.latest_snapshot(conn, 1); s['resale_min'] = 10000
+        conn.execute('UPDATE supply_snapshots SET summary=?', (json.dumps(s),))
+        row = pipeline.build_rows(conn)[0]
+        self.assertEqual(row['price_lowest'], 4560)
+        self.assertEqual(row['margin_lowest']['gross'], -3440)
+        self.assertEqual(row['proposed_price_lowest'], 10000)
+        self.assertEqual(row['proposed_margin_lowest']['gross'], 2000)
+        self.assertTrue(row['selected'])  # 준수가 적용 판정 허용 여부는 사업 미결: 현행 유지
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(pipeline, 'REPORT_DIR', Path(tmp)):
+            md, csv_path, _ = pipeline.write_report(conn)
+            self.assertIn('4,560', Path(md).read_text())
+            self.assertIn('10,000', Path(md).read_text())
+            import csv
+            with open(csv_path, encoding='utf-8-sig') as f:
+                exported = next(csv.DictReader(f))
+            self.assertEqual(exported['price_lowest'], '4560')
+            self.assertEqual(exported['proposed_price_lowest'], '10000')

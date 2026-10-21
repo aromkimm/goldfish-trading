@@ -126,38 +126,38 @@ def connect(path=None) -> sqlite3.Connection:
 
 def latest_snapshot(conn: sqlite3.Connection, no: int) -> dict | None:
     row = conn.execute(
-        "SELECT summary FROM supply_snapshots WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
+        "SELECT summary FROM supply_snapshots WHERE no=? ORDER BY fetched_at DESC, rowid DESC LIMIT 1", (no,)
     ).fetchone()
     return json.loads(row["summary"]) if row else None
 
 
 def latest_keyword_stats(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM keyword_stats WHERE keyword=? ORDER BY fetched_at DESC LIMIT 1", (keyword,)
+        "SELECT * FROM keyword_stats WHERE keyword=? ORDER BY fetched_at DESC, rowid DESC LIMIT 1", (keyword,)
     ).fetchone()
 
 
 def latest_trend(conn: sqlite3.Connection, keyword: str) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM trends WHERE keyword=? ORDER BY fetched_at DESC LIMIT 1", (keyword,)
+        "SELECT * FROM trends WHERE keyword=? ORDER BY fetched_at DESC, rowid DESC LIMIT 1", (keyword,)
     ).fetchone()
 
 
 def latest_competition(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM competition WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
+        "SELECT * FROM competition WHERE no=? ORDER BY fetched_at DESC, rowid DESC LIMIT 1", (no,)
     ).fetchone()
 
 
 def latest_catalog(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM catalog_checks WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)
+        "SELECT * FROM catalog_checks WHERE no=? ORDER BY fetched_at DESC, rowid DESC LIMIT 1", (no,)
     ).fetchone()
 
 
 def latest_manual_check(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM manual_checks WHERE no=? ORDER BY checked_at DESC LIMIT 1", (no,)
+        "SELECT * FROM manual_checks WHERE no=? ORDER BY checked_at DESC, rowid DESC LIMIT 1", (no,)
     ).fetchone()
 
 
@@ -174,5 +174,5 @@ def add_judgment(conn: sqlite3.Connection, no: int, verdict: str, reason: str, s
 
 def latest_judgment(conn: sqlite3.Connection, no: int) -> sqlite3.Row | None:
     return conn.execute(
-        "SELECT * FROM judgments WHERE no=? ORDER BY judged_at DESC, rowid DESC LIMIT 1", (no,)
+        "SELECT *, rowid AS revision FROM judgments WHERE no=? ORDER BY judged_at DESC, rowid DESC LIMIT 1", (no,)
     ).fetchone()

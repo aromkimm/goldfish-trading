@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import csv
+import hashlib
+import uuid
 import json
 import sqlite3
 from datetime import date
@@ -389,9 +391,16 @@ def _price_sets(comp, title: str, min_reverse_overlap: float) -> dict[str, tuple
             "키워드 상위 결과": scoring.comparable_prices(json.loads(comp["keyword_items"] or "[]"))}
 
 
-def _evidence_key(keyword: str, comp) -> str:
-    """검토가 본 근거의 식별값. 대표 키워드나 경쟁 수집이 바뀌면 이전 검토는 현재 지표의 검토가 아니다."""
-    return f"{keyword}|{comp['fetched_at']}"
+def _evidence_key(conn, no: int, keyword: str, comp, supply: dict, cfg: dict) -> str:
+    """검토 입력의 내용 식별값. 공급 재조회 시점만 바뀐 경우에는 동일하다."""
+    payload = {
+        "version": 2, "keyword": keyword, "competition": dict(comp),
+        "supply": supply, "raw": _latest_raw(conn, no), "settings": cfg,
+        "support": [dict(r) if r is not None else None for r in (
+            db.latest_keyword_stats(conn, keyword), db.latest_trend(conn, keyword),
+            db.latest_catalog(conn, no), db.latest_manual_check(conn, no))],
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
 def _merged(base: dict, override: dict) -> dict:
@@ -426,6 +435,8 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
         sc = scoring.price_scenarios(prices, s.get("resale_min"), cal["lowest_price"], cal["median_price"], low_bound)
         m_low = scoring.margin(sc["lowest"], s["supply_price"], s["ship_cost"], fee)
         m_mid = scoring.margin(sc["median"], s["supply_price"], s["ship_cost"], fee)
+        proposed_low = scoring.margin(sc["proposed_lowest"], s["supply_price"], s["ship_cost"], fee)
+        proposed_mid = scoring.margin(sc["proposed_median"], s["supply_price"], s["ship_cost"], fee)
         volume, volume_text = _search_volume(ks)
         total = comp["keyword_total"]
         density = round(total / volume, 2) if total is not None and volume else None
@@ -452,6 +463,9 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
                 "type_sellers": comp["type_sellers"]},
             "price_low_bound": low_bound,  # 최저가 시나리오에 쓴 하한(배송비 별도 표시가·같은 사진 가격)
             "price_lowest": sc["lowest"], "price_median": sc["median"],
+            "observed_price_lowest": sc["observed_lowest"], "observed_price_median": sc["observed_median"],
+            "proposed_price_lowest": sc["proposed_lowest"], "proposed_price_median": sc["proposed_median"],
+            "proposed_margin_lowest": proposed_low, "proposed_margin_median": proposed_mid,
             "supply_price": s["supply_price"], "ship_cost": s["ship_cost"], "ship_fee_type": s["ship_fee_type"],
             "resale_min": s.get("resale_min"), "return_fee": s.get("return_fee"),
             "margin_lowest": m_low, "margin_median": m_mid,
@@ -471,13 +485,15 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
             "volatility": volatility(conn, c["no"]),
             "review": json.loads(c["review"]) if c["review"] else None,
             "judgment": dict(j) if (j := db.latest_judgment(conn, c["no"])) else None,
-            "evidence_at": _evidence_key(keyword, comp),
+            "decision_revision": j["revision"] if j else 0,
+            "evidence_at": _evidence_key(conn, c["no"], keyword, comp, s, cfg),
         })
     rate = {"gross": "gross_rate", "net": "net_rate"}[cfg["selection"]["margin_basis"]]  # net은 수수료율 미설정이면 모름 → 통과 안 함
     for r in rows:
         r["missing"] = [k for k in ("search_volume", "same_photo", "gross_margin_rate", "trend_growth", "competition_density")
                         if r.get(k) is None]
-        median_margin, lowest_margin = r["margin_median"][rate], r["margin_lowest"][rate]
+        # 준수가 적용 시나리오로 선별하는 현행 방침은 유지한다. 허용 여부는 사업 미결이다.
+        median_margin, lowest_margin = r["proposed_margin_median"][rate], r["proposed_margin_lowest"][rate]
         # 선별 조건. 순위·점수는 쓰지 않는다(2026-10-16 평가에서 점수가 품질을 가르지 못함). 통과 후보는 모두 목록에 둔다.
         r["eligible"] = (median_margin is not None and median_margin >= cfg["selection"]["min_median_margin"]
               and lowest_margin is not None and lowest_margin >= cfg["selection"]["min_lowest_margin"]
@@ -485,7 +501,8 @@ def build_rows(conn: sqlite3.Connection, cfg: dict | None = None, sensitivity: b
               and not (r["judgment"] and r["judgment"]["verdict"] == "제외"))  # 사람·검토의 제외 판정은 재계산으로 뒤집지 않는다
         r["selected"] = r["eligible"]
         r["sensitive_to"] = []
-        r["review_current"] = bool(r["review"] and r["review"].get("evidence_at") == r["evidence_at"])
+        r["review_current"] = bool(r["review"] and r["review"].get("evidence_at") == r["evidence_at"]
+                                   and r["review"].get("decision_revision") == r["decision_revision"])
     rows.sort(key=lambda r: (not r["selected"], r["keyword"], r["no"]))  # 순서에 품질 의미가 없다
     if sensitivity:  # 가격 가정을 바꾸면 선별에서 빠지는지. 더 나은 설정을 고르는 시험이 아니라 근거의 견고함 표시다.
         for name, override in cfg["selection"]["sensitivity"].items():
@@ -516,7 +533,8 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         f"# 후보 선별표 — {date.today().isoformat()}",
         "",
         "- 마진은 추정치다. 점수·순위는 매기지 않는다. 표 순서는 선별 통과 여부·대표 키워드 순이며 판매 우선순위가 아니다.",
-        "- 선별 통과(✓): 경쟁가가 같은 사진 상품 가격이고, 네이버 보정 후 경쟁 중앙가 기준 마진율 15% 이상, 경쟁 최저가에 팔아도 적자가 아닌 후보 전부. 사람·검토 단계에서 제외로 판정한 후보는 다시 통과시키지 않는다(새 판정으로만 바뀜). 통과는 손해 위험을 걸렀다는 뜻이며 팔린다는 예측이 아니다. 판매 가능 조건 확인 대상이다.",
+        "- 선별 통과(✓): 경쟁가가 같은 사진 상품 가격이고, 준수가 적용 시나리오의 중앙가·최저가 마진이 설정 기준을 충족한 후보 전부. 사람·검토 단계에서 제외로 판정한 후보는 다시 통과시키지 않는다(새 판정으로만 바뀜). 통과는 현행 가격 가정을 충족했다는 뜻이며 손실 회피나 판매 가능성의 보장이 아니다. 판매 가능 조건 확인 대상이다.",
+        "- 가격 구분: 관측 비교가(정규화·저가 제거 후, 배송비 별도 표시가 하한 포함) → 네이버 보정 추정가 → 준수가 적용 시나리오. 앞의 두 값은 준수가로 올리지 않는다. 선별에는 현행대로 준수가 적용 시나리오 마진을 사용하며, 그 허용 여부는 미결이다. 시나리오 가격은 시장에서 받을 수 있다는 증거가 아니다.",
         "- 경쟁가 기준: 같은 사진(동일 상품) 가격만 판단 근거다. 같은 유형·키워드 상위 결과 기준 행의 경쟁가·마진은 다른 디자인·규격이 섞인 참고값이며 표에 `참고`로 표시한다.",
         "- 마진 가정: 무료배송으로 판매해 도매 배송비를 판매가에서 부담한다. 마진율 분모는 판매가다. 공급가는 기본 옵션 기준이며, 추가금 있는 옵션은 최고 옵션 기준 마진을 모름·주의 열에 함께 적는다. 경쟁 중앙가는 11번가 배송 표시가 `무료`인 상품끼리 비교하고, 최저가는 조건부무료·착불/선결제 상품의 표시가(배송비 미포함, 결제 총액의 하한)나, 같은 사진 가격이 부족해 다른 집합을 쓸 때의 같은 사진 가격이 더 낮으면 그 값을 쓴다. 상품명에 표기된 수량·치수가 다른 상품과 같은 유형 중 상품명 단어 대부분이 도매 상품명에 없는 상품(다른 종류)을 뺀다. 경쟁가 분산(상위÷하위 4분위)이 크면 혼입 의심으로 표시한다〔제거·표시 기준은 추정 제안값〕. 반품 비용은 반품률을 몰라 마진에 넣지 않고, 반품 1건의 공급처 반품배송비(무료배송 판매 시 2배 조건 반영)가 최저가 기준 몇 건의 마진에 해당하는지 표시한다. 선별 통과 후보는 설정의 가격 가정 대안(저가 제거·같은 사진 최소 건수·네이버 보정)으로 다시 계산해 통과에서 빠지면 그 가정을 표시한다.",
         "- 네이버 보정〔추정치〕: 네이버 캡처 표본에서 네이버 가격이 11번가보다 낮아, 경쟁 최저가 ×0.76, 중앙가 ×0.91로 계산한다. 네이버 예상 같은 사진 판매자 수는 11번가 ×1.8(표시용).",
@@ -530,15 +548,15 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         "- 같은 상품 리뷰 수: 11번가에서 같은 사진을 쓴 상품들의 리뷰 합계. 판매 흔적이며 판매량이 아니다.",
         "- 검색 추세: 네이버 검색어 트렌드 기준 최근 3개월 ÷ 그 전 3개월(증감), 직전 달 ÷ 12개월 평균(계절). 상대값 비율이며 검색량이 아니다. 블로그 글 수·작성 속도는 참고용이고 점수에 넣지 않는다.",
         "",
-        "| 선별 통과 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 네이버 카탈로그(유형/일치) | 경쟁가 기준 | 최저가 / 마진 | 중앙가 / 마진 | 도매가+배송 | 모름·주의 |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| 선별 통과 | 상품 | 키워드 | 월 검색수 | 검색 추세(증감/계절) | 11번가 상품 수 | 경쟁 밀도 | 같은 유형 판매자(같은 사진) | 네이버 카탈로그(유형/일치) | 경쟁가 기준 | 관측 비교가 최저/중앙 | 보정 최저가 / 마진 | 보정 중앙가 / 마진 | 준수가 적용 최저/중앙 / 선별 마진 | 도매가+배송 | 모름·주의 |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for r in rows:
         notes = [f"지표 없음: {', '.join(r['missing'])}"] if r["missing"] else []
         if r["image_usable"] is False:
             notes.append("이미지 사용 불허")
         if r["price_floored"]:
-            notes.append(f"최저판매준수가 {r['resale_min']:,} 적용")
+            notes.append(f"준수가 {r['resale_min']:,}원으로 시나리오 상향 — 보정 경쟁가와 차이, 가격 수용성 미확인")
         if r["ship_cost"] is None:
             notes.append(f"배송비 모름({r['ship_fee_type']})")
         if r["price_excluded"] is None:
@@ -574,8 +592,12 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
             _fmt(r["competition_density"]), f"{_fmt(r['saturation'])} ({_fmt(r['same_photo'])}, 네이버 예상 {_fmt(r['naver_same_photo_est'])})",
             f"{_fmt(r['catalog_similar'])} / {_fmt(r['catalog_exact'])}",
             r["price_basis"] + ("" if r["price_basis"] == "동일 상품" else " (참고)"),
+            f"{_fmt(r['observed_price_lowest'])} / {_fmt(r['observed_price_median'])}",
             f"{_fmt(r['price_lowest'])} / {_fmt(ml['gross_rate'], True)}",
             f"{_fmt(r['price_median'])} / {_fmt(mm['gross_rate'], True)}",
+            f"{_fmt(r['proposed_price_lowest'])} / {_fmt(r['proposed_price_median'])} · "
+            f"{_fmt(r['proposed_margin_lowest'][settings()['selection']['margin_basis'] + '_rate'], True)} / "
+            f"{_fmt(r['proposed_margin_median'][settings()['selection']['margin_basis'] + '_rate'], True)}",
             f"{_fmt(r['supply_price'])}+{_fmt(r['ship_cost'])}", "; ".join(notes) + " |",
         ]))
     short = [r for r in rows if r["price_shortage"] and not (r["judgment"] and r["judgment"]["verdict"] == "제외")]
@@ -596,7 +618,7 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
         lines += ["", "## 7단계 검토", ""]
         for r in reviewed:
             rv = r["review"]
-            state = "" if r["review_current"] else " — 이전 근거의 검토(키워드·경쟁 수집 변경 후 재검토 필요)"
+            state = "" if r["review_current"] else " — 이전 근거의 검토(검토 입력 변경 후 재검토 필요)"
             lines += [f"### {r['title']}", "", f"- 판정: {rv.get('verdict') or '없음'}{state}",
                       f"- 근거: {rv.get('rationale', '')}",
                       f"- 리스크: {rv.get('risks', '')}", f"- 모름: {rv.get('unknowns', '')}", ""]
@@ -606,15 +628,17 @@ def write_report(conn: sqlite3.Connection) -> tuple[str, str, int]:
     csv_path = f"{stem}.csv"
     flat_keys = ["no", "selected", "title", "keyword", "search_volume_text", "comp_idx", "shop_total", "competition_density",
                  "saturation", "same_photo", "naver_same_photo_est", "catalog_similar", "catalog_exact", "same_reviews", "keyword_fit", "sat_checked", "sat_title_total", "title_query", "checked_at", "price_basis", "price_dispersion", "price_low_bound", "price_lowest", "price_median",
-                 "resale_min", "supply_price", "option_count", "option_supply_max", "ship_cost", "return_fee", "image_usable", "kc_cert",
+                 "observed_price_lowest", "observed_price_median", "proposed_price_lowest", "proposed_price_median", "price_floored", "resale_min", "supply_price", "option_count", "option_supply_max", "ship_cost", "return_fee", "image_usable", "kc_cert",
                  "merge_enable", "sensitive_to", "trend_growth", "season_index", "shop_growth", "shop_months", "blog_total", "blog_rate",
                  "cafe_total", "price_compare_min", "price_compare_max", "sole", "popular", "url"]
     with open(csv_path, "w", encoding="utf-8-sig", newline="") as f:
         w = csv.writer(f)
-        w.writerow(flat_keys + ["gross_rate_lowest", "gross_rate_median", "net_rate_lowest", "net_rate_median"])
+        w.writerow(flat_keys + ["gross_rate_lowest", "gross_rate_median", "net_rate_lowest", "net_rate_median", "proposed_gross_rate_lowest", "proposed_gross_rate_median", "proposed_net_rate_lowest", "proposed_net_rate_median"])
         for r in rows:
             w.writerow([r[k] for k in flat_keys] + [r["margin_lowest"]["gross_rate"], r["margin_median"]["gross_rate"],
-                                                    r["margin_lowest"]["net_rate"], r["margin_median"]["net_rate"]])
+                                                    r["margin_lowest"]["net_rate"], r["margin_median"]["net_rate"],
+                                                    r["proposed_margin_lowest"]["gross_rate"], r["proposed_margin_median"]["gross_rate"],
+                                                    r["proposed_margin_lowest"]["net_rate"], r["proposed_margin_median"]["net_rate"]])
     return md_path, csv_path, len(rows)
 
 
@@ -624,7 +648,7 @@ REVIEW_FIELDS = ("verdict", "rationale", "risks", "unknowns")
 
 
 def _latest_raw(conn, no: int) -> dict:
-    row = conn.execute("SELECT raw FROM supply_snapshots WHERE no=? ORDER BY fetched_at DESC LIMIT 1", (no,)).fetchone()
+    row = conn.execute("SELECT raw FROM supply_snapshots WHERE no=? ORDER BY fetched_at DESC, rowid DESC LIMIT 1", (no,)).fetchone()
     return json.loads(row["raw"]) if row else {}
 
 
@@ -661,67 +685,111 @@ def export_review(conn: sqlite3.Connection, top: int | None = None) -> tuple[str
 
 
 def import_review(conn: sqlite3.Connection, path) -> int:
-    """검토 결과를 저장한다. 판정은 판정 기록에도 남겨 제외 판정이 선별에 반영되게 한다.
-    검토 당시의 근거 식별값을 저장해 키워드·경쟁 수집이 바뀌면 검토를 다시 요구한다."""
+    """내보낸 근거 식별값과 현재 입력이 일치하는 검토만 원자적으로 저장한다."""
     current = {r["no"]: r for r in build_rows(conn)}
-    n = 0
     with open(path, encoding="utf-8") as f:
-        lines = f.readlines()
-    for line in lines:
-        if not line.strip():
-            continue
-        r = json.loads(line)
+        entries = [json.loads(line) for line in f if line.strip()]
+    seen = set()
+    for r in entries:
+        no = r["no"]
+        if no in seen:
+            raise ValueError(f"{no}: 검토 중복")
+        seen.add(no)
         if r.get("verdict") not in db.VERDICTS:
-            raise ValueError(f"{r.get('no')}: verdict는 {', '.join(db.VERDICTS)} 중 하나")
-        if r["no"] not in current:
-            raise ValueError(f"{r['no']}: 비교표에 없는 후보")
-        review = {k: r.get(k) for k in REVIEW_FIELDS} | {"evidence_at": current[r["no"]]["evidence_at"],
-                                                         "reviewed_at": db.now()}
-        conn.execute("UPDATE candidates SET review=? WHERE no=?", (json.dumps(review, ensure_ascii=False), r["no"]))
-        db.add_judgment(conn, r["no"], r["verdict"], r.get("rationale") or "", "7단계 검토")
-        n += 1
-    conn.commit()
-    return n
+            raise ValueError(f"{no}: verdict는 {', '.join(db.VERDICTS)} 중 하나")
+        if no not in current:
+            raise ValueError(f"{no}: 비교표에 없는 후보")
+        if r.get("evidence_at") != current[no]["evidence_at"]:
+            raise ValueError(f"{no}: 검토 근거 누락·변경. review-export 후 다시 검토한다")
+        if r.get("decision_revision") != current[no]["decision_revision"]:
+            raise ValueError(f"{no}: 검토 이후 판정 변경·식별값 누락. 현재 판정을 확인하고 다시 검토한다")
+        if not (r.get("rationale") or "").strip():
+            raise ValueError(f"{no}: 판정 근거가 필요")
+    with conn:
+        for r in entries:
+            db.add_judgment(conn, r["no"], r["verdict"], r["rationale"], "7단계 검토")
+            review = {k: r.get(k) for k in REVIEW_FIELDS} | {
+                "evidence_at": r["evidence_at"], "reviewed_at": db.now(),
+                "decision_revision": db.latest_judgment(conn, r["no"])["revision"]}
+            conn.execute("UPDATE candidates SET review=? WHERE no=?", (json.dumps(review, ensure_ascii=False), r["no"]))
+    return len(entries)
 
 
 # 8. 판매 가능 조건 확인 — 선별 통과 후보를 등록 가능한지 확인하고, 안 되면 선정 단계로 돌려보낸다 -------------
 
+def _check_handoff(rows: dict, nos: list[int], evidence: dict | None = None) -> None:
+    blocked = []
+    for no in nos:
+        row = rows.get(no)
+        if row is None or not row["selected"]:
+            blocked.append(f"{no}(현재 선별 미통과)")
+        elif not row["review_current"]:
+            blocked.append(f"{no}(검토 없음·이전 근거)")
+        elif evidence is not None and evidence.get(str(no)) != row["evidence_at"]:
+            blocked.append(f"{no}(확인 화면 이후 근거 변경)")
+    if blocked:
+        raise ValueError("인계 중단: " + ", ".join(blocked) + ". report·review-export로 현재 근거를 확인한다")
+
+
+def _refresh_handoff_supply(conn, nos: list[int]) -> dict:
+    # 일부 조회 실패 시 화면/조건서는 만들지 않는다. 성공한 전체 조회만 함께 저장한다.
+    views = {no: domeggook.item_view(no) for no in nos}
+    with conn:
+        for no, view in views.items():
+            summary = domeggook.summarize(view)
+            if summary["no"] != no:
+                raise ValueError(f"{no}: 공급처 응답 상품번호 불일치")
+            conn.execute("INSERT INTO supply_snapshots VALUES (?,?,?,?)", (
+                no, db.now(), json.dumps(summary, ensure_ascii=False), json.dumps(view, ensure_ascii=False)))
+    return views
+
+
 def export_verify(conn: sqlite3.Connection, top: int | None = None, nos: list[int] | None = None) -> tuple[str, int]:
     rules = settings()["verification"]
     rows = {r["no"]: r for r in build_rows(conn)}
-    if not nos:
+    if nos is None:
         nos = [no for no, r in rows.items() if r["stage"] == "checked" and r["selected"] and r["review_current"]
-               ][:top or rules["top"]]
-    # 의미 검토(7단계)를 현재 근거로 마치고 제외되지 않은 후보만 판매 조건 확인으로 넘긴다.
-    blocked = [f"{no}({'비교표에 없음' if no not in rows else '검토 없음·이전 근거' if not rows[no]['review_current'] else '제외 판정'})"
-               for no in nos if no not in rows or not rows[no]["review_current"]
-               or (rows[no]["judgment"] or {}).get("verdict") == "제외"]
-    if blocked:
-        raise ValueError("판매 조건 확인 전에 7단계 검토가 필요: " + ", ".join(blocked))
-    items, urls = [], {}
-    for no in nos:
-        view = domeggook.item_view(no)  # 확인 시점의 최신 정보로 판단한다
-        conn.execute("INSERT INTO supply_snapshots VALUES (?,?,?,?)", (
-            no, db.now(), json.dumps(domeggook.summarize(view), ensure_ascii=False),
-            json.dumps(view, ensure_ascii=False)))
-        items.append(verify.collect(view))
-        urls[no] = conn.execute("SELECT url FROM candidates WHERE no=?", (no,)).fetchone()["url"]
-    conn.commit()
+               ][:rules["top"] if top is None else top]
+    nos = list(dict.fromkeys(nos))
+    if not nos:
+        return "", 0
+    _check_handoff(rows, nos)
+    views = _refresh_handoff_supply(conn, nos)
+    rows = {r["no"]: r for r in build_rows(conn)}
+    _check_handoff(rows, nos)
+    items = [verify.collect(views[no]) for no in nos]
+    urls = {no: rows[no]["url"] for no in nos}
+    batch_id = uuid.uuid4().hex
+    pending = {"batch_id": batch_id, "conditions": items,
+               "evidence": {str(no): rows[no]["evidence_at"] for no in nos}}
     VERIFY_DIR.mkdir(parents=True, exist_ok=True)
-    stamp = date.today().isoformat()
-    (VERIFY_DIR / f"pending-{stamp}.json").write_text(json.dumps(items, ensure_ascii=False), encoding="utf-8")
-    path = VERIFY_DIR / f"verify-{stamp}.html"
-    path.write_text(verify.render(items, urls, rules, stamp), encoding="utf-8")
+    (VERIFY_DIR / f"pending-{batch_id}.json").write_text(json.dumps(pending, ensure_ascii=False), encoding="utf-8")
+    path = VERIFY_DIR / f"verify-{batch_id}.html"
+    path.write_text(verify.render(items, urls, rules, batch_id), encoding="utf-8")
     return str(path), len(items)
 
 
 def import_verify(conn: sqlite3.Connection, path) -> dict:
     rules = settings()["verification"]
-    pending = sorted(VERIFY_DIR.glob("pending-*.json"))
-    if not pending:
-        raise FileNotFoundError("verify-export를 먼저 실행한다")
-    conditions = {c["no"]: c for c in json.loads(pending[-1].read_text(encoding="utf-8"))}
     entered = verify.read_csv(path)
+    batch_ids = {r.get("batch_id") for r in entered.values()}
+    if len(batch_ids) != 1:
+        raise ValueError("확인 화면 식별값 누락·혼합. verify-export로 화면을 다시 만든다")
+    batch_id = next(iter(batch_ids))
+    if not isinstance(batch_id, str) or len(batch_id) != 32 or any(c not in "0123456789abcdef" for c in batch_id):
+        raise ValueError("확인 화면 식별값 누락·오류. verify-export로 화면을 다시 만든다")
+    pending = json.loads((VERIFY_DIR / f"pending-{batch_id}.json").read_text(encoding="utf-8"))
+    if pending.get("batch_id") != batch_id:
+        raise ValueError("확인 화면 식별값 불일치")
+    conditions = {c["no"]: c for c in pending["conditions"]}
+    if set(conditions) != set(entered):
+        raise ValueError("확인 화면과 CSV 상품 목록 불일치")
+    nos = list(conditions)
+    _check_handoff({r["no"]: r for r in build_rows(conn)}, nos, pending["evidence"])
+    views = _refresh_handoff_supply(conn, nos)
+    _check_handoff({r["no"]: r for r in build_rows(conn)}, nos, pending["evidence"])
+    # 날짜에 따라 달라지는 판매 종료일 등은 현재 기준으로 다시 평가한다.
+    conditions = {no: verify.collect(views[no]) for no in nos}
     counts, sheets, returned = {"verified": 0, "returned": 0}, [], []
     for no, c in conditions.items():
         m = entered.get(no)
@@ -739,10 +807,11 @@ def import_verify(conn: sqlite3.Connection, path) -> dict:
         counts[result] += 1
     conn.commit()
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    out = REPORT_DIR / f"{date.today().isoformat()}-sell-conditions.md"
+    out = REPORT_DIR / f"{date.today().isoformat()}-{batch_id}-sell-conditions.md"
     out.write_text("\n".join([
         f"# 판매 조건서 — {date.today().isoformat()}", "",
-        "후보 선별 에이전트의 선별과 판매 가능 조건 확인을 통과한 상품. 등록에 필요한 값을 정리했다.", "",
+        "발행 시점의 선별·검토 근거와 판매 가능 조건을 확인한 상품. 게시 승인과 별개이며 공급 조건 변경 시 재확인이 필요하다.", "",
+        f"- 확인 실행: `{batch_id}` · 확인 시각: {db.now()}", "",
         *sheets,
         "## 선정 단계로 돌려보낸 상품", "", *(returned or ["- 없음"]), "",
     ]), encoding="utf-8")

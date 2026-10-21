@@ -74,14 +74,18 @@ def competitor_prices(matched_prices: list[int], keyword_prices: list[int], min_
 
 def price_scenarios(prices: list[int], resale_min: int | None,
                     lowest_factor: float = 1.0, median_factor: float = 1.0, lowest_bound: int | None = None) -> dict:
-    """최저가·경쟁 중앙가. 네이버 보정 계수를 곱한 뒤, 도매처 최저판매준수가격이 있으면 하한으로 올린다.
+    """관측가·보정 추정가·준수가 적용 시나리오를 분리한다. 준수가로 경쟁가를 덮어쓰지 않는다.
     lowest_bound: 배송비 별도 경쟁 상품의 표시가. 최저가 시나리오는 이 값이 더 낮으면 이 값을 쓴다(불리한 쪽)."""
     if not prices:
-        return {"lowest": None, "median": None, "floored": False}
+        return {"observed_lowest": None, "observed_median": None,
+                "lowest": None, "median": None, "proposed_lowest": None, "proposed_median": None, "floored": False}
     low = min(prices) if lowest_bound is None else min(min(prices), lowest_bound)
     lowest, mid = round(low * lowest_factor), round(median(prices) * median_factor)
     floor = resale_min or 0
-    return {"lowest": max(lowest, floor), "median": max(mid, floor), "floored": floor > lowest}
+    return {"observed_lowest": low, "observed_median": median(prices),
+            "lowest": lowest, "median": mid,
+            "proposed_lowest": max(lowest, floor), "proposed_median": max(mid, floor),
+            "floored": floor > lowest or floor > mid}
 
 
 def margin(sale_price: int | None, supply_price: int | None, ship_cost: int | None,

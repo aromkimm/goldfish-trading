@@ -13,7 +13,7 @@ from datetime import date, datetime
 from . import manual
 from .sources import domeggook
 
-FIELDS = ["no", "options", "cutoff", "return_method", "info_confirmed", "restriction_confirmed", "note"]
+FIELDS = ["no", "batch_id", "options", "cutoff", "return_method", "info_confirmed", "restriction_confirmed", "note"]
 
 
 def info_deferred(desc) -> bool:
@@ -181,6 +181,7 @@ _GUIDE = """<b>판매 가능 조건 확인</b> — API로 채운 값을 보고, 
 </ol>"""
 
 _CARD = """<div class="card" data-no="{no}">
+<input type="hidden" data-no="{no}" name="batch_id" value="{batch_id}">
 <img src="{thumb}" alt="" loading="lazy">
 <div>
 <b>{title}</b> <a href="{url}" target="_blank" rel="noopener">도매 상품</a>
@@ -217,7 +218,7 @@ def render(items: list[dict], urls: dict, rules: dict, stamp: str) -> str:
                 f"반품비 {_won(c['return_fee'])} · 출고 {c['prep'] or '모름'}(평균 {c['send_avg']}일)")
         info = f" — 별도표기 {len(c['info_duty_pending'])}항목" if c["info_duty_pending"] else ""
         cards.append(_CARD.format(
-            no=c["no"], thumb=html.escape(c["thumb"] or ""), title=html.escape(c["title"] or ""),
+            no=c["no"], batch_id=html.escape(stamp), thumb=html.escape(c["thumb"] or ""), title=html.escape(c["title"] or ""),
             url=html.escape(urls.get(c["no"]) or ""), meta=html.escape(meta),
             fails="".join(f'<div class="warn">자동 확인 반려: {html.escape(f)}</div>' for f in fails),
             options=opts, info=html.escape(info)))
@@ -228,7 +229,11 @@ def render(items: list[dict], urls: dict, rules: dict, stamp: str) -> str:
 def read_csv(path) -> dict[int, dict]:
     import csv
     with open(path, encoding="utf-8-sig", newline="") as f:
-        return {int(r["no"]): r for r in csv.DictReader(f)}
+        rows = list(csv.DictReader(f))
+    result = {int(r["no"]): r for r in rows}
+    if len(result) != len(rows):
+        raise ValueError("CSV 상품번호 중복")
+    return result
 
 
 def sheet(c: dict, m: dict, warn: list[str]) -> str:

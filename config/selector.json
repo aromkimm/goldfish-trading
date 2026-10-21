@@ -131,7 +131,7 @@
     "_price_basis_status": "확인 전 — 경쟁가가 같은 사진 상품 가격인 후보만 통과. 같은 유형·키워드 상위 결과 가격은 다른 디자인·규격이 섞여 참고값으로만 쓴다",
     "min_median_margin": 0.15,
     "min_lowest_margin": 0.0,
-    "_margin_status": "제안 — 네이버 보정 후 경쟁 중앙가 기준 수수료 차감 전 마진율이 min_median_margin 미만이거나 경쟁 최저가 기준 마진율이 min_lowest_margin 미만이면 통과시키지 않는다. 사업상 판매 승인 기준과 구분한다",
+    "_margin_status": "제안 — 네이버 보정 후 최저판매준수가를 적용한 시나리오의 중앙가 기준 수수료 차감 전 마진율이 min_median_margin 미만이거나 같은 시나리오의 최저가 기준 마진율이 min_lowest_margin 미만이면 통과시키지 않는다. 사업상 판매 승인 기준과 구분한다. 준수가 적용으로 통과를 허용할지는 미결이며 관측 비교가·보정 추정가를 별도 보존한다",
     "margin_basis": "gross",
     "_margin_basis_status": "미결정 — 선별 조건의 마진 기준. gross는 수수료 차감 전, net은 pricing.platform_fee_rate 차감 후이며 수수료율이 비어 있으면 통과시키지 않는다. 금붕부부 결정 전까지 gross",
     "sensitivity": {
