@@ -380,9 +380,12 @@ class ManualCheck(unittest.TestCase):
 
     def test_render_escapes_and_links(self):
         page = manual.render([{"no": 1, "title": "<b>걸이</b>", "thumb": "t", "url": "u",
-                               "keyword": "욕실 걸이", "supply_price": 3000}], "2026-10-10")
+                               "keyword": "키워드", "title_query": "욕실 걸이", "supply_price": 3000,
+                               "ship_cost": 2500}], "2026-10-10")
         self.assertIn("&lt;b&gt;걸이", page)
         self.assertIn("query=%EC%9A%95%EC%8B%A4+%EA%B1%B8%EC%9D%B4", page)
+        self.assertIn("도매 원가 5,500원", page)
+        self.assertEqual(page.count('class="search"'), 1)
 
     def test_read_csv_skips_unfilled(self):
         path = Path(tempfile.mkdtemp()) / "m.csv"
@@ -392,6 +395,10 @@ class ManualCheck(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual((rows[0]["total_results"], rows[0]["same_sellers"], rows[0]["same_prices"]),
                          (12345, 4, [9900, 10500]))
+        path.write_text("\ufeffno,same_sellers,same_prices,note\n" '1,2,"24500 26000",착불\n', encoding="utf-8")
+        rows = manual.read_csv(path)
+        self.assertEqual((rows[0]["total_results"], rows[0]["same_prices"], rows[0]["note"]),
+                         (None, [24500, 26000], "착불"))
 
 
 class Scoring(unittest.TestCase):

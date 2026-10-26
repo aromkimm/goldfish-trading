@@ -74,10 +74,10 @@ CREATE TABLE IF NOT EXISTS catalog_checks (     -- 네이버 커머스API 카탈
 CREATE TABLE IF NOT EXISTS manual_checks (     -- 네이버쇼핑 수동 확인 결과 (11번가 대비 검증 표본)
     no INTEGER NOT NULL,
     checked_at TEXT NOT NULL,
-    total_results INTEGER,            -- 대표 키워드 검색 결과 전체 상품 수
+    total_results INTEGER,            -- 대표 키워드 검색 결과 전체 상품 수 (이전 형식 화면만 입력)
     same_sellers INTEGER,             -- 같은 상품을 파는 판매자 수 (동일 상품 포화도)
-    same_prices TEXT NOT NULL,        -- JSON 배열
-    similar_prices TEXT NOT NULL,     -- JSON 배열. 같은 상품이 적을 때의 경쟁가
+    same_prices TEXT NOT NULL,        -- JSON 배열. 상품가+배송비 결제 총액 (이전 형식 화면은 판매가)
+    similar_prices TEXT NOT NULL,     -- JSON 배열. 같은 상품이 적을 때의 경쟁가 (이전 형식 화면만 입력)
     note TEXT
 );
 CREATE TABLE IF NOT EXISTS judgments (         -- 사람·검토 단계의 상품별 판정. 최신 판정이 선별 통과 여부에 반영된다
