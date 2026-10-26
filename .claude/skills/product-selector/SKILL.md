@@ -13,7 +13,7 @@ description: 금붕상사 후보 선별 에이전트를 실행해 도매매 후�
 - 명령은 저장소 루트에서 `.venv/bin/python -m selector <명령>`으로 실행한다. 처음이면 `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`.
 - 기존 후보와 섞지 않을 평가 배치는 `selector --data-dir data/<폴더> <명령>`처럼 하위 명령 앞에 `--data-dir`를 두고, `search`에 `--skip-db data/selector.db <앞선 평가 배치 DB…>`를 준다(여러 경로 가능). DB와 llm·manual·verify·reports 파일이 그 폴더에 따로 생기고 지정한 DB들에 있던 상품번호는 추가되지 않는다. 같은 DB에 섞으면 평가 표본을 다시 뽑거나 재현할 수 없다.
 - 11번가 키는 등록한 IP에서만 동작한다. 실행 위치가 바뀌어 거부되면 11번가 API 관리에서 IP를 추가하라고 안내한다.
-- 네이버쇼핑 확인은 사용자 제공 화면과 `manual-export`(기본: 선별 통과 후보 전부)·`manual-import`를 사용한다. 크롤링하거나 접근 차단을 다른 도구로 우회하지 않는다.
+- 네이버쇼핑 확인은 사용자 제공 화면과 `manual-export`(기본: 선별 통과 후보 전부)·`manual-import`를 사용한다. 크롤링하거나 접근 차단을 다른 도구로 우회하지 않는다. 사용자가 검색 결과 첫 페이지 캡처를 주면 도매 썸네일과 같은 사진의 판매가·배송비를 판독하고, 결제 총액이 가장 낮은 몇 곳만 수량·옵션·배송비·필수 추가옵션·URL 확인을 요청한다. `same_prices`에는 상품가+배송비 결제 총액을 넣는다.
 
 ## 절차
 
