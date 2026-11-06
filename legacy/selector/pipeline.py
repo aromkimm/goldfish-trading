@@ -339,6 +339,7 @@ def export_manual(conn: sqlite3.Connection, nos: list[int] | None = None) -> tup
         s = db.latest_snapshot(conn, no)
         items.append({"no": no, "title": s["title"], "thumb": s.get("thumb"), "url": c["url"],
                       "keyword": json.loads(c["keywords"])[0], "supply_price": s.get("supply_price"),
+                      "ship_cost": s.get("ship_cost"),
                       "title_query": elevenst.query_from_title(s["title"])})
     MANUAL_DIR.mkdir(parents=True, exist_ok=True)
     stamp = date.today().isoformat()
