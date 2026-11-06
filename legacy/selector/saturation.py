@@ -2,7 +2,7 @@
 
 사진은 dHash 거리, 유형은 검색어 단어의 상품명 포함 비율로 판정한다.
 동일 제조사·동일 상품을 확정하지 않으며 조회 범위 밖 경쟁자는 세지 않는다.
-임계값은 config/selector.json, 검증 근거는 records/2026-10-10-product-selection-agent.md를 따른다.
+임계값은 legacy/config/selector.json, 검증 근거는 records/2026-10-10-product-selection-agent.md를 따른다.
 """
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 """네이버 검색광고 키워드 도구 클라이언트.
 
 명세 출처(2026-10-10 확인): github.com/naver/searchad-apidoc
-쇼핑 검색 API는 제공되지 않아 쓰지 않는다(docs/product-selection-agent.md 데이터 출처).
+쇼핑 검색 API는 제공되지 않아 쓰지 않는다(legacy/docs/product-selection-agent.md 데이터 출처).
 """
 from __future__ import annotations
 

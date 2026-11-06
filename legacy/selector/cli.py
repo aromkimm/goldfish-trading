@@ -24,7 +24,7 @@ def known_nos(*paths: Path) -> frozenset[int]:
 def main(argv=None) -> None:
     p = argparse.ArgumentParser(prog="selector", description="금붕상사 후보 선별 에이전트")
     p.add_argument("--data-dir", type=Path,
-                   help="DB와 작업 파일(llm·manual·verify·reports)을 둘 폴더 (기본: data/). 이미지 캐시는 data/cache를 공유한다")
+                   help="DB와 작업 파일을 둘 폴더 (기본: 저장소의 records/artifacts/selector-data/). 이미지 캐시는 기본 자료 경로의 cache를 공유한다")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     s = sub.add_parser("search", help="1. 도매매 상품 목록에서 후보 추가")

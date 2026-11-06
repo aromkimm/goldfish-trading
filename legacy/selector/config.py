@@ -5,11 +5,11 @@ import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = ROOT / "data"
+DATA_DIR = ROOT.parent / "records" / "artifacts" / "selector-data"
 CONFIG_PATH = ROOT / "config" / "selector.json"
 
 
-def load_env(path: Path = ROOT / ".env") -> None:
+def load_env(path: Path = ROOT.parent / ".env") -> None:
     """.env의 KEY=VALUE를 환경변수로 읽는다. 이미 설정된 값은 덮어쓰지 않는다."""
     if not path.exists():
         return

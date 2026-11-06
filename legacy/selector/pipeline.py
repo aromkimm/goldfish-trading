@@ -1,4 +1,4 @@
-"""처리 흐름 단계. 단계 정의는 docs/product-selection-agent.md의 처리 흐름을 따른다."""
+"""처리 흐름 단계. 단계 정의는 legacy/docs/product-selection-agent.md의 실행 흐름을 따른다."""
 from __future__ import annotations
 
 import csv

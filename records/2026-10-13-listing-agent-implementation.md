@@ -2,7 +2,7 @@
 
 - 유형: 구현·상품 검증. 확인 기간: 2026-10-12~2026-10-14.
 - 용도: 구조 검사·상품 의미 검수·화면 확인·판매 효과를 구분하고 미검증 범위를 재검증하기 위한 기록.
-- 실행 방법: [사용법](../agents/product-listing/README.md), 검수 기준: [작업 절차](../agents/product-listing/workflow.md).
+- 실행 방법: [사용법](../legacy/agents/product-listing/README.md), 검수 기준: [작업 절차](../legacy/agents/product-listing/README.md#산출물과-검수).
 
 ## 가설
 
@@ -30,12 +30,12 @@
 2026-10-14 코드·사진 생성 경로 통합을 다음 범위에서 확인했다〔당시 실행값〕.
 
 - listing-2 계약 시험 35개 통과. CLI 오류·필수값 차단·자산 참조·경로·변조·승인 재사용 검사를 포함하며 실제 상품 의미 품질의 합격을 뜻하지 않는다.
-- 두 v8 등록안의 상품명·카테고리·태그를 포함한 fields, 검색 후보·판단, 경쟁 관측, 출처·기존 사실, 채널 확인 내용과 미결 과제를 통합 전후 대조해 유지했다. 자료 파일·사진을 제외한 [매트](../agents/product-listing/tests/fixtures/desk-mat.json)·[바구니](../agents/product-listing/tests/fixtures/basket.json) 입력으로 선정 데이터·출력 회귀를 재현한다. 이 입력은 최신 조사 자료나 게시용 원본이 아니다.
+- 두 v8 등록안의 상품명·카테고리·태그를 포함한 fields, 검색 후보·판단, 경쟁 관측, 출처·기존 사실, 채널 확인 내용과 미결 과제를 통합 전후 대조해 유지했다. 자료 파일·사진을 제외한 [매트](../legacy/agents/product-listing/tests/fixtures/desk-mat.json)·[바구니](../legacy/agents/product-listing/tests/fixtures/basket.json) 입력으로 선정 데이터·출력 회귀를 재현한다. 이 입력은 최신 조사 자료나 게시용 원본이 아니다.
 - 기존 사진 시안의 매트 12영역·바구니 11영역을 공통 build로 생성했다. 원본 이미지 바이트를 유지했다. 바구니의 충돌 중인 린넨 명칭은 본문에서 빼고 공급처 세탁 기재를 별도 사실로 연결했으며, 소재·관리법 확인 과제는 유지했다.
 - Chrome 로컬 PC 1280×900·모바일 390×844에서 사진 로딩·도입 순서·줄바꿈·표·규격 도식·작은 사진 묶음을 확인했다. 사진 디코딩 실패·가로 넘침·영역 해상도를 넘는 표시 폭은 없었다. 고밀도 선명도·실제 판매자센터·상품 사실 전체의 검수는 아니다.
 - 기존 layout 없는 v8 패키지의 check, 새 패키지의 check 및 영역·문구 변경 후 검수·승인 초기화를 확인했다. 사진이 보여도 미확인 사용·편집 권한은 게시 차단으로 남았다.
 
-재검증 자료: [매트 통합 패키지](../agents/product-listing/runs/23824864-integrated-v2-package/listing-package.json) · [바구니 통합 패키지](../agents/product-listing/runs/67434894-integrated-v2-package/listing-package.json) · [화면 크기·버전·해시·사진 검사](../agents/product-listing/runs/integrated-review/screen-review.json). 화면 캡처와 해당 버전 desktop/mobile 검수 보고는 같은 검증 폴더에 있다. 로컬 자료는 Git 제외 대상이다.
+재검증 자료: [매트 통합 패키지](artifacts/product-listing-runs/23824864-integrated-v2-package/listing-package.json) · [바구니 통합 패키지](artifacts/product-listing-runs/67434894-integrated-v2-package/listing-package.json) · [화면 크기·버전·해시·사진 검사](artifacts/product-listing-runs/integrated-review/screen-review.json). 화면 캡처와 해당 버전 desktop/mobile 검수 보고는 같은 검증 폴더에 있다. 로컬 자료는 Git 제외 대상이다.
 
 ### 검색·등록 판단
 
@@ -47,16 +47,16 @@
 
 ### 재검증 자료
 
-아래는 당시 실행의 로컬 자료이며 Git 제외 대상이다. 다른 체크아웃에는 없을 수 있다. 상품별 수치·원문 위치·조회 시각·검색 환경·판단은 JSON과 그 `sources/`에 연결돼 있다.
+아래는 당시 실행의 로컬 자료이며 Git 제외 대상이다. 다른 체크아웃에는 없을 수 있다. 상품별 수치·원문 위치·조회 시각·검색 환경·판단은 JSON과 그 `sources/`에 연결돼 있다. 통합 패키지와 비교 기준인 v8 패키지, 해당 화면 검증 자료, 패키지에 포함되지 않은 고유 조사 입력을 보존한다. 중간 생성본 전체의 변경 과정은 재현 범위가 아니다.
 
 | 자료 | 위치 |
 | --- | --- |
-| 매트 등록안과 수요·경쟁·채널 근거 | [v8 관리 원본](../agents/product-listing/runs/23824864-v8-package/listing-package.json) |
-| 바구니 등록안과 수요·경쟁·채널 근거 | [v8 관리 원본](../agents/product-listing/runs/67434894-v8-package/listing-package.json) |
-| 매트 사진 영역·원본 해시·화면 검수 | [구성 자료](../agents/product-listing/runs/23824864-visual-review/composition.json) · [화면 검수](../agents/product-listing/runs/23824864-visual-review/screen-review.json) |
-| 바구니 사진 영역·원본 해시·화면 검수 | [구성 자료](../agents/product-listing/runs/67434894-visual-review/composition.json) · [화면 검수](../agents/product-listing/runs/67434894-visual-review/screen-review.json) |
+| 매트 등록안과 수요·경쟁·채널 근거 | [v8 관리 원본](artifacts/product-listing-runs/23824864-v8-package/listing-package.json) |
+| 바구니 등록안과 수요·경쟁·채널 근거 | [v8 관리 원본](artifacts/product-listing-runs/67434894-v8-package/listing-package.json) |
+| 매트 사진 영역·원본 해시·화면 검수 | [구성 자료](artifacts/product-listing-runs/23824864-visual-review/composition.json) · [화면 검수](artifacts/product-listing-runs/23824864-visual-review/screen-review.json) |
+| 바구니 사진 영역·원본 해시·화면 검수 | [구성 자료](artifacts/product-listing-runs/67434894-visual-review/composition.json) · [화면 검수](artifacts/product-listing-runs/67434894-visual-review/screen-review.json) |
 
-별도 시안의 검수를 등록 패키지 버전의 검수·승인으로 승계하지 않았다. 현재 구현은 [테스트 코드](../agents/product-listing/tests/)로 재검증하며, 위 시험 수는 당시 실행 범위다.
+별도 시안의 검수를 등록 패키지 버전의 검수·승인으로 승계하지 않았다. 현재 구현은 [테스트 코드](../legacy/agents/product-listing/tests/)로 재검증하며, 위 시험 수는 당시 실행 범위다.
 
 ## 다음 결정
 
